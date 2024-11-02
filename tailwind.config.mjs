@@ -8,4 +8,11 @@ export default {
 		require('daisyui'),
 		require('@tailwindcss/typography'),
 	],
+	safelist: [
+		'w-8',
+		'w-16',
+		'w-24',
+		'ring-primary', 
+		'ring-secondary', 
+		'ring-accent'],
 }
