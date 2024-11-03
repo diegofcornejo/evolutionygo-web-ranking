@@ -10,6 +10,7 @@ export default {
 	],
 	safelist: [
 		'w-8',
+		'w-12',
 		'w-16',
 		'w-24',
 		'ring-primary', 
