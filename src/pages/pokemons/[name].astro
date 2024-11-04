@@ -8,7 +8,12 @@ const pokemon = await response.json();
 <Layout title={pokemon.name}>
 	<h1 class='text-gradient capitalize mb-4' transition:name={`title-${pokemon.name}`}>{pokemon.name}</h1>
 	<div class='flex flex-col items-center justify-center'>
-		<img src={pokemon.sprites.other.dream_world.front_default} alt={pokemon.name} class='h-48 w-auto' transition:name={`img-${pokemon.name}`}/>
+		<img 
+			src={pokemon.sprites.other.dream_world.front_default} 
+			alt={pokemon.name} 
+			class='h-96 w-auto' 
+			transition:name={`img-${pokemon.name}`}
+		/>
 		<div class='flex flex-row gap-2 mt-4 mb-4 justify-center'>
 			{pokemon.types.map((type: {type: {name: string}}) => (
 				<div class='badge badge-outline'>{type.type.name}</div>
