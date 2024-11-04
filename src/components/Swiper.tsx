@@ -1,7 +1,6 @@
 import { Pagination, A11y, Autoplay } from 'swiper/modules';
-
-// Import Swiper React components
 import { Swiper, SwiperSlide } from 'swiper/react';
+import { toast } from 'sonner';
 
 // Import Swiper styles
 import 'swiper/css';
@@ -36,6 +35,10 @@ const slides = [
 	}
 ];
 
+const handleToast = () => {
+	toast.success('Hello, world!')
+}
+
 export default () => {
 	return (
 		<div className='mb-8'>
@@ -56,22 +59,10 @@ export default () => {
 				{slides.map((slide) => (
 					<SwiperSlide key={slide.id}>
 						<div className='h-auto w-full bg-base-200 flex justify-center items-center'>
-							<img src={slide.image} alt={`Slide ${slide.id}`} width={600} height={400}/>
+							<img src={slide.image} alt={`Slide ${slide.id}`} width={600} height={400} onClick={handleToast} className='cursor-pointer'/>
 						</div>
 					</SwiperSlide>
 				))}
-				{/* <SwiperSlide>
-					<div className='h-96 w-full bg-red-500'></div>
-				</SwiperSlide>
-				<SwiperSlide>
-					<div className='h-96 w-full bg-blue-500'></div>
-				</SwiperSlide>
-				<SwiperSlide>
-					<div className='h-96 w-full bg-green-500'></div>
-				</SwiperSlide>
-				<SwiperSlide>
-					<div className='h-96 w-full bg-yellow-500'></div>
-				</SwiperSlide> */}
 			</Swiper>
 		</div>
 	);
