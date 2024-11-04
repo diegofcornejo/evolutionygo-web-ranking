@@ -58,8 +58,8 @@ export default () => {
 			>
 				{slides.map((slide) => (
 					<SwiperSlide key={slide.id}>
-						<div className='h-auto w-full bg-base-200 flex justify-center items-center'>
-							<img src={slide.image} alt={`Slide ${slide.id}`} onClick={handleToast} className='cursor-pointer w-full aspect-[3/1] md:aspect-[4/1] object-cover'/>
+						<div className='h-auto w-full bg-base-200 flex justify-center items-center' onClick={handleToast}>
+							<img src={slide.image} alt={`Slide ${slide.id}`} className='cursor-pointer w-full aspect-[3/1] md:aspect-[4/1] object-cover'/>
 						</div>
 					</SwiperSlide>
 				))}
