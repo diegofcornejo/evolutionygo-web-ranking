@@ -1,6 +1,7 @@
 ---
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
+import { Toaster } from 'sonner';
 interface Props {
 	title: string;
 }
@@ -22,6 +23,7 @@ const { title } = Astro.props;
 		<Navbar />
 		<slot />
 		<Footer />
+		<Toaster richColors closeButton duration={5000} position='bottom-right' client:load/>
 	</body>
 </html>
 <style is:global>
