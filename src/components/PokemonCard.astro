@@ -16,12 +16,12 @@ const image = data.sprites.other.dream_world.front_default;
 const types = data.types;
 ---
 
-<div class="card bg-base-200 w-full shadow-xl cursor-pointer" onclick={`window.location.href = '/pokemons/${name}'`}>
+<a href={`/pokemons/${name}`} class="card bg-base-200 w-full shadow-xl cursor-pointer">
   <figure>
-    <img src={image} alt={name} class="h-48 w-auto pt-8"/>
+    <img src={image} alt={name} class="h-48 w-auto pt-8" transition:name={`img-${name}`}/>
   </figure>
   <div class="card-body">
-    <h2 class="card-title">
+    <h2 class="card-title" transition:name={`title-${name}`}>
       {name}
       <div class="badge badge-secondary">NEW</div>
     </h2>
@@ -32,4 +32,4 @@ const types = data.types;
       ))}
     </div>
   </div>
-</div>
+</a>

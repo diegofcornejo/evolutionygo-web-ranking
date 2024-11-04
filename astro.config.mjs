@@ -12,7 +12,6 @@ export default defineConfig({
   integrations: [tailwind(), react({
         experimentalReactChildren: true,
     })],
-
   output: 'server',
   adapter: vercel()
 });
