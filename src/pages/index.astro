@@ -5,6 +5,7 @@ import Breadcrumb from '../components/Breadcrumb.astro';
 import AvatarGroup from '../components/AvatarGroup.astro';
 import AvatarRing from '../components/AvatarRing.astro';
 import AvatarIndicator from '../components/AvatarIndicator.astro';
+import Swiper from '../components/Swiper';
 ---
 
 <Layout title='Evolution YGO Ranking'>
@@ -45,6 +46,7 @@ import AvatarIndicator from '../components/AvatarIndicator.astro';
 			</defs>
 		</svg> -->
 		<h1>Welcome to <span class='text-gradient'>Evolution YGO Ranking</span></h1>
+		<Swiper client:load/>
 		<!-- <p class='instructions'>
 			To get started, open the directory <code>src/pages</code> in your project.<br />
 			<strong>Code Challenge:</strong> Tweak the "Welcome to Astro" message above.
