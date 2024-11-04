@@ -26,3 +26,6 @@ pnpm-debug.log*
 # Mac OS
 .DS_Store
 **/.DS_Store
+
+# vercel
+.vercel/
