@@ -7,14 +7,26 @@ import AvatarIndicator from '../components/AvatarIndicator.astro';
 import Swiper from '../components/Swiper';
 
 import PokemonCard from '../components/PokemonCard.astro';
+import YGOCard from '../components/YGOCard.astro';
 
 interface Pokemon {
 	name: string;
 }
 
-const response = await fetch('https://pokeapi.co/api/v2/pokemon?limit=12');
-const data = await response.json();
-const pokemons = data.results;
+interface YGO {
+	id: number;
+}
+
+// POKEMON API
+const pokemonResponse = await fetch('https://pokeapi.co/api/v2/pokemon?limit=12');
+const pokemonData = await pokemonResponse.json();
+const pokemons = pokemonData.results;
+
+// YGO API
+const ygoCardIds = [11714098, 68170903, 27744077, 23771716, 34541863, 64163367, 26593852, 19204398, 5405694, 65393205, 3366982, 3544583];
+const ygoResponse = await fetch(`https://db.ygoprodeck.com/api/v7/cardinfo.php?id=${ygoCardIds.join(',')}`);
+const ygoData = await ygoResponse.json();
+const ygocards = ygoData.data;
 ---
 
 <Layout title='Evolution YGO Ranking'>
@@ -29,6 +41,9 @@ const pokemons = data.results;
 		<h1>Welcome to <span class='text-gradient'>Evolution YGO Ranking</span></h1>
 		<Swiper client:load/>
 		<ul role='list' class='link-card-grid'>
+			{ygocards.map((ygocard: YGO) => (
+				<YGOCard id={ygocard.id} />
+			))}
 			{pokemons.map((pokemon: Pokemon) => (
 				<PokemonCard name={pokemon.name} />
 			))}
