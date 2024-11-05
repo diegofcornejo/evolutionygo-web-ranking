@@ -1,0 +1,34 @@
+---
+interface Props {
+	id: string;
+	open: string;
+	close?: string;
+	showButtons?: boolean;
+	showLogo?: boolean;
+}
+
+const { id, open, close = 'Close', showButtons = true, showLogo = true } = Astro.props;
+---
+
+<button class='btn btn-sm ml-1 mr-1' onclick={`${id}.showModal()`}>{open}</button>
+<dialog id={id} class='modal'>
+	<div class='modal-box'>
+		{showLogo && <img src='/logo.svg' alt='logo' class='h-16 w-auto mx-auto' />}
+		<h3 class='text-lg font-bold text-center'>{open}</h3>
+		<div class='modal-action'>
+			<div class='w-full'>
+				<slot name='main' />
+				{
+					showButtons && (
+						<div class='flex justify-end gap-2 mt-8'>
+							<slot name='buttons' />
+							<button class='btn btn-outline' onclick={`${id}.close()`}>
+								{close}
+							</button>
+						</div>
+					)
+				}
+			</div>
+		</div>
+	</div>
+</dialog>
