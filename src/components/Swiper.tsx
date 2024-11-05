@@ -50,8 +50,8 @@ export default () => {
 					delay: 5000,
 					disableOnInteraction: false,
 				}}
-				onSlideChange={() => console.log('slide change')}
-				onSwiper={(swiper) => console.log(swiper)}
+				// onSlideChange={() => console.log('slide change')}
+				// onSwiper={(swiper) => console.log(swiper)}
 				pagination={{
 					clickable: true,
 				}}

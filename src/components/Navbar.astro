@@ -1,4 +1,6 @@
 ---
+import Modal from "./Modal.astro";
+import SignInForm from "./SignInForm.tsx";
 const menuItems = [
 	{
 		name: 'News',
@@ -157,4 +159,7 @@ const menuItems = [
 			</ul>
 		</div>
 	</div>
+	<Modal id="signin" open="Sign in" showCloseButton={false}>
+		<SignInForm dialog="signin" slot='main' client:load/>
+	</Modal>
 </div>
