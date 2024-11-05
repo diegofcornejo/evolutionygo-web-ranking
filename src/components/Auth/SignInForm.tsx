@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ReactSVG } from 'react-svg'
+import { isLoggedIn } from '../../stores/sessionStore';
 
 export default function LoginForm({ dialog }: { dialog: string }) {
 	const [email, setEmail] = useState('');
@@ -37,6 +38,7 @@ export default function LoginForm({ dialog }: { dialog: string }) {
 
 			if (response.ok) {
 				const data = await response.text();
+				isLoggedIn.set(true);
 				console.log('Login successful:', data);
 				closeModal();
 			} else {

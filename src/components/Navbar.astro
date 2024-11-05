@@ -42,6 +42,30 @@ const menuItems = [
 	},
 ];
 ---
+<script>
+	import { isLoggedIn } from '../stores/sessionStore';
+	isLoggedIn.subscribe((value) => {
+		const signinButton = document.getElementById('button-modal-signin');
+		const signupButton = document.getElementById('button-modal-signup');
+		const dropdownProfile = document.getElementById('dropdown-navbar-profile');
+		if(value) {
+			if(signinButton){signinButton.style.display = 'none';}
+			if(signupButton){signupButton.style.display = 'none';}
+			if(dropdownProfile){dropdownProfile.style.display = 'block';}
+		} else {
+			if(signinButton){signinButton.style.display = 'block';}
+			if(signupButton){signupButton.style.display = 'block';}
+			if(dropdownProfile){dropdownProfile.style.display = 'none';}
+		}
+	});
+
+	function logout() {
+		isLoggedIn.set(false);
+	}
+	// @ts-ignore
+	document.getElementById('button-navbar-logout').addEventListener('click', logout);
+
+</script>
 
 <div class='navbar bg-base-100 sticky top-0 z-50'>
 	<div class='navbar-start'>
@@ -136,7 +160,7 @@ const menuItems = [
 				<span class='badge badge-xs badge-primary indicator-item'></span>
 			</div>
 		</button>
-		<div class='dropdown dropdown-end'>
+		<div class='dropdown dropdown-end' id='dropdown-navbar-profile'>
 			<div tabindex='0' role='button' class='btn btn-ghost btn-circle avatar'>
 				<div class='w-8 rounded-full ring-primary ring-offset-base-100 ring ring-offset-2'>
 					<img
@@ -156,7 +180,7 @@ const menuItems = [
 					</a>
 				</li>
 				<li><a>Settings</a></li>
-				<li><a>Logout</a></li>
+				<li><a id='button-navbar-logout'>Logout</a></li>
 			</ul>
 		</div>
 	</div>
@@ -164,6 +188,6 @@ const menuItems = [
 		<SignInForm dialog="signin" slot='main' client:load/>
 	</Modal>
 	<Modal id="signup" open="Sign up" showButtons={false}>
-		<SignUpForm dialog="signup" slot='main' client:load/>
+			<SignUpForm dialog="signup" slot='main' client:load/>
 	</Modal>
 </div>
