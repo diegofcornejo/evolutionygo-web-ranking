@@ -25,37 +25,34 @@ export default function LoginForm({ dialog }: { dialog: string }) {
 	const handleSubmit = async (event: { preventDefault: () => void; }) => {
 		event.preventDefault();
 		console.log(email, username);
-		if (email === 'admin@admin.com' && username === 'admin') {
-			toast.success('Login successful', {
-				position: 'bottom-center',
+
+		try {
+			const response = await fetch(`${import.meta.env.PUBLIC_API_URL}/users/register`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({ email, username })
 			});
-			closeModal();
-		} else {
-			setError('Invalid credentials');
+
+			const data = await response.json();
+
+			console.log(data);
+
+			if (response.ok) {
+				console.log('Registration successful:', data);
+				closeModal();
+				toast.success('Registration successful, please verify your email', {
+					position: 'bottom-center',
+				});
+			} else {
+				console.log('Error in registration:', data);
+				setError(data.message || 'Error in registration');
+			}
+		} catch (error) {
+			console.error('Error in registration:', error);
+			setError('No connection to server');
 		}
-
-
-
-		// try {
-		// 	const response = await fetch('https://api.evolutionygo/login', {
-		// 		method: 'POST',
-		// 		headers: {
-		// 			'Content-Type': 'application/json'
-		// 		},
-		// 		body: JSON.stringify({ email, password })
-		// 	});
-
-		// 	const data = await response.json();
-
-		// 	if (response.ok) {
-		// 		console.log('Login exitoso:', data);
-		// 	} else {
-		// 		setError(data.message || 'Error en el inicio de sesión');
-		// 	}
-		// } catch (error) {
-		// 	setError('No se pudo conectar con el servidor');
-		// 	console.error('Error en el login:', error);
-		// }
 	};
 
 	return (
