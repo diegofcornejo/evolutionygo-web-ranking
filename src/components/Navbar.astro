@@ -1,6 +1,7 @@
 ---
 import Modal from "./Modal.astro";
-import SignInForm from "./SignInForm.tsx";
+import SignInForm from "./Auth/SignInForm.tsx";
+import SignUpForm from "./Auth/SignUpForm.tsx";
 const menuItems = [
 	{
 		name: 'News',
@@ -159,7 +160,10 @@ const menuItems = [
 			</ul>
 		</div>
 	</div>
-	<Modal id="signin" open="Sign in" showCloseButton={false}>
+	<Modal id="signin" open="Sign in" showButtons={false}>
 		<SignInForm dialog="signin" slot='main' client:load/>
+	</Modal>
+	<Modal id="signup" open="Sign up" showButtons={false}>
+		<SignUpForm dialog="signup" slot='main' client:load/>
 	</Modal>
 </div>
