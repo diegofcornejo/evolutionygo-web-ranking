@@ -9,3 +9,5 @@ export const isLoggedIn = persistentAtom<boolean>('isLoggedIn', false, {
   encode: JSON.stringify,
   decode: JSON.parse,
 });
+
+export const userName = persistentAtom<string>('userName', '');

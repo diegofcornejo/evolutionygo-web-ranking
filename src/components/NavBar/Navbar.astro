@@ -5,11 +5,16 @@ import SignUpForm from "../Auth/SignUpForm.tsx";
 import menuItems from "./menuItems";
 ---
 <script>
-	import { isLoggedIn } from '../../stores/sessionStore';
+	import { isLoggedIn, userName } from '../../stores/sessionStore';
 	import { update, logout } from './helper';
 	
 	isLoggedIn.subscribe((value) => {
 		update(value);
+	});
+
+	userName.subscribe((value) => {
+		// @ts-ignore
+		document.getElementById('navbar-username').innerHTML = value || '';
 	});
 	
 	document.addEventListener('astro:page-load', () => {
@@ -39,7 +44,7 @@ import menuItems from "./menuItems";
 			</div>
 			<ul
 				tabindex='0'
-				class='menu menu-sm dropdown-content bg-base-300 rounded-box z-[1] mt-3 w-52 p-2 shadow'
+				class='menu menu-sm dropdown-content bg-base-300 rounded-box z-[1] mt-1 w-52 p-2 shadow'
 			>
 				{
 					menuItems.map((item) =>
@@ -63,7 +68,6 @@ import menuItems from "./menuItems";
 				}
 			</ul>
 		</div>
-		<!-- <img src='/logo.svg' alt='logo' class='hidden sm:block h-16 w-auto cursor-pointer' onclick={`window.location.href = '/'`}/> -->
 		<a href="/"><img src='/logo.svg' alt='logo' class='h-16 w-auto cursor-pointer'/></a>
 	</div>
 	<div class='navbar-center hidden lg:flex'>
@@ -123,8 +127,9 @@ import menuItems from "./menuItems";
 			</div>
 			<ul
 				tabindex='0'
-				class='menu menu-sm dropdown-content bg-base-300 rounded-box z-[1] mt-3 w-48 p-2 shadow'
+				class='menu menu-sm dropdown-content bg-base-300 rounded-box z-[1] mt-1 w-56 p-2 shadow'
 			>
+				<li class='text-lg font-bold text-center pt-2 pb-4' id='navbar-username'></li>
 				<li>
 					<a class='justify-between'>
 						Profile
