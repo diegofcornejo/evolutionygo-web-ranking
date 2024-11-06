@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ReactSVG } from 'react-svg'
 import { isLoggedIn } from '../../stores/sessionStore';
+import { tokenStore } from '../../stores/tokenStore';
 
 export default function LoginForm({ dialog }: { dialog: string }) {
 	const [email, setEmail] = useState('');
@@ -38,6 +39,7 @@ export default function LoginForm({ dialog }: { dialog: string }) {
 
 			if (response.ok) {
 				isLoggedIn.set(true);
+				tokenStore.set(data.token);
 				closeModal();
 			} else {
 				setError(data.message || 'Error in login');

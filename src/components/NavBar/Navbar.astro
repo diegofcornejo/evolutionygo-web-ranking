@@ -2,45 +2,7 @@
 import Modal from "../Modal.astro";
 import SignInForm from "../Auth/SignInForm.tsx";
 import SignUpForm from "../Auth/SignUpForm.tsx";
-const menuItems = [
-	{
-		name: 'News',
-		href: '/news',
-	},
-	{
-		name: 'Ranking',
-		href: '/ranking',
-		submenu: [
-			{
-				name: 'Submenu 1',
-				href: '/submenu1',
-				target: '_self',
-			},
-			{
-				name: 'Submenu 2',
-				href: '/submenu2',
-				target: '_self',
-			},
-		],
-	},
-	{
-		name: 'Feature',
-		href: '/feature',
-	},
-	{
-		name: 'Download',
-		href: '/download',
-	},
-	{
-		name: 'Tournaments',
-		href: '/tournaments',
-	},
-	{
-		name: 'Status',
-		href: 'https://status.evolutionygo.com',
-		target: '_blank',
-	},
-];
+import menuItems from "./menuItems";
 ---
 <script>
 	import { isLoggedIn } from '../../stores/sessionStore';

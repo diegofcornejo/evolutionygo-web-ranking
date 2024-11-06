@@ -1,8 +1,10 @@
 import { isLoggedIn } from '../../stores/sessionStore';
+import { tokenStore } from '../../stores/tokenStore';
 
 
 const handleLogout = () => {
 	isLoggedIn.set(false);
+	tokenStore.set(undefined);
 }
 
 const logout = () => {
