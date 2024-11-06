@@ -24,7 +24,6 @@ export default function LoginForm({ dialog }: { dialog: string }) {
 
 	const handleSubmit = async (event: { preventDefault: () => void; }) => {
 		event.preventDefault();
-		console.log(email, username);
 
 		try {
 			const response = await fetch(`${import.meta.env.PUBLIC_API_URL}/users/register`, {
@@ -37,16 +36,12 @@ export default function LoginForm({ dialog }: { dialog: string }) {
 
 			const data = await response.json();
 
-			console.log(data);
-
 			if (response.ok) {
-				console.log('Registration successful:', data);
 				closeModal();
 				toast.success('Registration successful, please verify your email', {
 					position: 'bottom-center',
 				});
 			} else {
-				console.log('Error in registration:', data);
 				setError(data.message || 'Error in registration');
 			}
 		} catch (error) {
@@ -80,8 +75,7 @@ export default function LoginForm({ dialog }: { dialog: string }) {
 					required
 				/>
 			</label>
-			<p className={`text-error h-4 transition-opacity duration-300 ${!error ? 'opacity-0' : 'opacity-100'
-				}`}>
+			<p className={`text-error text-sm h-4 transition-opacity duration-300 ${!error ? 'opacity-0' : 'opacity-100'}`}>
 				{error || ' '}
 			</p>
 			<div className='flex justify-end gap-2'>

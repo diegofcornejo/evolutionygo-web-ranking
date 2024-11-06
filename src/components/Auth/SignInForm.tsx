@@ -24,10 +24,8 @@ export default function LoginForm({ dialog }: { dialog: string }) {
 
 	const handleSubmit = async (event: { preventDefault: () => void; }) => {
 		event.preventDefault();
-		console.log(email, password);
 
 		try {
-			console.log(import.meta.env.PUBLIC_API_URL);
 			const response = await fetch(`${import.meta.env.PUBLIC_API_URL}/users/login`, {
 				method: 'POST',
 				headers: {
@@ -36,25 +34,23 @@ export default function LoginForm({ dialog }: { dialog: string }) {
 				body: JSON.stringify({ email, password })
 			});
 
+			const data = await response.json();
+
 			if (response.ok) {
-				const data = await response.text();
 				isLoggedIn.set(true);
-				console.log('Login successful:', data);
 				closeModal();
 			} else {
-				const data = await response.json()
 				setError(data.message || 'Error in login');
 			}
 		} catch (error) {
 			setError('No connection to server');
-			console.error('Error in login:', error);
 		}
 	};
 
 	return (
 		<form className='space-y-4' onSubmit={handleSubmit}>
 			<label className="input input-bordered flex items-center gap-2">
-				<ReactSVG src='/icons/email.svg' className='w-4 h-4 opacity-70'/>
+				<ReactSVG src='/icons/email.svg' className='w-4 h-4 opacity-70' />
 				<input
 					type="text"
 					className="grow"
@@ -66,7 +62,7 @@ export default function LoginForm({ dialog }: { dialog: string }) {
 				/>
 			</label>
 			<label className="input input-bordered flex items-center gap-2">
-				<ReactSVG src='/icons/password.svg' className='w-4 h-4 opacity-70'/>
+				<ReactSVG src='/icons/password.svg' className='w-4 h-4 opacity-70' />
 				<input
 					type="password"
 					className="grow"
@@ -77,8 +73,7 @@ export default function LoginForm({ dialog }: { dialog: string }) {
 					required
 				/>
 			</label>
-			<p className={`text-error h-4 transition-opacity duration-300 ${!error ? 'opacity-0' : 'opacity-100'
-				}`}>
+			<p className={`text-error text-sm h-4 transition-opacity duration-300 ${!error ? 'opacity-0' : 'opacity-100'}`}>
 				{error || ' '}
 			</p>
 			<div className='flex justify-end gap-2'>
