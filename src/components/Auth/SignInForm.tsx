@@ -42,8 +42,7 @@ export default function LoginForm({ dialog }: { dialog: string }) {
 				isLoggedIn.set(true);
 				tokenStore.set(data.token);
 				userName.set(data.username);
-				userId.set('82b97d80-5c79-4735-bf55-ee6df864930c');
-				console.log('userId', userId.get());
+				userId.set(data.id);
 				closeModal();
 			} else {
 				setError(data.message || 'Error in login');

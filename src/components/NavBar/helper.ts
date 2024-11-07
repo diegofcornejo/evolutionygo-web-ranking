@@ -6,6 +6,7 @@ const handleLogout = () => {
 	isLoggedIn.set(false);
 	tokenStore.set(undefined);
 	userName.set('');
+	userId.set('');
 }
 
 const logout = () => {
@@ -13,11 +14,11 @@ const logout = () => {
 	document.getElementById('button-navbar-logout').addEventListener('click', handleLogout);
 }
 
-const update = (value: boolean) => {
+const update = () => {
 	const signinButton = document.getElementById('button-modal-signin');
 	const signupButton = document.getElementById('button-modal-signup');
 	const dropdownProfile = document.getElementById('dropdown-navbar-profile');
-	if (value) {
+	if (isLoggedIn.get()) {
 		// @ts-ignore
 		signinButton.style.display = 'none';
 		// @ts-ignore
@@ -34,13 +35,13 @@ const update = (value: boolean) => {
 	}
 }
 
-const updateUsername = (value: string) => {
+const updateUser = () => {
 	// @ts-ignore
-	document.getElementById('navbar-username').innerHTML = value || '';
+	document.getElementById('navbar-username').innerHTML = userName.get() || '';
 	// @ts-ignore
-	document.getElementById('dropdown-navbar-avatar').src = `https://avatar.iran.liara.run/public/boy?username=${value}`;
+	document.getElementById('dropdown-navbar-avatar').src = `https://avatar.iran.liara.run/public/boy?username=${userName.get()}`;
 	// @ts-ignore
-	document.getElementById('dropdown-navbar-profile-link').href = `/duelists/${userId.get()}/${value}`;
+	document.getElementById('dropdown-navbar-profile-link').href = `/duelists/${userId.get()}`;
 }
 
-export { update, logout, updateUsername };
+export { update, logout, updateUser };

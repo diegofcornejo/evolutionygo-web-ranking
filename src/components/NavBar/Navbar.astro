@@ -6,20 +6,24 @@ import SignUpForm from "../Auth/SignUpForm.tsx";
 import menuItems from "./menuItems";
 ---
 <script>
-	import { isLoggedIn, userName } from '../../stores/sessionStore';
-	import { update, logout, updateUsername } from './helper';
+	import { isLoggedIn, userName, userId } from '../../stores/sessionStore';
+	import { update, logout, updateUser } from './helper';
 	
-	isLoggedIn.subscribe((value) => {
-		update(value);
+	isLoggedIn.subscribe(() => {
+		update();
 	});
 
-	userName.subscribe((value) => {
-		updateUsername(value);
+	userName.subscribe(() => {
+		updateUser();
+	});
+
+	userId.subscribe(() => {
+		updateUser();
 	});
 	
 	document.addEventListener('astro:page-load', () => {
-		updateUsername(userName.get());
-		update(isLoggedIn.get());
+		updateUser();
+		update();
 		logout();
 	});
 
