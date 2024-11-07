@@ -11,15 +11,15 @@ type MenuItem = {
 const menuItems: MenuItem[] = [
   {
     name: 'Home',
-    href: '#section-home',
+    href: '/#section-home',
   },
   {
     name: 'Ranking',
-    href: '#section-ranking',
+    href: '/#section-ranking',
   },
   {
     name: 'Download',
-    href: '#section-download',
+    href: '/#section-download',
   },
   // {
   //   name: 'Ranking',
@@ -39,7 +39,7 @@ const menuItems: MenuItem[] = [
   // },
   {
 		name: 'Features',
-		href: '#section-features',
+		href: '/#section-features',
 	},
 	{
     name: 'Tournaments',

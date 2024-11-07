@@ -19,12 +19,12 @@ const badge = position == 1 ? 'gold' : position == 2 ? 'silver' : 'bronze';
 <a href={`/duelists/${userId}/${username}`} class="card bg-base-200 w-full shadow-xl cursor-pointer">
 	<div class="flex flex-col items-center gap-4">
 		<figure>
-			<img src={image} alt={username} class="w-24 h-24 rounded-full mt-8" transition:name={`img-duelist-${userId}`}/>
+			<img src={image} alt={username} class="w-24 h-24 rounded-full mt-8" transition:name={`img-duelist-${userId}`} transition:animate="none"/>
 		</figure>
-		<Rating rating={rating} transition:name={`rating-duelist-${userId}`}/>
+		<Rating rating={rating} transition:name={`rating-duelist-${userId}`} transition:animate="none"/>
 	</div>
   <div class="card-body">
-    <h2 class="card-title" transition:name={`title-duelist-${userId}`}>
+    <h2 class="card-title" transition:name={`title-duelist-${userId}`} transition:animate="none">
       {username}
       <div class="badge badge-secondary">{position}</div>
     </h2>
