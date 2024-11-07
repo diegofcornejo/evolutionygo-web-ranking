@@ -1,0 +1,12 @@
+---
+interface Props {
+	id?: string;
+}
+const { id } = Astro.props;
+---
+
+<div class="hero bg-base-200 min-h-screen" id={id}>
+  <div class="hero-content flex-col lg:flex-row-reverse">
+    <slot />
+  </div>
+</div>

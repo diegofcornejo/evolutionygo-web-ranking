@@ -5,45 +5,9 @@ import AvatarGroup from '../components/AvatarGroup.astro';
 import AvatarRing from '../components/AvatarRing.astro';
 import AvatarIndicator from '../components/AvatarIndicator.astro';
 import Swiper from '../components/Swiper';
-
-import PokemonCard from '../components/Cards/PokemonCard.astro';
-import YGOCard from '../components/Cards/YGOCard.astro';
-import DuelistCard from '../components/Cards/DuelistCard.astro';
-
-interface Pokemon {
-	name: string;
-}
-
-interface YGO {
-	id: number;
-}
-
-interface Duelist {
-	userId: number;
-	username: string;
-	points: number;
-	wins: number;
-	losses: number;
-	winRate: number;
-	position: number;
-}
-
-// POKEMON API
-const pokemonResponse = await fetch('https://pokeapi.co/api/v2/pokemon?limit=12');
-const pokemonData = await pokemonResponse.json();
-const pokemons = pokemonData.results;
-
-// YGO API
-const ygoCardIds = [11714098, 68170903, 27744077, 23771716, 34541863, 64163367, 26593852, 19204398, 5405694, 65393205, 3366982, 3544583];
-const ygoResponse = await fetch(`https://db.ygoprodeck.com/api/v7/cardinfo.php?id=${ygoCardIds.join(',')}`);
-const ygoData = await ygoResponse.json();
-const ygocards = ygoData.data;
-
-// DUELIST API
-//'https://api.evolutionygo.com/api/v1/stats/?page=1&limit=100&banListName=Global'
-const duelistResponse = await fetch(`${import.meta.env.PUBLIC_API_URL}/stats/?page=1&limit=12&banListName=Global`);
-const duelistData = await duelistResponse.json();
-const duelists = duelistData;
+import Ranking from '../sections/Ranking.astro';
+import Download from '../sections/Download.astro';
+import Features from '../sections/Features.astro';
 ---
 
 <Layout title='Evolution YGO Ranking'>
@@ -57,17 +21,9 @@ const duelists = duelistData;
 		<AvatarIndicator size={8} online={false} /> -->
 		<h1>Welcome to <span class='text-gradient'>Evolution YGO Ranking</span></h1>
 		<Swiper client:load/>
-		<ul role='list' class='link-card-grid'>
-			{duelists.map((duelist: Duelist) => (
-				<DuelistCard {...duelist} />
-			))}
-			{ygocards.map((ygocard: YGO) => (
-				<YGOCard id={ygocard.id} />
-			))}
-			{pokemons.map((pokemon: Pokemon) => (
-				<PokemonCard name={pokemon.name} />
-			))}
-		</ul>
+		<Ranking/>
+		<Download/>
+		<Features/>
 	</main>
 </Layout>
 
@@ -79,15 +35,6 @@ const duelists = duelistData;
 		color: white;
 		font-size: 20px;
 		line-height: 1.6;
-	}
-	.astro-a {
-		position: absolute;
-		top: -32px;
-		left: 50%;
-		transform: translatex(-50%);
-		width: 220px;
-		height: auto;
-		z-index: -1;
 	}
 	h1 {
 		font-size: 3rem;
@@ -102,11 +49,5 @@ const duelists = duelistData;
 		-webkit-text-fill-color: transparent;
 		background-size: 400%;
 		background-position: 0%;
-	}
-	.link-card-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(24ch, 1fr));
-		gap: 2rem;
-		padding: 0;
 	}
 </style>
