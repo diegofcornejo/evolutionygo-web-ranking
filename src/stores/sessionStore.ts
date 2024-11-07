@@ -11,3 +11,5 @@ export const isLoggedIn = persistentAtom<boolean>('isLoggedIn', false, {
 });
 
 export const userName = persistentAtom<string>('userName', '');
+
+export const userId = persistentAtom<string>('userId', '');

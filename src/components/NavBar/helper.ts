@@ -1,4 +1,4 @@
-import { isLoggedIn, userName } from '../../stores/sessionStore';
+import { isLoggedIn, userName, userId } from '../../stores/sessionStore';
 import { tokenStore } from '../../stores/tokenStore';
 
 
@@ -34,4 +34,13 @@ const update = (value: boolean) => {
 	}
 }
 
-export { update, logout };
+const updateUsername = (value: string) => {
+	// @ts-ignore
+	document.getElementById('navbar-username').innerHTML = value || '';
+	// @ts-ignore
+	document.getElementById('dropdown-navbar-avatar').src = `https://avatar.iran.liara.run/public/boy?username=${value}`;
+	// @ts-ignore
+	document.getElementById('dropdown-navbar-profile-link').href = `/duelists/${userId.get()}/${value}`;
+}
+
+export { update, logout, updateUsername };
