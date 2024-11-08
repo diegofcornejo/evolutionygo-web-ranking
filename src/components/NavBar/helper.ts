@@ -39,7 +39,7 @@ const updateUser = () => {
 	// @ts-ignore
 	document.getElementById('navbar-username').innerHTML = userName.get() || '';
 	// @ts-ignore
-	document.getElementById('dropdown-navbar-avatar').src = `https://avatar.iran.liara.run/public/boy?username=${userName.get()}`;
+	document.getElementById('dropdown-navbar-avatar').src = `https://ui-avatars.com/api/?name=${userName.get()}&background=random&size=32`;
 	// @ts-ignore
 	document.getElementById('dropdown-navbar-profile-link').href = `/duelists/${userId.get()}`;
 }

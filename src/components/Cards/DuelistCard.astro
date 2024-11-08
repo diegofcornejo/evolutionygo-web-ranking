@@ -11,7 +11,7 @@ interface Props {
 }
 
 const { userId, username, points, wins, losses, winRate, position } = Astro.props;
-const image = `https://avatar.iran.liara.run/public/boy?username=${username}`;
+const image = `https://ui-avatars.com/api/?name=${username}&background=random&size=96`;
 const rating = Math.floor(Math.random() * 5) + 1;
 const badge = position == 1 ? 'gold' : position == 2 ? 'silver' : 'bronze';
 ---

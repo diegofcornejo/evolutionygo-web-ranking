@@ -6,7 +6,7 @@ import Rating from '../../components/Rating.astro';
 const { id} = Astro.params;
 const response = await fetch(`${import.meta.env.PUBLIC_API_URL}/users/${id}/stats`);
 const duelist = await response.json();
-const image = `https://avatar.iran.liara.run/public/boy?username=${duelist.username}`;
+const image = `https://ui-avatars.com/api/?name=${duelist.username}&background=random&size=192`;
 const rating = Math.floor(Math.random() * 5) + 1;
 ---
 
