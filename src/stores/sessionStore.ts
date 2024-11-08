@@ -1,15 +1,33 @@
-// import { atom } from 'nanostores';
-
-// export const isLoggedIn = atom(false);
-
-
 import { persistentAtom } from '@nanostores/persistent';
 
-export const isLoggedIn = persistentAtom<boolean>('isLoggedIn', false, {
-  encode: JSON.stringify,
-  decode: JSON.parse,
+type User = {
+	id: string;
+	username: string;
+};
+
+export type Session = {
+	token: string;
+	isLoggedIn: boolean;
+	user: User;
+};
+
+const session = persistentAtom<string>('session', '', {
+	encode: JSON.stringify,
+	decode: JSON.parse,
 });
 
-export const userName = persistentAtom<string>('userName', '');
+const getSession = () => {
+	return JSON.parse(session.get() || '{}') as Session;
+};
 
-export const userId = persistentAtom<string>('userId', '');
+const updateSession = (sessionData: Session) => {
+	session.set(JSON.stringify(sessionData));
+};
+
+const updateSessionProperty = <K extends keyof Session>(property: K, value: Session[K]) => {
+	const sessionData = getSession();
+	sessionData[property] = value;
+	updateSession(sessionData);
+};
+
+export { session, getSession, updateSession, updateSessionProperty };
