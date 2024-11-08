@@ -12,6 +12,13 @@ import icon from 'astro-icon';
 // https://astro.build/config
 export default defineConfig({
   integrations: [tailwind(), react(), icon()],
+	vite: {
+		resolve: {
+			alias: {
+				'@fontsource-variable/plus-jakarta-sans': '@fontsource-variable/plus-jakarta-sans'
+			}
+		}
+	},
   output: 'server',
   adapter: vercel()
 });
