@@ -17,6 +17,10 @@ const menuItems: MenuItem[] = [
     name: 'Ranking',
     href: '/#section-ranking',
   },
+	{
+		name: 'Features',
+		href: '/#section-features',
+	},
   {
     name: 'Download',
     href: '/#section-download',
@@ -37,10 +41,6 @@ const menuItems: MenuItem[] = [
   //     },
   //   ],
   // },
-  {
-		name: 'Features',
-		href: '/#section-features',
-	},
 	{
     name: 'Tournaments',
     href: '/tournaments',
