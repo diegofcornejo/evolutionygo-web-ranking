@@ -14,6 +14,7 @@
     "@astrojs/react": "^3.6.2",
     "@astrojs/tailwind": "^5.1.2",
     "@astrojs/vercel": "^7.8.2",
+    "@fontsource-variable/plus-jakarta-sans": "^5.1.0",
     "@nanostores/persistent": "0.10.2",
     "@nanostores/react": "0.8.0",
     "@types/react": "^18.3.12",
