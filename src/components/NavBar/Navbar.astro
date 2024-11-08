@@ -1,4 +1,5 @@
 ---
+import { theme } from '../../stores/themeStore';
 import { Icon } from 'astro-icon/components'
 import Modal from "../Modal.astro";
 import SignInForm from "../Auth/SignInForm.tsx";
@@ -7,17 +8,18 @@ import menuItems from "./menuItems";
 ---
 <script>
 	import { session } from '../../stores/sessionStore';
-	import { update, logout, updateUser } from './helper';
+	import { update, logout, updateUser, setTheme } from './helper';
 
 	session.subscribe(() => {
 		update();
 		updateUser();
 	});
-	
+
 	document.addEventListener('astro:page-load', () => {
 		updateUser();
 		update();
 		logout();
+		setTheme();
 	});
 
 </script>
@@ -95,7 +97,7 @@ import menuItems from "./menuItems";
 		</ul>
 	</div>
 	<div class='navbar-end'>
-		<input type="checkbox" value="dark" class="toggle theme-controller" />
+		<input type="checkbox" value='dark' class="toggle theme-controller" id='button-navbar-theme'/>
 		<button class='btn btn-ghost btn-circle'>
 			<div class='indicator'>
 				<Icon name="bell" class='h-6 w-6'/>

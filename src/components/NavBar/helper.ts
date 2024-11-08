@@ -1,6 +1,6 @@
 import { getSession, updateSession } from '../../stores/sessionStore';
+import { theme } from '../../stores/themeStore';
 import type { Session } from '../../stores/sessionStore';
-
 const handleLogout = () => {
 	const session: Session = {
 		isLoggedIn: false,
@@ -13,6 +13,10 @@ const handleLogout = () => {
 const logout = () => {
 	// @ts-ignore
 	document.getElementById('button-navbar-logout').addEventListener('click', handleLogout);
+}
+
+const toggleTheme = () => {
+	theme.set(theme.get() === 'night' ? 'dark' : 'night');
 }
 
 const update = () => {
@@ -46,4 +50,11 @@ const updateUser = () => {
 	document.getElementById('dropdown-navbar-profile-link').href = `/duelists/${session.user.id}`;
 }
 
-export { update, logout, updateUser };
+const setTheme = () => {
+	// @ts-ignore
+	document.getElementById('button-navbar-theme').checked = theme.get() === 'dark';
+	// @ts-ignore
+	document.getElementById('button-navbar-theme').addEventListener('change', toggleTheme);
+}
+
+export { update, logout, updateUser, setTheme };
