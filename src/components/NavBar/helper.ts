@@ -1,12 +1,13 @@
-import { isLoggedIn, userName, userId } from '../../stores/sessionStore';
-import { tokenStore } from '../../stores/tokenStore';
-
+import { getSession, updateSession } from '../../stores/sessionStore';
+import type { Session } from '../../stores/sessionStore';
 
 const handleLogout = () => {
-	isLoggedIn.set(false);
-	tokenStore.set(undefined);
-	userName.set('');
-	userId.set('');
+	const session: Session = {
+		isLoggedIn: false,
+		token: '',
+		user: { id: '', username: '' }
+	};
+	updateSession(session);
 }
 
 const logout = () => {
@@ -18,7 +19,7 @@ const update = () => {
 	const signinButton = document.getElementById('button-modal-signin');
 	const signupButton = document.getElementById('button-modal-signup');
 	const dropdownProfile = document.getElementById('dropdown-navbar-profile');
-	if (isLoggedIn.get()) {
+	if (getSession().isLoggedIn) {
 		// @ts-ignore
 		signinButton.style.display = 'none';
 		// @ts-ignore
@@ -36,12 +37,13 @@ const update = () => {
 }
 
 const updateUser = () => {
+	const session: Session = getSession();
 	// @ts-ignore
-	document.getElementById('navbar-username').innerHTML = userName.get() || '';
+	document.getElementById('navbar-username').innerHTML = session.user.username || '';
 	// @ts-ignore
-	document.getElementById('dropdown-navbar-avatar').src = `https://ui-avatars.com/api/?name=${userName.get()}&background=random&size=32`;
+	document.getElementById('dropdown-navbar-avatar').src = `https://ui-avatars.com/api/?name=${session.user.username}&background=random&size=32`;
 	// @ts-ignore
-	document.getElementById('dropdown-navbar-profile-link').href = `/duelists/${userId.get()}`;
+	document.getElementById('dropdown-navbar-profile-link').href = `/duelists/${session.user.id}`;
 }
 
 export { update, logout, updateUser };

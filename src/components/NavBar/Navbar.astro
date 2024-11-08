@@ -6,18 +6,11 @@ import SignUpForm from "../Auth/SignUpForm.tsx";
 import menuItems from "./menuItems";
 ---
 <script>
-	import { isLoggedIn, userName, userId } from '../../stores/sessionStore';
+	import { session } from '../../stores/sessionStore';
 	import { update, logout, updateUser } from './helper';
-	
-	isLoggedIn.subscribe(() => {
+
+	session.subscribe(() => {
 		update();
-	});
-
-	userName.subscribe(() => {
-		updateUser();
-	});
-
-	userId.subscribe(() => {
 		updateUser();
 	});
 	
