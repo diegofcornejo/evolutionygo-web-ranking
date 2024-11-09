@@ -14,12 +14,11 @@ interface Duelist {
 	losses: number;
 	winRate: number;
 	position: number;
-	mini?: boolean;
 }
 
 // DUELIST API
 const duelistResponse = await fetch(
-	`${import.meta.env.PUBLIC_API_URL}/stats/?page=1&limit=13&banListName=Global`,
+	`${import.meta.env.PUBLIC_API_URL}/stats/?page=1&limit=25&banListName=Global`,
 );
 
 const duelistData = await duelistResponse.json();
@@ -59,7 +58,7 @@ const rating = Math.floor(Math.random() * 5) + 1;
 				<!-- row 1 -->
 				{
 					duelists.map((duelist: Duelist) => (
-						<tr class='hover:bg-base-200'>
+						<tr class='hover:bg-secondary'>
 							<th>{duelist.position}</th>
 							<td class='min-w-[200px]'>
 								<a href={`/duelists/${duelist.userId}`}>
