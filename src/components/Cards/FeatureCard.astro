@@ -1,19 +1,17 @@
 ---
+import { Icon } from 'astro-icon/components';
 interface Props {
 	title: string;
 	description: string;
+	icon: string;
 }
-const { title, description } = Astro.props;
+const { title, description, icon } = Astro.props;
 ---
 
 <div class='card glass w-full'>
-	<figure>
-		<img
-			src='https://placehold.co/200x400/9A8CA8/FFFFFF/png'
-			alt='car!'
-			class='h-[200px] w-[400px] object-cover'
-		/>
-	</figure>
+	<div class='bg-success-content h-24 w-full flex items-center justify-center rounded-t-xl border-t-2 border-secondary'>
+		<Icon name={icon} class='text-6xl text-secondary' />
+	</div>
 	<div class='card-body'>
 		<h2 class='card-title'>{title}</h2>
 		<p>{description}</p>
