@@ -1,11 +1,26 @@
 ---
+import FeatureCard from '@components/Cards/FeatureCard.astro';
 const title = 'features';
 const description = 'The most featured YGOPro Server';
 const info = 'Evolution is built on top of the EDOPro and Mercury (Koishi) Servers, fully compatible with their clients and offering additional features such as duel reconnection and automatic ranking.';
+const features = [
+	{
+		title: 'Duel Reconnection',
+		description: 'Automatically reconnect to the duel after a disconnection.',
+	},
+	{
+		title: 'Automatic Ranking',
+		description: 'Automatically update your ranking after a duel.',
+	},
+	{
+		title: 'Free to Use',
+		description: 'No need to pay for anything, just enjoy the server.',
+	},
+];
 ---
 
 <div class='hero bg-base-100 md:py-24 my-8' id='section-features'>
-	<div class='hero-content flex-col lg:flex-row justify-between max-w-full px-8'>
+	<div class='hero-content flex-col lg:flex-row justify-between max-w-full p-0'>
 			<!-- Sección de texto -->
 			<div class="w-full lg:w-1/3 text-center lg:text-left leading-3">
 					<h1 class='text-xl font-bold bg-gradient-to-r from-purple-500 via-blue-500 to-white-500 bg-clip-text text-transparent uppercase'>{title}</h1>
@@ -15,9 +30,9 @@ const info = 'Evolution is built on top of the EDOPro and Mercury (Koishi) Serve
 					</p>
 			</div>
 			<div class="w-full lg:w-2/3 grid grid-cols-1 lg:grid-cols-3 gap-4">
-					<img src='https://placehold.co/400x400/9A8CA8/FFFFFF/png' class='w-full rounded-lg shadow-2xl'/>
-					<img src='https://placehold.co/400x400/9A8CA8/FFFFFF/png' class='w-full rounded-lg shadow-2xl'/>
-					<img src='https://placehold.co/400x400/9A8CA8/FFFFFF/png' class='w-full rounded-lg shadow-2xl'/>
+				{
+					features.map((feature) => <FeatureCard {...feature} />)
+				}
 			</div>
 	</div>
 </div>
