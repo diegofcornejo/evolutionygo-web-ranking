@@ -1,9 +1,5 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Breadcrumb from '../components/Breadcrumb.astro';
-import AvatarGroup from '../components/AvatarGroup.astro';
-import AvatarRing from '../components/AvatarRing.astro';
-import AvatarIndicator from '../components/AvatarIndicator.astro';
 import Swiper from '../components/Swiper';
 import Ranking from '../sections/Ranking.astro';
 import Download from '../sections/Download.astro';
@@ -14,15 +10,8 @@ const title = 'Evolution YGO Season 4';
 ---
 
 <Layout title='Evolution YGO Ranking'>
-	<main>
-		<!-- <Breadcrumb />
-		<AvatarGroup size={12} avatars={[1,2,3,4,5,6,7,8,9,10]} maxShow={5} />
-		<AvatarRing size={8} color='primary' />
-		<AvatarRing size={8} color='secondary'/>
-		<AvatarRing size={8} color='accent' />
-		<AvatarIndicator size={8} online={true} />
-		<AvatarIndicator size={8} online={false} /> -->
-		<h1><span class='text-gradient'>{title}</span></h1>
+	<main class='w-full max-w-[calc(100%_-_2rem)] text-[white] text-xl leading-[1.6] mx-auto my-4'>
+		<h1 class="text-4xl sm:text-5xl font-bold leading-none text-center mb-[1em]"><span class='text-gradient'>{title}</span></h1>
 		<Swiper client:load/>
 		<Ranking/>
 		<Features/>
@@ -32,21 +21,6 @@ const title = 'Evolution YGO Season 4';
 </Layout>
 
 <style>
-	main {
-		margin: 2rem auto;
-		width: 100%;
-		max-width: calc(100% - 4rem);
-		color: white;
-		font-size: 20px;
-		line-height: 1.6;
-	}
-	h1 {
-		font-size: 3rem;
-		font-weight: 700;
-		line-height: 1;
-		text-align: center;
-		margin-bottom: 1em;
-	}
 	.text-gradient {
 		background-image: var(--accent-gradient);
 		-webkit-background-clip: text;

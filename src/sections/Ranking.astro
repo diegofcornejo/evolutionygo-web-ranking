@@ -1,5 +1,6 @@
 ---
-import DuelistCard from '../components/Cards/DuelistCard.astro';
+import DuelistCard from '@components/Cards/DuelistCard.astro';
+import Rating from '@components/Rating.astro';
 
 const title = 'Top Players';
 const description =
@@ -24,17 +25,19 @@ const duelistResponse = await fetch(
 const duelistData = await duelistResponse.json();
 const topDuelists = duelistData.slice(0, 3);
 const duelists = duelistData.slice(3);
+
+const rating = Math.floor(Math.random() * 5) + 1;
 ---
 
 <div class='py-24' id='section-ranking'>
 	<div class='flex flex-col gap-8 text-center place-items-center'>
-		<h1 class='text-center text-4xl font-bold'>{title}</h1>
+		<h1 class='text-3xl md:text-5xl md:leading-[3.5rem] font-bold pt-6'>{title}</h1>
 		<h2 class='text-lg text-gray-400 leading-8 max-w-4xl'>{description}</h2>
 	</div>
 
 	<ul
 		role='list'
-		class='grid grid-cols-[repeat(auto-fit,minmax(24ch,1fr))] gap-8 mt-8 p-0 place-items-center'
+		class='grid grid-cols-1 md:grid-cols-3 gap-6 mt-8 p-0 place-items-center'
 	>
 		{topDuelists.map((duelist: Duelist) => <DuelistCard {...duelist} />)}
 	</ul>
@@ -45,6 +48,7 @@ const duelists = duelistData.slice(3);
 				<tr>
 					<th>Position</th>
 					<th>Username</th>
+					<!-- <th></th> -->
 					<th>Points</th>
 					<th>Wins</th>
 					<th>Losses</th>
@@ -69,13 +73,17 @@ const duelists = duelistData.slice(3);
 										/>
 										<div>
 											<div class='font-bold'>{duelist.username}</div>
-											<div class='badge badge-xs badge-primary'>tcg</div>
-											<div class='badge badge-xs badge-secondary'>edison</div>
-											<div class='badge badge-xs badge-accent'>2024</div>
+											<Rating rating={rating} size='sm'/>
 										</div>
 									</div>
 								</a>
 							</td>
+							{/* <td>
+								<div class='badge badge-xs badge-outline py-1 h-auto'>🌟 MVP</div>
+								<div class='badge badge-xs badge-outline py-1 h-auto'>🏆 TDC</div>
+								<div class='badge badge-xs badge-outline py-1 h-auto'>🥈 Edison</div>
+								<div class='badge badge-xs badge-outline py-1 h-auto'>🔥 Hero</div>
+							</td> */}
 							<td>{duelist.points}</td>
 							<td>{duelist.wins}</td>
 							<td>{duelist.losses}</td>

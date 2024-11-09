@@ -1,12 +1,13 @@
 ---
 interface Props {
 	rating: number;
+	size?: 'sm' | 'md' | 'lg';
 }
-const { rating } = Astro.props;
+const { rating, size = 'md' } = Astro.props;
 ---
 
-<div class="rating">
+<div class:list={`rating rating-${size}`}>
   {Array.from({ length: rating }).map((_, index) => (
-    <input type="radio" name="rating-2" class="mask mask-star-2 bg-orange-400 pointer-events-none"/>
+    <input type="radio" name="rating-2" class="mask mask-star-2 bg-warning pointer-events-none"/>
   ))}
 </div>
