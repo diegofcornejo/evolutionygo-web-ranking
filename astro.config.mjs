@@ -9,16 +9,18 @@ import vercel from '@astrojs/vercel/serverless';
 
 import icon from 'astro-icon';
 
+import playformCompress from '@playform/compress';
+
 // https://astro.build/config
 export default defineConfig({
-  integrations: [tailwind(), react(), icon()],
-	vite: {
-		resolve: {
-			alias: {
-				'@fontsource-variable/plus-jakarta-sans': '@fontsource-variable/plus-jakarta-sans'
-			}
-		}
-	},
+  integrations: [tailwind(), react(), icon(), playformCompress()],
+    vite: {
+        resolve: {
+            alias: {
+                '@fontsource-variable/plus-jakarta-sans': '@fontsource-variable/plus-jakarta-sans'
+            }
+        }
+    },
   output: 'server',
   adapter: vercel()
 });
