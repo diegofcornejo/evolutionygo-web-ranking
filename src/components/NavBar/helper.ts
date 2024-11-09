@@ -45,7 +45,7 @@ const updateUser = () => {
 	// @ts-ignore
 	document.getElementById('navbar-username').innerHTML = session.user.username || '';
 	// @ts-ignore
-	document.getElementById('dropdown-navbar-avatar').src = `https://ui-avatars.com/api/?name=${session.user.username}&background=random&size=32`;
+	document.getElementById('dropdown-navbar-avatar').src = `https://ui-avatars.com/api/?name=${session.user.username}&background=random&size=128`;
 	// @ts-ignore
 	document.getElementById('dropdown-navbar-profile-link').href = `/duelists/${session.user.id}`;
 }
