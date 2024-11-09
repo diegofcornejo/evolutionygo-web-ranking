@@ -1,7 +1,9 @@
 ---
 import DuelistCard from '../components/Cards/DuelistCard.astro';
 
-const title = 'Ranking';
+const title = 'Top Players';
+const description =
+	'Explore the top players in our community. Discover who the standout competitors are in our tournaments and events. Get to know their achievements, strategies, and stay updated with the rankings.';
 
 interface Duelist {
 	userId: number;
@@ -11,16 +13,77 @@ interface Duelist {
 	losses: number;
 	winRate: number;
 	position: number;
+	mini?: boolean;
 }
 
 // DUELIST API
 const duelistResponse = await fetch(
-	`${import.meta.env.PUBLIC_API_URL}/stats/?page=1&limit=12&banListName=Global`,
+	`${import.meta.env.PUBLIC_API_URL}/stats/?page=1&limit=13&banListName=Global`,
 );
+
 const duelistData = await duelistResponse.json();
-const duelists = duelistData;
+const topDuelists = duelistData.slice(0, 3);
+const duelists = duelistData.slice(3);
 ---
 
-<ul role='list' class='grid grid-cols-[repeat(auto-fit,minmax(24ch,1fr))] gap-8 mt-8 p-0' id='section-ranking'>
-	{duelists.map((duelist: Duelist) => <DuelistCard {...duelist} />)}
-</ul>
+<div class='py-24' id='section-ranking'>
+	<div class='flex flex-col gap-8 text-center place-items-center'>
+		<h1 class='text-center text-4xl font-bold'>{title}</h1>
+		<h2 class='text-lg text-gray-400 leading-8 max-w-4xl'>{description}</h2>
+	</div>
+
+	<ul
+		role='list'
+		class='grid grid-cols-[repeat(auto-fit,minmax(24ch,1fr))] gap-8 mt-8 p-0 place-items-center'
+	>
+		{topDuelists.map((duelist: Duelist) => <DuelistCard {...duelist} />)}
+	</ul>
+	<div class='overflow-x-auto mt-8 md:px-16'>
+		<table class='table'>
+			<!-- head -->
+			<thead class='bg-base-200'>
+				<tr>
+					<th>Position</th>
+					<th>Username</th>
+					<th>Points</th>
+					<th>Wins</th>
+					<th>Losses</th>
+					<th>Win Rate</th>
+				</tr>
+			</thead>
+			<tbody>
+				<!-- row 1 -->
+				{
+					duelists.map((duelist: Duelist) => (
+						<tr class='hover:bg-base-200'>
+							<th>{duelist.position}</th>
+							<td>
+								<a href={`/duelists/${duelist.userId}`}>
+									<div class='flex items-center gap-3'>
+										<img
+											src={`https://ui-avatars.com/api/?name=${duelist.username}&background=random&size=128`}
+											alt={duelist.username}
+											class='w-12 h-12 rounded-full'
+											transition:name={`img-duelist-${duelist.userId}`}
+											transition:animate='none'
+										/>
+										<div>
+											<div class='font-bold'>{duelist.username}</div>
+											<div class='badge badge-xs badge-primary'>tcg</div>
+											<div class='badge badge-xs badge-secondary'>edison</div>
+											<div class='badge badge-xs badge-accent'>2024</div>
+										</div>
+									</div>
+								</a>
+							</td>
+							<td>{duelist.points}</td>
+							<td>{duelist.wins}</td>
+							<td>{duelist.losses}</td>
+							<td>{duelist.winRate.toFixed(2)}%</td>
+						</tr>
+					))
+				}
+			</tbody>
+		</table>
+	</div>
+</div>
