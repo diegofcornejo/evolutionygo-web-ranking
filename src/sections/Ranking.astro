@@ -47,7 +47,7 @@ const rating = Math.floor(Math.random() * 5) + 1;
 			<thead class='bg-base-200'>
 				<tr>
 					<th>Position</th>
-					<th>Username</th>
+					<th class='min-w-[200px]'>Username</th>
 					<!-- <th></th> -->
 					<th>Points</th>
 					<th>Wins</th>
@@ -61,7 +61,7 @@ const rating = Math.floor(Math.random() * 5) + 1;
 					duelists.map((duelist: Duelist) => (
 						<tr class='hover:bg-base-200'>
 							<th>{duelist.position}</th>
-							<td>
+							<td class='min-w-[200px]'>
 								<a href={`/duelists/${duelist.userId}`}>
 									<div class='flex items-center gap-3'>
 										<img

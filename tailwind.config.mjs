@@ -18,5 +18,9 @@ export default {
 		'w-24',
 		'ring-primary', 
 		'ring-secondary', 
-		'ring-accent'],
+		'ring-accent',
+		'rating-sm',
+		'rating-md',
+		'rating-lg',
+	],
 }

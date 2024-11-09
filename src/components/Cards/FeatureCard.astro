@@ -1,0 +1,21 @@
+---
+interface Props {
+	title: string;
+	description: string;
+}
+const { title, description } = Astro.props;
+---
+
+<div class='card glass w-full'>
+	<figure>
+		<img
+			src='https://placehold.co/200x400/9A8CA8/FFFFFF/png'
+			alt='car!'
+			class='h-[200px] w-[400px] object-cover'
+		/>
+	</figure>
+	<div class='card-body'>
+		<h2 class='card-title'>{title}</h2>
+		<p>{description}</p>
+	</div>
+</div>
