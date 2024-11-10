@@ -2,8 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import Rating from '../../components/Rating.astro';
 
-
-const { id} = Astro.params;
+const { id } = Astro.params;
 const response = await fetch(`${import.meta.env.PUBLIC_API_URL}/users/${id}/stats`);
 const duelist = await response.json();
 const image = `https://ui-avatars.com/api/?name=${duelist.username}&background=random&size=192`;
@@ -11,39 +10,23 @@ const rating = Math.floor(Math.random() * 5) + 1;
 ---
 
 <Layout title={`Duelist ${duelist.username}`}>
-	<h1 class='text-gradient uppercase mb-4' transition:name={`title-duelist-${id}`}>
-		{duelist.username}
-	</h1>
-	<div class='flex flex-col items-center justify-center gap-2'>
-		<img
-			src={image}
-			alt={duelist.username}
-			class='h-48 w-auto rounded-full'
-			transition:name={`img-duelist-${id}`}
-		/>
-		<Rating rating={rating} transition:name={`rating-duelist-${id}`}/>
+	<main class='w-full max-w-[calc(100%_-_2rem)] text-[white] text-lg leading-[1.6] mx-auto my-4'>
+		<h1 class="text-4xl sm:text-5xl font-bold leading-none text-center mb-[1em]"><span class='text-gradient'>{duelist.username}</span></h1>
 		<div class='flex flex-col items-center justify-center gap-2'>
-			<p>Position: {duelist.position}</p>
-			<p>Points: {duelist.points}</p>
-			<p>Wins: {duelist.wins}</p>
-			<p>Losses: {duelist.losses}</p>
-			<p>Win Rate: {duelist.winRate.toFixed(2)}%</p>
+			<img
+				src={image}
+				alt={duelist.username}
+				class='h-48 w-auto rounded-full'
+				transition:name={`img-duelist-${id}`}
+			/>
+			<Rating rating={rating} transition:name={`rating-duelist-${id}`} />
+			<div class='flex flex-col items-center justify-center gap-2'>
+				<p>Position: {duelist.position}</p>
+				<p>Points: {duelist.points}</p>
+				<p>Wins: {duelist.wins}</p>
+				<p>Losses: {duelist.losses}</p>
+				<p>Win Rate: {duelist.winRate.toFixed(2)}%</p>
+			</div>
 		</div>
-	</div>
+	</main>
 </Layout>
-
-<style>
-	h1 {
-		font-size: 3rem;
-		font-weight: 700;
-		line-height: 1;
-		text-align: center;
-	}
-	.text-gradient {
-		background-image: var(--accent-gradient);
-		-webkit-background-clip: text;
-		-webkit-text-fill-color: transparent;
-		background-size: 400%;
-		background-position: 0%;
-	}
-</style>
