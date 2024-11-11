@@ -18,7 +18,7 @@ interface Duelist {
 
 // DUELIST API
 const duelistResponse = await fetch(
-	`${import.meta.env.PUBLIC_API_URL}/stats/?page=1&limit=25&banListName=Global`,
+	`${import.meta.env.PUBLIC_API_URL}/stats/?page=1&limit=10&banListName=Global`,
 );
 
 const duelistData = await duelistResponse.json();
