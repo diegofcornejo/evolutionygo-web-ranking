@@ -2,36 +2,79 @@
 import { Icon } from 'astro-icon/components';
 const title = 'Meet the Crew';
 
-const members = [
+type Member = {
+	name: string;
+	role: string;
+	picture: string;
+	links: { [key: string]: string };
+};
+
+const members: Member[] = [
 	{
 		name: 'diangogav',
 		role: 'Project Lead',
 		picture: '/avatar.webp',
+		links: {
+			discord: '',
+			github: 'https://github.com/diangogav',
+			twitter: '',
+			facebook: '',
+		},
 	},
 	{
 		name: 'leip1493',
 		role: 'Developer',
 		picture: '/avatar.webp',
+		links: {
+			discord: '',
+			github: '',
+			twitter: '',
+			facebook: '',
+		},
 	},
 	{
 		name: 'termitaklk',
 		role: 'Developer',
 		picture: '/avatar.webp',
+		links: {
+			discord: '',
+			github: '',
+			twitter: '',
+			facebook: '',
+		},
 	},
 	{
 		name: 'leandrogavidia',
 		role: 'Designer',
 		picture: '/avatar.webp',
+		links: {
+			discord: '',
+			github: '',
+			twitter: '',
+			facebook: '',
+		},
 	},
 	{
 		name: 'darkjinzo',
 		role: 'Community Manager',
 		picture: '/avatar.webp',
+		links: {
+			discord: '',
+			github: '',
+			twitter: '',
+			facebook: '',
+		},
 	},
 	{
 		name: 'diegofcornejo',
 		role: 'DevOps & SRE',
 		picture: '/crew/diegofcornejo.webp',
+		links: {
+			discord: '',
+			github: 'https://github.com/diegofcornejo',
+			twitter: '',
+			facebook: '',
+		},
 	},
 ];
 ---
@@ -48,18 +91,11 @@ const members = [
 						<h3 class='font-bold'>{member.name}</h3>
 						<span class='text-sm'>{member.role}</span>
 						<div class='flex text-secondary text-xs'>
-							<a class='btn btn-ghost btn-sm btn-circle'>
-								<Icon name='mdi:discord' class='text-xl'/>
-							</a>
-							<a class='btn btn-ghost btn-sm btn-circle'>
-								<Icon name='mdi:github' class='text-xl'/>
-							</a>
-							<a class='btn btn-ghost btn-sm btn-circle'>
-								<Icon name='mdi:twitter' class='text-xl'/>
-							</a>
-							<a class='btn btn-ghost btn-sm btn-circle'>
-								<Icon name='mdi:facebook' class='text-xl'/>
-							</a>
+							{Object.entries(member.links).map(([key, value]) => (
+								<a href={value} target='_blank' class='btn btn-ghost btn-sm btn-circle'>
+									<Icon name={`mdi:${key}`} class='text-xl'/>
+								</a>
+							))}
 						</div>
 					</div>
 				</div>
