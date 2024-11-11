@@ -43,11 +43,11 @@ const update = () => {
 const updateUser = () => {
 	const session: Session = getSession();
 	// @ts-ignore
-	document.getElementById('navbar-username').innerHTML = session.user.username || '';
+	document.getElementById('navbar-username').innerHTML = session?.user?.username ?? '';
 	// @ts-ignore
-	document.getElementById('dropdown-navbar-avatar').src = `https://ui-avatars.com/api/?name=${session.user.username}&background=random&size=128`;
+	document.getElementById('dropdown-navbar-avatar').src = `https://ui-avatars.com/api/?name=${session?.user?.username}&background=random&size=128`;
 	// @ts-ignore
-	document.getElementById('dropdown-navbar-profile-link').href = `/duelists/${session.user.id}`;
+	document.getElementById('dropdown-navbar-profile-link').href = `/duelists/${session?.user?.id}`;
 }
 
 const setTheme = () => {
