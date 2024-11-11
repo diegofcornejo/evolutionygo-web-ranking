@@ -17,12 +17,12 @@ interface Duelist {
 }
 
 const duelistResponse = await fetch(
-	`${import.meta.env.PUBLIC_API_URL}/stats/?page=1&limit=10&banListName=Global`,
+	`${import.meta.env.PUBLIC_API_URL}/stats/?page=1&limit=20&banListName=Global`,
 );
 
 const duelistData = await duelistResponse.json();
-const topDuelists = duelistData.slice(0, 3);
-const duelists = duelistData.slice(3);
+const topDuelists = duelistData.slice(0, 4);
+const duelists = duelistData.slice(4);
 
 const rating = Math.floor(Math.random() * 5) + 1;
 ---
@@ -35,11 +35,11 @@ const rating = Math.floor(Math.random() * 5) + 1;
 
 	<ul
 		role='list'
-		class='grid grid-cols-1 md:grid-cols-3 gap-6 mt-8 p-0 place-items-center'
+		class='grid grid-cols-1 md:grid-cols-4 gap-6 mt-8 p-0 place-items-stretch'
 	>
 		{topDuelists.map((duelist: Duelist) => <DuelistCard {...duelist} />)}
 	</ul>
-	<div class='overflow-x-auto mt-8 md:px-16'>
+	<div class='overflow-x-auto mt-8'>
 		<table class='table bg-base-300'>
 			<thead>
 				<tr>

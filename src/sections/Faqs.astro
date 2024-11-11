@@ -1,20 +1,41 @@
 ---
 const title = 'Frequently Asked Questions';
+const info =
+	'New to Evolution Server? Here is a list of common questions that you can review. If you have any other questions, feel free to communicate with us on our Discord.';
+const faqs = [
+	{
+		question: 'How to play on Evolution Server?',
+		answer: 'You only need to download a compatible client. We recommend downloading the official EDOPro client (Project Ignis) or any of the other clients listed on the download section. Finally, follow the instructions provided on our Discord to setup the server.',
+	},
+	{
+		question: 'Do I need an account to play on Evolution Server?',
+		answer: "You don't need an account to play on Evolution Server, but for a complete experience, we recommend registering. In addition to automatic ranking you'll gain access to more content and special events.",
+	},
+	{
+		question: 'How does the Ranking System work?',
+		answer: 'No matter which game mode you play, you will earn points for each victory. The more points you accumulate, the higher your rank will be. You can check your rank on the website; the website only displays the top 20 ranks. If you are not in the top 20, you can find your rank in your profile.',
+	},
+];
 ---
 
-<div class='hero bg-base-200 min-h-screen mt-8' id='section-faqs'>
-	<div class='hero-content flex-col lg:flex-row-reverse'>
-		<img
-			src='https://img.daisyui.com/images/stock/photo-1635805737707-575885ab0820.webp'
-			class='max-w-sm rounded-lg shadow-2xl'
-		/>
-		<div>
-			<h1 class='text-5xl font-bold'>{title}</h1>
-			<p class='py-6'>
-				Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda excepturi
-				exercitationem quasi. In deleniti eaque aut repudiandae et a id nisi.
-			</p>
-			<button class='btn btn-primary'>Get Started</button>
+<div class='hero my-16' id='section-faqs'>
+	<div class='hero-content flex-col md:flex-row-reverse justify-between w-full p-0'>
+		<div class='w-full lg:w-1/3 text-3xl md:text-5xl'>
+			<h1 class='text-center md:text-left text-3xl font-bold bg-gradient-to-r from-purple-500 via-blue-500 to-indigo-500 bg-clip-text text-transparent'>{title}</h1>
+			<p class='py-6 text-lg text-gray-400 leading-8'>{info}</p>
+		</div>
+		<div class='w-full lg:w-2/3'>
+			{
+				faqs.map((faq, index) => (
+					<div class='collapse collapse-arrow bg-base-200'>
+						<input type='radio' name='faqs-accordion' checked={index === 0} />
+						<div class='collapse-title text-xl font-medium'>{faq.question}</div>
+						<div class='collapse-content'>
+							<p class='text-lg text-gray-400 leading-8'>{faq.answer}</p>
+						</div>
+					</div>
+				))
+			}
 		</div>
 	</div>
 </div>
