@@ -57,13 +57,12 @@ const officialBadges = [
 			transition:name={`title-duelist-${userId}`}
 			transition:animate='none'
 		>
-			{username}
+		#{position} {username}
 			<!-- <div class='badge badge-secondary'>{position}</div> -->
 		</h2>
-		<p class=''>#{position}</p>
-		<p class='text-sm'>Points: {points}</p>
-		<p class='text-sm'>Wins: {wins}</p>
-		<p class='text-sm'>Losses: {losses}</p>
+		<p class='text-sm font-bold'>Points: {points}</p>
+		<p class='text-sm text-success'>Wins: {wins}</p>
+		<p class='text-sm text-error'>Losses: {losses}</p>
 		<p class='text-sm'>Win Rate: {winRate.toFixed(2)}%</p>
 		<div class='card-actions justify-center mt-4'>
 			{
