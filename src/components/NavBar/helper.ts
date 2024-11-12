@@ -1,6 +1,7 @@
 import { getSession, updateSession } from '../../stores/sessionStore';
 import { theme } from '../../stores/themeStore';
-import type { Session } from '../../stores/sessionStore';
+import type { Session } from '@types';
+
 const handleLogout = () => {
 	const session: Session = {
 		isLoggedIn: false,

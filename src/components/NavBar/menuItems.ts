@@ -1,11 +1,4 @@
-type MenuItem = {
-  name: string;
-  href: string;
-  submenu?: MenuItem[];
-  target?: string;
-	disabled?: boolean;
-	comingSoon?: boolean;
-};
+import type { MenuItem } from '@types';
 
 // Exportación por defecto de `menuItems`
 const menuItems: MenuItem[] = [

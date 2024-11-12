@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ReactSVG } from 'react-svg'
-import type { Session } from '../../stores/sessionStore';
-import { getSession, updateSession } from '../../stores/sessionStore';
+import type { Session } from '@types';
+import { updateSession } from '../../stores/sessionStore';
 
 export default function LoginForm({ dialog }: { dialog: string }) {
 	const [email, setEmail] = useState('');

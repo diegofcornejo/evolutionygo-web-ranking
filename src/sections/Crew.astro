@@ -1,15 +1,10 @@
 ---
 import { Icon } from 'astro-icon/components';
+import type { CrewMember } from '@types';
+
 const title = 'Meet the Crew';
 
-type Member = {
-	name: string;
-	role: string;
-	picture: string;
-	links: { [key: string]: string };
-};
-
-const members: Member[] = [
+const members: CrewMember[] = [
 	{
 		name: 'diangogav',
 		role: 'Project Lead',

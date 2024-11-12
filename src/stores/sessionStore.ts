@@ -1,15 +1,5 @@
 import { persistentAtom } from '@nanostores/persistent';
-
-type User = {
-	id: string;
-	username: string;
-};
-
-export type Session = {
-	token: string;
-	isLoggedIn: boolean;
-	user: User;
-};
+import type { Session } from '@types';
 
 const session = persistentAtom<string>('session', '', {
 	encode: JSON.stringify,

@@ -1,18 +1,10 @@
 ---
 import { Icon } from 'astro-icon/components';
+import type { GameClient } from '@types';
+
 const title = 'Ready to duel?';
 const subtitle = 'Just download a client';
 const description = 'Evolution does not have its own client. We recommend downloading the official EDOPro client or any of the other clients listed below.';
-
-interface GameClient {
-	name: string;
-	link: string;
-	icon?: {
-		name: string;
-		classes: string;
-	};
-	platforms: string[];
-}
 
 const clients: GameClient[] = [
 	{

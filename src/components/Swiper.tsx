@@ -2,14 +2,14 @@ import { Pagination, A11y, Autoplay } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { toast } from 'sonner';
 import Banner from './Banner.tsx';
-
+import type { News } from '@types';
 // Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/scrollbar';
 import 'swiper/css/autoplay';
 
-const news = [
+const news: News[] = [
 	{
 		id: 1,
 		image: 'https://img.daisyui.com/images/store/figma.webp',
