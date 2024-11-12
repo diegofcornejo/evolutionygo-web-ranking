@@ -66,7 +66,7 @@ const handleToast = () => {
 
 export default () => {
 	return (
-		<div className='mb-8'>
+		<div className='mb-8 mx-4'>
 			<Swiper
 				modules={[Pagination, A11y, Autoplay]}
 				spaceBetween={50}
