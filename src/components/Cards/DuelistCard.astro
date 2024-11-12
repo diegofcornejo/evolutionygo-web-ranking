@@ -1,6 +1,17 @@
 ---
 import Rating from '../Rating.astro';
+
 interface Props {
+	userId: number;
+	username: string;
+	points: number;
+	wins: number;
+	losses: number;
+	winRate: number;
+	position: number;
+}
+
+export type Duelist = {
 	userId: number;
 	username: string;
 	points: number;

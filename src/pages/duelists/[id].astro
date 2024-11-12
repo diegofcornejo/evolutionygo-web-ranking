@@ -1,31 +1,68 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import Rating from '../../components/Rating.astro';
+import DuelistCard from '@components/Cards/DuelistCard.astro';
+
+type Match = {
+	userId: string;
+	bestOf: number;
+	banListName: string;
+	playerNames: string[];
+	opponentNames: string[];
+	playerScore: number;
+	opponentScore: number;
+	points: number;
+	winner: boolean;
+	date: string;
+}
 
 const { id } = Astro.params;
-const response = await fetch(`${import.meta.env.PUBLIC_API_URL}/users/${id}/stats`);
-const duelist = await response.json();
-const image = `https://ui-avatars.com/api/?name=${duelist.username}&background=random&size=192`;
-const rating = Math.floor(Math.random() * 5) + 1;
+const duelistResponse = await fetch(`${import.meta.env.PUBLIC_API_URL}/users/${id}/stats`);
+const duelist = await duelistResponse.json();
+const matchHistoryResponse = await fetch(`${import.meta.env.PUBLIC_API_URL}/users/${id}/matches`);
+const matchHistory = await matchHistoryResponse.json();
+const getIsPvP = (match: Match) => match.playerNames.length === 1 || match.opponentNames.length === 1;
+const getDuelMode = (match: Match) => `${match.playerNames.length} vs ${match.opponentNames.length} | Best of ${match.bestOf}`;
+const getDuelistName = (names: string[]) => names.join(', ');
 ---
 
-<Layout title={`Duelist ${duelist.username}`}>
+<Layout title={`Duelist ${duelist.username} Stats`}>
 	<main class='w-full max-w-[calc(100%_-_2rem)] text-[white] text-lg leading-[1.6] mx-auto my-4'>
-		<h1 class="text-4xl sm:text-5xl font-bold leading-none text-center mb-[1em]"><span class='text-gradient'>{duelist.username}</span></h1>
-		<div class='flex flex-col items-center justify-center gap-2'>
-			<img
-				src={image}
-				alt={duelist.username}
-				class='h-48 w-auto rounded-full'
-				transition:name={`img-duelist-${id}`}
-			/>
-			<Rating rating={rating} transition:name={`rating-duelist-${id}`} />
-			<div class='flex flex-col items-center justify-center gap-2'>
-				<p>Position: {duelist.position}</p>
-				<p>Points: {duelist.points}</p>
-				<p>Wins: {duelist.wins}</p>
-				<p>Losses: {duelist.losses}</p>
-				<p>Win Rate: {duelist.winRate.toFixed(2)}%</p>
+		<h1 class="text-4xl sm:text-5xl font-bold leading-none text-center mb-[1em]"><span class='text-gradient'>{duelist.username} Stats</span></h1>
+		<div class='flex flex-col md:flex-row gap-2 md:gap-4 lg:gap-0'>
+			<div class='md:w-1/4'>
+				<DuelistCard {...duelist} />
+			</div>
+			<div class='overflow-x-auto flex-auto md:w-3/4 max-h-screen'>
+				<table class='table bg-base-300'>
+					<thead class='sticky top-0 bg-base-300'>
+						<tr>
+							<th>Duel Mode</th>
+							<th>Type</th>
+							<th>Banlist</th>
+							<th>Player</th>
+							<th>Opponent</th>
+							<th>Result</th>
+							<th>Points</th>
+							<th>Date</th>
+						</tr>
+					</thead>
+					<tbody>
+						{
+							matchHistory.map((match: Match) => (
+								<tr class='hover:bg-secondary'>
+									<th class='max-w-[200px]'>{getDuelMode(match)}</th>
+									<td class='min-w-[100px]'>{getIsPvP(match) ? 'PvP' : 'Tag'}</td>
+									<td class=''>{match.banListName}</td>
+									<td>{getDuelistName(match.playerNames)}</td>
+									<td>{getDuelistName(match.opponentNames)}</td>
+									<td class={`${match.winner ? 'text-success' : 'text-error'}`}>{match.playerScore} - {match.opponentScore}</td>
+									<td class={`${match.winner ? 'text-success' : 'text-error'}`}>{match.points}</td>
+									<td>{match.date}</td>
+								</tr>
+							))
+						}
+					</tbody>
+				</table>
 			</div>
 		</div>
 	</main>
