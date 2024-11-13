@@ -12,7 +12,7 @@ import 'swiper/css/autoplay';
 const news: News[] = [
 	{
 		id: 1,
-		image: 'https://img.daisyui.com/images/store/figma.webp',
+		image: '/banner.webp',
 		title: 'Season 4 is here!',
 		description: 'Evolution version 3.0.0 is now available!',
 		buttonText: 'More details',
@@ -20,7 +20,7 @@ const news: News[] = [
 	},
 	{
 		id: 2,
-		image: 'https://img.daisyui.com/images/store/figma.webp',
+		image: '/banner.webp',
 		title: 'TCG Champions 2024',
 		description: 'This is an example of a news item.',
 		buttonText: 'More details',
@@ -28,7 +28,7 @@ const news: News[] = [
 	},
 	{
 		id: 3,
-		image: 'https://img.daisyui.com/images/store/figma.webp',
+		image: '/banner.webp',
 		title: 'Official daisyUI',
 		description: 'This is an example of a news item.',
 		buttonText: 'More details',
@@ -36,7 +36,7 @@ const news: News[] = [
 	},
 	{
 		id: 4,
-		image: 'https://img.daisyui.com/images/store/figma.webp',
+		image: '/banner.webp',
 		title: 'Official daisyUI 2',
 		description: 'This is an example of a news item.',
 		buttonText: 'More details',
@@ -44,7 +44,7 @@ const news: News[] = [
 	},
 	{
 		id: 5,
-		image: 'https://img.daisyui.com/images/store/figma.webp',
+		image: '/banner.webp',
 		title: 'Evolution New 3',
 		description: 'This is an example of a news item.',
 		buttonText: 'More details',
@@ -52,7 +52,7 @@ const news: News[] = [
 	},
 	{
 		id: 6,
-		image: 'https://img.daisyui.com/images/store/figma.webp',
+		image: '/banner.webp',
 		title: 'Evolution New 4',
 		description: 'This is an example of a news item.',
 		buttonText: 'More details',
