@@ -1,0 +1,35 @@
+---
+import { Icon } from 'astro-icon/components';
+
+interface Props {
+	id: string;
+	icon: string;
+	name: string;
+	labels: string[];
+	unlockedAt: Date;
+	description: string;
+	earnedPoints: number;
+	color?: string;
+}
+
+const { icon, name, labels = [], unlockedAt, description, earnedPoints, color = '#F5BF50'} = Astro.props;
+---
+
+<div class='card bg-base-300 w-full shadow-xl max-w-xs'>
+	<div class='flex flex-col items-center gap-4'>
+		<figure>
+			<Icon name={icon} class='text-6xl mt-4' style={`color: ${color}`}/>
+		</figure>
+	</div>
+	<div class='card-body text-center'>
+		<h2 class='font-bold text-lg'>
+			{name}
+		</h2>
+		<p class='text-sm text-success'>Points Earned: {earnedPoints}</p>
+		<p class='text-sm'>Unlocked: {new Date(unlockedAt).toLocaleDateString()}</p>
+		<p class='text-xs text-gray-400'>{description}</p>
+		<div class='card-actions justify-center mt-4'>
+			{labels.map((badge) => <div class={`badge badge-outline badge-sm`}>{badge}</div>)}
+		</div>
+	</div>
+</div>

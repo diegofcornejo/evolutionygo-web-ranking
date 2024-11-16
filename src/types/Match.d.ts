@@ -9,4 +9,5 @@ export type Match = {
 	points: number;
 	winner: boolean;
 	date: string;
+	season: number;
 }

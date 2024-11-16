@@ -8,6 +8,8 @@ import type { GameClient } from './GameClient';
 import type { Faq } from './Faqs';
 import type { Feature } from './Features';
 import type { User } from './User';
+import type { Achievement } from './Achievement';
+
 export type { 
 	News, 
 	Session, 
@@ -18,5 +20,6 @@ export type {
 	GameClient,
 	Faq,
 	Feature,
-	User
+	User,
+	Achievement
 };

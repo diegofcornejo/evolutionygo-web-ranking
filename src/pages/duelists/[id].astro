@@ -1,7 +1,8 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import DuelistCard from '@components/Cards/DuelistCard.astro';
-import type { Match } from '@types';
+import AchievementCard from '@components/Cards/AchievementCard.astro';
+import type { Match, Achievement } from '@types';
 
 const { id } = Astro.params;
 const duelistResponse = await fetch(`${import.meta.env.PUBLIC_API_URL}/users/${id}/stats`);
@@ -15,13 +16,86 @@ const getDuelistName = (names: string[]) => names.join(', ');
 
 <Layout title={`Duelist ${duelist.username} Stats`}>
 	<main class='w-full max-w-[calc(100%_-_2rem)] text-[white] text-lg leading-[1.6] mx-auto my-4'>
-		<h1 class="text-4xl sm:text-5xl font-bold leading-none text-center mb-[1em]"><span class='text-gradient'>{duelist.username} Stats</span></h1>
+		<h1 class='text-4xl sm:text-5xl font-bold leading-none text-center mb-[1em]'>
+			<span class='text-gradient'>{duelist.username} Stats</span>
+		</h1>
 		<div class='flex flex-col md:flex-row gap-2 md:gap-4 lg:gap-0'>
-			<div class='md:w-1/4'>
+			<div class='flex flex-col gap-4 md:w-1/4'>
 				<DuelistCard {...duelist} />
 			</div>
 			<div class='overflow-x-auto flex-auto md:w-3/4 max-h-screen'>
-				<table class='table bg-base-300'>
+				<div role='tablist' class='tabs tabs-bordered'>
+					<input
+						type='radio'
+						name='user_stats_tabs'
+						role='tab'
+						class='tab min-w-[150px]'
+						aria-label='Achievements'
+						checked='checked'
+					/>
+					<div role='tabpanel' class='tab-content pt-4'>
+						<div class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'>
+							{
+								duelist.achievements.map((achievement: Achievement) => (
+									<AchievementCard {...achievement} />
+								))
+							}
+						</div>
+					</div>
+
+					<input
+						type='radio'
+						name='user_stats_tabs'
+						role='tab'
+						class='tab min-w-[150px]'
+						aria-label='Duels History'
+					/>
+					<div role='tabpanel' class='tab-content pt-4'>
+						<table class='table bg-base-300'>
+							<thead class='sticky top-0 bg-base-300'>
+								<tr>
+									<th>Season</th>
+									<th>Duel Mode</th>
+									<th>Type</th>
+									<th>Banlist</th>
+									<th>Player</th>
+									<th>Opponent</th>
+									<th>Result</th>
+									<th>Points</th>
+									<th>Date</th>
+								</tr>
+							</thead>
+							<tbody>
+								{
+									matchHistory.map((match: Match) => (
+										<tr class='hover:bg-secondary'>
+											<td class="text-center">{match.season}</td>
+											<th class='max-w-[200px]'>{getDuelMode(match)}</th>
+											<td class='min-w-[100px]'>
+												{getIsPvP(match) ? 'PvP' : 'Tag'}
+											</td>
+											<td class=''>{match.banListName}</td>
+											<td>{getDuelistName(match.playerNames)}</td>
+											<td>{getDuelistName(match.opponentNames)}</td>
+											<td
+												class={`${match.winner ? 'text-success' : 'text-error'}`}
+											>
+												{match.playerScore} - {match.opponentScore}
+											</td>
+											<td
+												class={`${match.winner ? 'text-success' : 'text-error'}`}
+											>
+												{match.points}
+											</td>
+											<td>{match.date}</td>
+										</tr>
+									))
+								}
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<!-- <table class='table bg-base-300'>
 					<thead class='sticky top-0 bg-base-300'>
 						<tr>
 							<th>Duel Mode</th>
@@ -50,7 +124,7 @@ const getDuelistName = (names: string[]) => names.join(', ');
 							))
 						}
 					</tbody>
-				</table>
+				</table> -->
 			</div>
 		</div>
 	</main>
