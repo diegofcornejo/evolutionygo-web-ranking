@@ -13,17 +13,13 @@ const news: News[] = [
 		id: 1,
 		image: '/banners/banner1.webp',
 		title: 'Season 4 is here!',
-		description: 'Evolution version 3.0.0 is now available!',
-		buttonText: 'More details',
-		buttonLink: '/',
+		description: 'Evolution version 3.0.0 is now available!'
 	},
 	{
 		id: 2,
 		image: '/banners/banner2.webp',
 		title: 'TCG Champions 2024',
-		description: 'TEAM HABANA is the new champion!',
-		buttonText: 'More details',
-		buttonLink: '/',
+		description: 'TEAM HABANA is the new champion!'
 	}
 ];
 
@@ -50,8 +46,6 @@ export default () => {
 							image={newsItem.image}
 							title={newsItem.title}
 							description={newsItem.description}
-							buttonText={newsItem.buttonText}
-							buttonLink={newsItem.buttonLink}
 						/>
 					</SwiperSlide>
 				))}

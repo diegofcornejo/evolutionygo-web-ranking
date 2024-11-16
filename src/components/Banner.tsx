@@ -2,8 +2,8 @@ interface BannerProps {
 	image: string;
 	title: string;
 	description: string;
-	buttonText: string;
-	buttonLink: string;
+	buttonText?: string;
+	buttonLink?: string;
 }
 
 export default ({ image, title, description, buttonText, buttonLink }: BannerProps) => {
@@ -38,13 +38,15 @@ export default ({ image, title, description, buttonText, buttonLink }: BannerPro
 						{description}
 					</h2>
 				</div>
-				<a className="btn btn-block btn-primary group" href={buttonLink}>
-					{buttonText}
-					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor"
-						className="hidden h-6 w-6 transition-transform duration-300 group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1 md:inline-block">
-						<path strokeLinecap="round" strokeLinejoin="round" d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3"></path>
-					</svg>
-				</a>
+				{(buttonLink || buttonText) && (
+					<a className="btn btn-block btn-primary group" href={buttonLink}>
+						{buttonText}
+						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor"
+							className="hidden h-6 w-6 transition-transform duration-300 group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1 md:inline-block">
+							<path strokeLinecap="round" strokeLinejoin="round" d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3"></path>
+						</svg>
+					</a>
+				)}
 			</div>
 		</div>
 	);

@@ -9,8 +9,10 @@ const duelistResponse = await fetch(`${import.meta.env.PUBLIC_API_URL}/users/${i
 const duelist = await duelistResponse.json();
 const matchHistoryResponse = await fetch(`${import.meta.env.PUBLIC_API_URL}/users/${id}/matches`);
 const matchHistory = await matchHistoryResponse.json();
-const getIsPvP = (match: Match) => match.playerNames.length === 1 || match.opponentNames.length === 1;
-const getDuelMode = (match: Match) => `${match.playerNames.length} vs ${match.opponentNames.length} | Best of ${match.bestOf}`;
+const getIsPvP = (match: Match) =>
+	match.playerNames.length === 1 || match.opponentNames.length === 1;
+const getDuelMode = (match: Match) =>
+	`${match.playerNames.length} vs ${match.opponentNames.length} | Best of ${match.bestOf}`;
 const getDuelistName = (names: string[]) => names.join(', ');
 ---
 
@@ -36,9 +38,13 @@ const getDuelistName = (names: string[]) => names.join(', ');
 					<div role='tabpanel' class='tab-content pt-4'>
 						<div class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'>
 							{
-								duelist.achievements.map((achievement: Achievement) => (
-									<AchievementCard {...achievement} />
-								))
+								duelist.achievements.length === 0 ? (
+									<p class='text-gray-400 text-sm'>No achievements yet</p>
+								) : (
+									duelist.achievements.map((achievement: Achievement) => (
+										<AchievementCard {...achievement} />
+									))
+								)
 							}
 						</div>
 					</div>
@@ -69,7 +75,7 @@ const getDuelistName = (names: string[]) => names.join(', ');
 								{
 									matchHistory.map((match: Match) => (
 										<tr class='hover:bg-secondary'>
-											<td class="text-center">{match.season}</td>
+											<td class='text-center'>{match.season}</td>
 											<th class='max-w-[200px]'>{getDuelMode(match)}</th>
 											<td class='min-w-[100px]'>
 												{getIsPvP(match) ? 'PvP' : 'Tag'}
@@ -95,36 +101,6 @@ const getDuelistName = (names: string[]) => names.join(', ');
 						</table>
 					</div>
 				</div>
-				<!-- <table class='table bg-base-300'>
-					<thead class='sticky top-0 bg-base-300'>
-						<tr>
-							<th>Duel Mode</th>
-							<th>Type</th>
-							<th>Banlist</th>
-							<th>Player</th>
-							<th>Opponent</th>
-							<th>Result</th>
-							<th>Points</th>
-							<th>Date</th>
-						</tr>
-					</thead>
-					<tbody>
-						{
-							matchHistory.map((match: Match) => (
-								<tr class='hover:bg-secondary'>
-									<th class='max-w-[200px]'>{getDuelMode(match)}</th>
-									<td class='min-w-[100px]'>{getIsPvP(match) ? 'PvP' : 'Tag'}</td>
-									<td class=''>{match.banListName}</td>
-									<td>{getDuelistName(match.playerNames)}</td>
-									<td>{getDuelistName(match.opponentNames)}</td>
-									<td class={`${match.winner ? 'text-success' : 'text-error'}`}>{match.playerScore} - {match.opponentScore}</td>
-									<td class={`${match.winner ? 'text-success' : 'text-error'}`}>{match.points}</td>
-									<td>{match.date}</td>
-								</tr>
-							))
-						}
-					</tbody>
-				</table> -->
 			</div>
 		</div>
 	</main>
