@@ -23,7 +23,15 @@ const rating = Math.floor(Math.random() * 5) + 1;
 		<h1 class='text-3xl md:text-5xl md:leading-[3.5rem] font-bold pt-6'>{title}</h1>
 		<h2 class='text-lg text-gray-400 leading-8 max-w-4xl'>{description}</h2>
 	</div>
+	<div class="flex flex-row justify-center gap-4 pt-4">
+		<select class="select select-secondary w-full max-w-xs">
+			<option disabled selected>Season 3</option>
+		</select>
+		<select class="select select-secondary w-full max-w-xs" id="selector-banlists">
+			<option disabled selected>Global</option>
+		</select>
 
+	</div>
 	<ul
 		role='list'
 		class='grid grid-cols-1 md:grid-cols-4 gap-6 mt-8 p-0 place-items-stretch'
