@@ -15,7 +15,7 @@ const duelistData = await duelistResponse.json();
 const topDuelists = duelistData.slice(0, 4);
 const duelists = duelistData.slice(4);
 
-const rating = Math.floor(Math.random() * 5) + 1;
+const getRating = (winRate: number) => 1 + (winRate / 100) * 4;
 ---
 
 <div class='py-24 mx-4' id='section-ranking'>
@@ -67,7 +67,7 @@ const rating = Math.floor(Math.random() * 5) + 1;
 										/>
 										<div>
 											<div class='font-bold'>{duelist.username}</div>
-											<Rating rating={rating} size='sm'/>
+											<Rating rating={getRating(duelist.winRate)} size='sm'/>
 										</div>
 									</div>
 								</a>
