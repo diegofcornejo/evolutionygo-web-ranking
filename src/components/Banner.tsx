@@ -24,11 +24,6 @@ export default ({ image, title, description, buttonText, buttonLink }: BannerPro
 				</h2>
 				<div className="grow">
 					<h2 className="card-title text-sm font-light sm:w-[250%] sm:text-lg md:text-lg lg:text-lg xl:text-xl">
-						{/* <svg className="inline h-4 w-4 md:h-6 md:w-6" width="32" height="32" viewBox="0 0 415 415" xmlns="http://www.w3.org/2000/svg">
-							<rect x="82.5" y="290" width="250" height="125" rx="62.5" fill="#1AD1A5"></rect>
-							<circle cx="207.5" cy="135" r="125" fill="white"></circle>
-							<circle cx="207.5" cy="135" r="56" fill="#FF9903"></circle>
-						</svg> */}
 						{description}
 					</h2>
 				</div>

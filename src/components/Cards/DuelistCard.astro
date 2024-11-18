@@ -40,20 +40,10 @@ const rating = 1 + (winRate / 100) * 4;
 			transition:animate='none'
 		>
 		#{position} {username}
-			<!-- <div class='badge badge-secondary'>{position}</div> -->
 		</h2>
 		<p class='text-sm font-bold'>Points: {points}</p>
 		<p class='text-sm text-success'>Wins: {wins}</p>
 		<p class='text-sm text-error'>Losses: {losses}</p>
 		<p class='text-sm'>Win Rate: {winRate.toFixed(2)}%</p>
-		<!-- <div class='card-actions justify-center mt-4'>
-			{
-				officialBadges.map((badge) => (
-					<div class={`badge badge-outline`}>
-						{badge.icon} {badge.label}
-					</div>
-				))
-			}
-		</div> -->
 	</div>
 </a>
