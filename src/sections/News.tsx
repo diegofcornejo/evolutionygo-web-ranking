@@ -1,6 +1,6 @@
 import { Pagination, A11y, Autoplay } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import Banner from './Banner.tsx';
+import Banner from '@components/Banner.tsx';
 import type { News } from '@types';
 // Import Swiper styles
 import 'swiper/css';
@@ -43,9 +43,12 @@ export default () => {
 				{news.map((newsItem) => (
 					<SwiperSlide key={newsItem.id}>
 						<Banner
+							id={newsItem.id}
 							image={newsItem.image}
 							title={newsItem.title}
 							description={newsItem.description}
+							buttonLink={newsItem.buttonLink}
+							buttonText={newsItem.buttonText}
 						/>
 					</SwiperSlide>
 				))}

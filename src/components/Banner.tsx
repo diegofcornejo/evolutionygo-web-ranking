@@ -1,17 +1,11 @@
-interface BannerProps {
-	image: string;
-	title: string;
-	description: string;
-	buttonText?: string;
-	buttonLink?: string;
-}
+import type { News as BannerProps} from '@types';
 
 export default ({ image, title, description, buttonText, buttonLink }: BannerProps) => {
 	return (
 		<div
 			className="card bg-base-100 from-base-200 not-prose outline-base-content/5 relative overflow-hidden bg-gradient-to-b font-sans shadow-lg outline -outline-offset-1 md:flex-row-reverse">
 			<figure className="max-md:bg-primary/10 isolate shrink-0 md:w-2/3">
-				<img className="pointer-events-none w-full aspect-[3/1] object-cover" alt="daisyUI store"
+				<img className="pointer-events-none w-full aspect-[3/1] object-cover" alt="Evolution YGO"
 					src={image} />
 			</figure>
 			<div
@@ -38,7 +32,7 @@ export default ({ image, title, description, buttonText, buttonLink }: BannerPro
 						{description}
 					</h2>
 				</div>
-				{(buttonLink || buttonText) && (
+				{(buttonLink && buttonText) && (
 					<a className="btn btn-block btn-primary group" href={buttonLink}>
 						{buttonText}
 						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor"
