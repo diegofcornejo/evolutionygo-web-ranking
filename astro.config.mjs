@@ -11,16 +11,21 @@ import icon from 'astro-icon';
 
 import playformCompress from '@playform/compress';
 
+import sitemap from '@astrojs/sitemap';
+
 // https://astro.build/config
 export default defineConfig({
-  integrations: [tailwind(), react(), icon(), playformCompress()],
-    vite: {
-        resolve: {
-            alias: {
-                '@fontsource-variable/plus-jakarta-sans': '@fontsource-variable/plus-jakarta-sans'
-            }
-        }
-    },
-  output: 'server',
-  adapter: vercel()
+	integrations: [tailwind(), react(), icon(), playformCompress(), sitemap({
+		customPages: ['https://status.evolutionygo.com']
+	})],
+	vite: {
+		resolve: {
+			alias: {
+				'@fontsource-variable/plus-jakarta-sans': '@fontsource-variable/plus-jakarta-sans'
+			}
+		}
+	},
+	site: 'https://beta.evolutionygo.com',
+	output: 'server',
+	adapter: vercel()
 });
