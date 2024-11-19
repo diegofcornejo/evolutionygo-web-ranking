@@ -59,7 +59,7 @@ export default function SettingsForm({ dialog }: { dialog: string }) {
 
 	const handleSaveUsername = async (event: { preventDefault: () => void; }) => {
 		event.preventDefault();
-		handleSave('users/change-username', username, setUsernameError);
+		handleSave('users/change-username', { username }, setUsernameError);
 	};
 
 	const handleSavePassword = async (event: { preventDefault: () => void; }) => {

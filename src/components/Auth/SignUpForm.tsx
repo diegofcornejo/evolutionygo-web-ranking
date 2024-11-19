@@ -71,6 +71,7 @@ export default function LoginForm({ dialog }: { dialog: string }) {
 					className="grow"
 					placeholder="Username"
 					value={username}
+					maxLength={14}
 					onChange={(e) => setUsername(e.target.value)}
 					required
 				/>
