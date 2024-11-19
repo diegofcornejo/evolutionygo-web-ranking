@@ -14,7 +14,7 @@ const { id, open, close = 'Close', showButtons = true, showLogo = true } = Astro
 <dialog id={id} class='modal'>
 	<div class='modal-box'>
 		{showLogo && <img src='/logo.svg' alt='logo' class='h-16 w-auto mx-auto' />}
-		<h3 class='text-lg font-bold text-center'>{open}</h3>
+		<h3 class='text-2xl text-center mt-4'>{open}</h3>
 		<div class='modal-action'>
 			<div class='w-full'>
 				<slot name='main' />
@@ -31,4 +31,7 @@ const { id, open, close = 'Close', showButtons = true, showLogo = true } = Astro
 			</div>
 		</div>
 	</div>
+	<form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
 </dialog>
