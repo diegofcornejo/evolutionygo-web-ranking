@@ -53,14 +53,25 @@ export default function SettingsForm({ dialog }: { dialog: string }) {
 				setError(data.message || 'Error updating');
 			}
 		} catch (error) {
-			console.error(error);
 			setError('No connection to server');
 		}
 	};
 
+	const handleSaveUsername = async (event: { preventDefault: () => void; }) => {
+		event.preventDefault();
+		handleSave('users/change-username', username, setUsernameError);
+	};
+
+	const handleSavePassword = async (event: { preventDefault: () => void; }) => {
+		event.preventDefault();
+		handleSave('users/reset-password', { password, newPassword }, setPasswordError);
+	}
+
+
 	return (
-		<div className="">
-			<div className="space-y-2">
+		<div>
+			<form className="space-y-2 mt-8"
+				onSubmit={handleSaveUsername}>
 				<h2 className="font-bold">Change Username</h2>
 				<label className="input input-bordered flex items-center gap-2">
 					<ReactSVG src="/icons/username.svg" className="w-4 h-4 opacity-70" />
@@ -81,13 +92,13 @@ export default function SettingsForm({ dialog }: { dialog: string }) {
 				</p>
 				<button
 					className="btn btn-primary btn-sm"
-					onClick={() => handleSave('users/change-username', username, setUsernameError)}
+					type="submit"
 				>
 					Save Username
 				</button>
-			</div>
-
-			<div className="space-y-2 mt-16">
+			</form>
+			<div className="divider"></div>
+			<form className="space-y-2 mt-4" onSubmit={handleSavePassword}>
 				<h2 className="font-bold">Change Password</h2>
 				<label className="input input-bordered flex items-center gap-2">
 					<ReactSVG src="/icons/password.svg" className="w-4 h-4 opacity-70" />
@@ -120,11 +131,11 @@ export default function SettingsForm({ dialog }: { dialog: string }) {
 				</p>
 				<button
 					className="btn btn-primary btn-sm"
-					onClick={() => handleSave('users/reset-password', { password, newPassword }, setPasswordError)}
+					type="submit"
 				>
 					Save Password
 				</button>
-			</div>
+			</form>
 			<div className='flex justify-end gap-2'>
 				<button className="btn btn-outline" type="button" onClick={closeModal}>Close</button>
 			</div>
