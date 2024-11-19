@@ -9,67 +9,83 @@ const members: CrewMember[] = [
 		name: 'diangogav',
 		role: 'Project Lead',
 		picture: '/avatar.webp',
-		links: {
-			discord: '',
-			github: 'https://github.com/diangogav',
-			twitter: '',
-			facebook: '',
-		},
+		links: [
+			{
+				icon: 'mdi:github',
+				url: 'https://github.com/diangogav',
+			},
+		],
 	},
 	{
 		name: 'leip1493',
 		role: 'Developer',
 		picture: '/avatar.webp',
-		links: {
-			discord: '',
-			github: '',
-			twitter: '',
-			facebook: '',
-		},
+		links: [
+			{
+				icon: 'mdi:github',
+				url: 'https://github.com/leip1493',
+			},
+		],
 	},
 	{
 		name: 'termitaklk',
 		role: 'Developer',
 		picture: '/avatar.webp',
-		links: {
-			discord: '',
-			github: '',
-			twitter: '',
-			facebook: '',
-		},
+		links: [
+			{
+				icon: 'mdi:github',
+				url: 'https://github.com/termitaklk',
+			},
+		],
 	},
 	{
 		name: 'leandrogavidia',
 		role: 'Designer',
 		picture: '/avatar.webp',
-		links: {
-			discord: '',
-			github: '',
-			twitter: '',
-			facebook: '',
-		},
+		links: [
+			{
+				icon: 'mdi:github',
+				url: 'https://github.com/leandrogavidia',
+			},
+		],
 	},
 	{
-		name: 'darkjinzo',
+		name: 'Juan D. Lopez',
 		role: 'Community Manager',
 		picture: '/avatar.webp',
-		links: {
-			discord: '',
-			github: '',
-			twitter: '',
-			facebook: '',
-		},
+		links: [
+			{
+				icon: 'mdi:discord',
+				url: 'https://discord.gg/n8wYKDZg',
+			},
+			{
+				icon: 'ic:baseline-tiktok',
+				url: 'https://www.tiktok.com/@jinzojgaming?_t=8rUCha6U8gx&_r=1',
+			},
+			{
+				icon: 'mdi:instagram',
+				url: 'https://www.instagram.com/juanjo270997?igsh=MWd0aXp3Njg1bHl6dQ==',
+			},
+		],
 	},
 	{
 		name: 'diegofcornejo',
 		role: 'DevOps & SRE',
 		picture: '/crew/diegofcornejo.webp',
-		links: {
-			discord: '',
-			github: 'https://github.com/diegofcornejo',
-			twitter: '',
-			facebook: '',
-		},
+		links: [
+			{
+				icon: 'mdi:web',
+				url: 'https://diegocornejo.com',
+			},
+			{
+				icon: 'mdi:github',
+				url: 'https://github.com/diegofcornejo',
+			},
+			{
+				icon: 'mdi:discord',
+				url: 'https://discordapp.com/users/489192723132317696',
+			},
+		],
 	},
 ];
 ---
@@ -80,14 +96,22 @@ const members: CrewMember[] = [
 		{
 			members.map((member) => (
 				<div class='flex gap-4'>
-					<img alt={member.name} src={member.picture} class='rounded-full w-24 aspect-square' />
+					<img
+						alt={member.name}
+						src={member.picture}
+						class='rounded-full w-24 aspect-square'
+					/>
 					<div class='flex flex-col gap-2'>
 						<h3 class='font-bold'>{member.name}</h3>
 						<span class='text-sm'>{member.role}</span>
 						<div class='flex text-secondary text-xs'>
-							{Object.entries(member.links).map(([key, value]) => (
-								<a href={value} target='_blank' class='btn btn-ghost btn-sm btn-circle'>
-									<Icon name={`mdi:${key}`} class='text-xl'/>
+							{member?.links?.map((link) => (
+								<a
+									href={link.url}
+									target='_blank'
+									class='btn btn-ghost btn-sm btn-circle'
+								>
+									<Icon name={`${link.icon}`} class='text-xl' />
 								</a>
 							))}
 						</div>
