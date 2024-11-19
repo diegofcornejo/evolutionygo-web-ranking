@@ -1,0 +1,15 @@
+---
+import SettingsForm from "@components/Settings/SettingsForm";
+---
+
+<dialog id='dialog-settings' class='modal'>
+	<div class='modal-box'>
+		<img src='/logo.svg' alt='logo' class='h-16 w-auto mx-auto' />
+		<h3 class='text-lg font-bold text-center'>Settings</h3>
+		<div class='modal-action'>
+			<div class='w-full'>
+				<SettingsForm dialog="dialog-settings" client:load/>
+			</div>
+		</div>
+	</div>
+</dialog>

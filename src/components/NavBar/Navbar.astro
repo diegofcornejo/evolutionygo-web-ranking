@@ -1,13 +1,14 @@
 ---
 import { Icon } from 'astro-icon/components'
-import Modal from "../Modal.astro";
-import SignInForm from "../Auth/SignInForm.tsx";
-import SignUpForm from "../Auth/SignUpForm.tsx";
+
+import Modal from "@components/Modal.astro";
+import { SignInForm, SignUpForm } from "@components/Auth";
+import SettingsDialog from "@components/Settings/Modal.astro";
 import menuItems from "./menuItems";
 ---
 <script>
-	import { session } from '../../stores/sessionStore';
-	import { update, logout, updateUser, setTheme } from './helper';
+	import { session } from '@stores/sessionStore';
+	import { update, logout, updateUser, setTheme, openSettings } from './helper';
 
 	session.subscribe(() => {
 		update();
@@ -19,6 +20,7 @@ import menuItems from "./menuItems";
 		update();
 		logout();
 		setTheme();
+		openSettings();
 	});
 
 </script>
@@ -124,15 +126,16 @@ import menuItems from "./menuItems";
 						<span class='badge badge-sm badge-primary'>New</span>
 					</a>
 				</li>
-				<li><a>Settings</a></li>
+				<li><a id="button-navbar-settings">Settings</a></li>
 				<li><a id='button-navbar-logout'>Logout</a></li>
 			</ul>
 		</div>
 	</div>
+	<SettingsDialog/>
 	<Modal id="signin" open="Sign in" showButtons={false}>
 		<SignInForm dialog="signin" slot='main' client:load/>
 	</Modal>
 	<Modal id="signup" open="Sign up" showButtons={false}>
-			<SignUpForm dialog="signup" slot='main' client:load/>
+		<SignUpForm dialog="signup" slot='main' client:load/>
 	</Modal>
 </div>

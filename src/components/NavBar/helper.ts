@@ -1,5 +1,5 @@
-import { getSession, updateSession } from '../../stores/sessionStore';
-import { theme } from '../../stores/themeStore';
+import { getSession, updateSession } from '@stores/sessionStore';
+import { theme } from '@stores/themeStore';
 import type { Session } from '@types';
 
 const handleLogout = () => {
@@ -18,6 +18,17 @@ const logout = () => {
 
 const toggleTheme = () => {
 	theme.set(theme.get() === 'night' ? 'dark' : 'night');
+}
+
+const handleSettings = () => {
+	const dialog = document.getElementById('dialog-settings');
+	// @ts-ignore
+	dialog.showModal();
+}
+
+const openSettings = () => {
+	// @ts-ignore
+	document.getElementById('button-navbar-settings').addEventListener('click', handleSettings);
 }
 
 const update = () => {
@@ -58,4 +69,4 @@ const setTheme = () => {
 	document.getElementById('button-navbar-theme').addEventListener('change', toggleTheme);
 }
 
-export { update, logout, updateUser, setTheme };
+export { update, logout, updateUser, setTheme, openSettings, handleLogout };
