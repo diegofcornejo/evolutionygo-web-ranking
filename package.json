@@ -7,7 +7,10 @@
     "start": "astro dev",
     "build": "astro check && astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
+    "prepare": "husky"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
@@ -35,7 +38,17 @@
     "typescript": "^5.6.3"
   },
   "devDependencies": {
+    "@commitlint/cli": "^19.6.0",
+    "@commitlint/config-conventional": "^19.6.0",
     "@tailwindcss/typography": "^0.5.15",
-    "daisyui": "^4.12.14"
+    "daisyui": "^4.12.14",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.2.10",
+    "oxlint": "^0.11.1"
+  },
+  "lint-staged": {
+    "*.{astro,js,jsx,ts,tsx}": [
+      "oxlint"
+    ]
   }
 }
