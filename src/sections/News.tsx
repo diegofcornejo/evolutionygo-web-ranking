@@ -20,6 +20,12 @@ const news: News[] = [
 		image: '/banners/banner2.webp',
 		title: 'TCG Champions 2024',
 		description: 'TEAM HABANA is the new champion!'
+	},
+	{
+		id: 3,
+		image: '/banners/banner3.webp',
+		title: 'Edison Champions 2024',
+		description: 'TEAM AyD Heaven is the new champion!'
 	}
 ];
 

@@ -14,16 +14,16 @@ export default ({ image, title, description, buttonText, buttonLink }: BannerPro
 			<div
 				className="bg-primary pointer-events-none absolute bottom-[-120%] left-1/2 aspect-square w-full -translate-x-1/2 rounded-full opacity-20 blur-3xl">
 			</div>
-			<div
+			{/* <div
 				className="bg-base-100 pointer-events-none absolute -top-3/4 right-1/4 z-[3] aspect-square w-1/2 rounded-full opacity-60 blur-3xl">
-			</div>
+			</div> */}
 			<div className="card-body relative isolate z-[3]">
 				<h2
-					className="card-title text-base-content text-xl contrast-200 [text-wrap:balance] sm:w-[250%] sm:text-2xl md:text-4xl lg:text-3xl xl:text-4xl">
+					className="card-title text-base-content text-xl contrast-200 [text-wrap:balance] sm:w-[250%] md:w-full sm:text-2xl md:text-2xl lg:text-3xl xl:text-4xl">
 					<span>{title}</span>
 				</h2>
 				<div className="grow">
-					<h2 className="card-title text-sm font-light sm:w-[250%] sm:text-lg md:text-lg lg:text-lg xl:text-xl">
+					<h2 className="card-title text-sm font-light [text-wrap:balance] sm:w-[250%] md:w-full sm:text-lg md:text-lg lg:text-lg xl:text-xl">
 						{description}
 					</h2>
 				</div>
