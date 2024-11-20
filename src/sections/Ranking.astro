@@ -62,8 +62,6 @@ const getRating = (winRate: number) => 1 + (winRate / 100) * 4;
 											src={`https://ui-avatars.com/api/?name=${duelist.username}&background=random&size=128`}
 											alt={duelist.username}
 											class='w-12 h-12 rounded-full'
-											transition:name={`img-duelist-${duelist.userId}`}
-											transition:animate='none'
 										/>
 										<div>
 											<div class='font-bold'>{duelist.username}</div>

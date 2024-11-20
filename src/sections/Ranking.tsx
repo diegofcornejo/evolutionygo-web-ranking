@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import Select from 'react-select';
 import DuelistCard from '@components/Cards/DuelistCard';
 import Rating from '@components/Rating';
 import type { Duelist } from '@types';
@@ -19,12 +20,16 @@ export default function Ranking() {
 		setBanListOptions(data);
 	};
 
-	const handleSeasonChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-		setSeason(e.target.value);
+	const handleSeasonChange = (option: { label: string, value: string } | null) => {
+		if (option) {
+			setSeason(option.value);
+		}
 	};
 
-	const handleBanListChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-		setBanList(e.target.value);
+	const handleBanListChange = (option: { label: string, value: string } | null) => {
+		if (option) {
+			setBanList(option.value);
+		}
 	};
 
   useEffect(() => {
@@ -56,14 +61,53 @@ export default function Ranking() {
         <h2 className='text-lg text-gray-400 leading-8 max-w-4xl'>{description}</h2>
       </div>
       <div className="flex flex-row justify-center gap-4 pt-4">
-        <select className="select select-secondary w-full max-w-xs" value={season} onChange={handleSeasonChange}>
-          <option disabled selected>{season}</option>
-        </select>
-        <select className="select select-secondary w-full max-w-xs" value={banList} onChange={handleBanListChange}>
+        {/* <select className="select select-secondary w-full max-w-xs" value={season} onChange={handleSeasonChange}>
+          <option disabled>{season}</option>
+        </select> */}
+				<Select
+					instanceId='selector-season'
+					className='w-full max-w-xs text-sm'
+					defaultValue={{label: season, value: season}}
+					onChange={handleSeasonChange}
+					isSearchable={true}
+					options={['Season 3'].map((option: string) => ({label: option, value: option}))}
+					theme={(theme) => ({
+						...theme,
+						colors: {
+							...theme.colors,
+							neutral0: '#0F172A',
+							neutral20: 'oklch(68.0113% 0.158303 276.934902 / 1)',
+							neutral80: '#FFFFFF',
+							primary25: '#16213E',
+							primary: 'oklch(68.0113% 0.158303 276.934902 / 1)',
+						},
+					})}
+				/>
+
+				<Select
+					instanceId='selector-banlist'
+					className='w-full max-w-xs text-sm'
+					defaultValue={{label: banList, value: banList}}
+					onChange={handleBanListChange}
+					isSearchable={true}
+					options={banListOptions.map((option: string) => ({label: option, value: option}))}
+					theme={(theme) => ({
+						...theme,
+						colors: {
+							...theme.colors,
+							neutral0: '#0F172A',
+							neutral20: 'oklch(68.0113% 0.158303 276.934902 / 1)',
+							neutral80: '#FFFFFF',
+							primary25: '#16213E',
+							primary: 'oklch(68.0113% 0.158303 276.934902 / 1)',
+						},
+					})}
+				/>
+        {/* <select className="select select-secondary w-full max-w-xs" value={banList} onChange={handleBanListChange}>
           {banListOptions.map((option: string) => (
             <option key={option} value={option}>{option}</option>
           ))}
-        </select>
+        </select> */}
       </div>
       <ul
         role='list'
