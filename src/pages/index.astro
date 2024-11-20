@@ -1,7 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import News from '@sections/News';
-import Ranking from '@sections/Ranking.astro';
+import Ranking from '@sections/Ranking';
 import Download from '@sections/Download.astro';
 import Features from '@sections/Features.astro';
 import Faqs from '@sections/Faqs.astro';
@@ -13,7 +13,7 @@ const title = 'Evolution YGO Season 4';
 	<main class='w-full text-[white] text-xl leading-[1.6] mx-auto'>
 		<h1 class="text-4xl sm:text-5xl font-bold leading-none text-center mb-[1em] max-w-sm md:max-w-full pt-4 "><span class='text-gradient'>{title}</span></h1>
 		<News client:load/>
-		<Ranking/>
+		<Ranking client:load/>
 		<Features/>
 		<Download/>
 		<Faqs/>
