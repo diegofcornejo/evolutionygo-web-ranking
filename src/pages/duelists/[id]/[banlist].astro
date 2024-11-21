@@ -26,18 +26,18 @@ const getDuelistName = (names: string[]) => names.join(', ');
 <Layout title={`Duelist ${duelist.username} Stats`}>
 	<main class='w-full max-w-[calc(100%_-_2rem)] text-[white] text-lg leading-[1.6] mx-auto my-4'>
 		<h1 class='text-4xl sm:text-5xl font-bold leading-none text-center mb-[1em]'>
-			<span class='text-gradient'>{duelist.username} Stats</span>
+			<span class='text-gradient'>{duelist.username} {banlistName} Stats</span>
 		</h1>
 		<div class='flex flex-col md:flex-row gap-2 md:gap-4 lg:gap-0'>
 			<div class='flex flex-col gap-4 md:w-1/4'>
 				<DuelistCard
 					{...duelist}
 					borderColor={
-						duelist.position === 1
+						duelist.position == 1
 							? 'gold'
-							: duelist.position === 2
+							: duelist.position == 2
 							? 'silver'
-							: duelist.position === 3
+							: duelist.position == 3
 							? 'bronze'
 							: 'transparent'
 					}
