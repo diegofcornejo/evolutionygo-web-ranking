@@ -90,7 +90,7 @@ export default function Ranking() {
               <tr key={duelist.userId} className='hover:bg-secondary'>
                 <th className='max-w-[75px] text-center'>{duelist.position}</th>
                 <td className='min-w-[200px]'>
-                  <a href={`/duelists/${duelist.userId}`}>
+                  <a href={`/duelists/${duelist.userId}/${banList}`}>
                     <div className='flex items-center gap-3'>
                       <img
                         src={`https://ui-avatars.com/api/?name=${duelist.username}&background=random&size=128`}
