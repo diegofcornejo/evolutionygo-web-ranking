@@ -1,0 +1,43 @@
+---
+import { Icon } from 'astro-icon/components';
+
+const getAnnouncement = async () => {
+	const res = await fetch(`${import.meta.env.PUBLIC_CACHET_API_URL}/api/v1/schedules`, {
+		cache: 'no-store',
+	});
+	const COMPLETED = 2;
+	const data = await res.json();
+	const noCompleted = data.data.filter((announcement: any) => announcement.status < COMPLETED);
+	return noCompleted;
+};
+const announcements = await getAnnouncement();
+---
+
+<div class='dropdown dropdown-end mx-2'>
+	<button tabindex='0' role='button' class='btn btn-ghost btn-circle'>
+		<div class='indicator'>
+			<Icon name='bell' class='h-6 w-6' />
+			{announcements.length > 0 && (
+				<span class='badge badge-xs badge-primary indicator-item'></span>
+			)}
+		</div>
+	</button>
+	<ul
+		tabindex='0'
+		class='menu menu-sm dropdown-content bg-base-300 rounded-box z-[1] mt-1 w-56 p-2 shadow'
+	>
+		{announcements.length === 0 && (
+			<li>
+				<p class='text-center'>No announcements</p>
+			</li>
+		)}
+		{announcements.map((announcement: any) => (
+			<li>
+				<div class='flex flex-col gap-1 items-start'>
+					<p class='font-bold'>{announcement.name}</p>
+					<p class='text-xs text-gray-500'>{announcement.scheduled_at}</p>
+				</div>
+			</li>
+		))}
+	</ul>
+</div>

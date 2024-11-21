@@ -1,19 +1,9 @@
 ---
-import { Icon } from 'astro-icon/components';
-
 import Modal from '@components/Modal.astro';
 import { SignInForm, SignUpForm } from '@components/Auth';
 import SettingsDialog from '@components/Settings/Modal.astro';
+import AnnouncementsDropdown from './AnnouncementsDropdown.astro';
 import menuItems from './menuItems';
-
-const getAnnouncement = async () => {
-	const res = await fetch(`${import.meta.env.PUBLIC_CACHET_API_URL}/api/v1/schedules`, {
-		cache: 'no-store',
-	});
-	const data = await res.json();
-	return data.data;
-};
-const announcements = await getAnnouncement();
 ---
 
 <script>
@@ -121,34 +111,7 @@ const announcements = await getAnnouncement();
 			class='toggle theme-controller'
 			id='button-navbar-theme'
 		/>
-		<!-- <button class='btn btn-ghost btn-circle'>
-			<div class='indicator'>
-				<Icon name="bell" class='h-6 w-6'/>
-				<span class='badge badge-xs badge-primary indicator-item'></span>
-			</div>
-		</button> -->
-		<div class='dropdown dropdown-end mx-2'>
-			<button tabindex='0' role='button' class='btn btn-ghost btn-circle'>
-				<div class='indicator'>
-					<Icon name='bell' class='h-6 w-6' />
-					<span class='badge badge-xs badge-primary indicator-item'></span>
-				</div>
-			</button>
-			<ul
-				tabindex='0'
-				class='menu menu-sm dropdown-content bg-base-300 rounded-box z-[1] mt-1 w-56 p-2 shadow'
-			>
-				{announcements.map((announcement: any) => (
-					<li>
-						<div class='flex flex-col gap-1 items-start'>
-							<p class='font-bold'>{announcement.name}</p>
-							<p class='text-xs text-gray-500'>{announcement.scheduled_at}</p>
-						</div>
-					</li>
-				))}
-			</ul>
-		</div>
-
+		<AnnouncementsDropdown />
 		<div class='dropdown dropdown-end' id='dropdown-navbar-profile'>
 			<div tabindex='0' role='button' class='btn btn-ghost btn-circle avatar'>
 				<div class='w-8 rounded-full ring-primary ring-offset-base-100 ring ring-offset-2'>
