@@ -23,7 +23,18 @@ const getDuelistName = (names: string[]) => names.join(', ');
 		</h1>
 		<div class='flex flex-col md:flex-row gap-2 md:gap-4 lg:gap-0'>
 			<div class='flex flex-col gap-4 md:w-1/4'>
-				<DuelistCard {...duelist}/>
+				<DuelistCard
+					{...duelist}
+					borderColor={
+						duelist.position === 1
+							? 'gold'
+							: duelist.position === 2
+							? 'silver'
+							: duelist.position === 3
+							? 'bronze'
+							: 'transparent'
+					}
+				/>
 			</div>
 			<div class='overflow-x-auto flex-auto md:w-3/4 max-h-screen'>
 				<div role='tablist' class='tabs tabs-bordered'>

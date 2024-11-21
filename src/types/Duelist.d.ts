@@ -6,4 +6,5 @@ export type Duelist = {
 	losses: number;
 	winRate: number;
 	position: number;
+	borderColor?: 'transparent' | 'gold' | 'silver' | 'bronze';
 }

@@ -13,7 +13,7 @@ const news: News[] = [
 		id: 1,
 		image: '/banners/banner1.webp',
 		title: 'Season 4 is here!',
-		description: 'Evolution version 3.0.0 is now available!'
+		description: 'Evolution version 2.4.0 is now available!'
 	},
 	{
 		id: 2,

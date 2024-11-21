@@ -69,8 +69,8 @@ export default function Ranking() {
         role='list'
         className='grid grid-cols-1 md:grid-cols-4 gap-6 mt-8 p-0 place-items-stretch'
       >
-        {topDuelists.map((duelist: Duelist) => (
-          <DuelistCard key={duelist.userId} {...duelist} />
+        {topDuelists.map((duelist: Duelist, index: number) => (
+          <DuelistCard key={duelist.userId} {...duelist} borderColor={index === 0 ? 'gold' : index === 1 ? 'silver' : 'bronze'} />
         ))}
       </ul>
       <div className='overflow-x-auto mt-8'>

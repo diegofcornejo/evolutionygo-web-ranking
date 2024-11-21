@@ -2,7 +2,13 @@
 export default {
 	content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
 	theme: {
-		extend: {},
+		extend: {
+			colors: {
+				gold: '#FFD700',
+				silver: '#C0C0C0',
+				bronze: '#CD7F32',
+			},
+		},
 	},
 	daisyui: {
 		themes: ['night', 'dark']
@@ -22,5 +28,9 @@ export default {
 		'rating-sm',
 		'rating-md',
 		'rating-lg',
+		'border-gold',
+		'border-silver',
+		'border-bronze',
+		'border-transparent',
 	],
 }
