@@ -1,11 +1,21 @@
 ---
-import { Icon } from 'astro-icon/components'
+import { Icon } from 'astro-icon/components';
 
-import Modal from "@components/Modal.astro";
-import { SignInForm, SignUpForm } from "@components/Auth";
-import SettingsDialog from "@components/Settings/Modal.astro";
-import menuItems from "./menuItems";
+import Modal from '@components/Modal.astro';
+import { SignInForm, SignUpForm } from '@components/Auth';
+import SettingsDialog from '@components/Settings/Modal.astro';
+import menuItems from './menuItems';
+
+const getAnnouncement = async () => {
+	const res = await fetch(`${import.meta.env.PUBLIC_CACHET_API_URL}/api/v1/schedules`, {
+		cache: 'no-store',
+	});
+	const data = await res.json();
+	return data.data;
+};
+const announcements = await getAnnouncement();
 ---
+
 <script>
 	import { session } from '@stores/sessionStore';
 	import { update, logout, updateUser, setTheme, openSettings } from './helper';
@@ -22,7 +32,6 @@ import menuItems from "./menuItems";
 		setTheme();
 		openSettings();
 	});
-
 </script>
 
 <div class='navbar bg-base-100 sticky top-0 z-50'>
@@ -55,21 +64,25 @@ import menuItems from "./menuItems";
 								<ul class='p-2'>
 									{item.submenu.map((subitem) => (
 										<li>
-											<a href={subitem.href} target={subitem?.target}>{subitem.name}</a>
+											<a href={subitem.href} target={subitem?.target}>
+												{subitem.name}
+											</a>
 										</li>
 									))}
 								</ul>
 							</li>
 						) : (
 							<li>
-								<a href={item.href} target={item?.target}>{item.name}</a>
+								<a href={item.href} target={item?.target}>
+									{item.name}
+								</a>
 							</li>
 						),
 					)
 				}
 			</ul>
 		</div>
-		<a href="/"><img src='/logo.svg' alt='logo' class='h-16 w-auto cursor-pointer'/></a>
+		<a href='/'><img src='/logo.svg' alt='logo' class='h-16 w-auto cursor-pointer' /></a>
 	</div>
 	<div class='navbar-center hidden lg:flex'>
 		<ul class='menu menu-horizontal px-1'>
@@ -82,7 +95,9 @@ import menuItems from "./menuItems";
 								<ul class='p-2 w-48'>
 									{item.submenu.map((subitem) => (
 										<li>
-											<a href={subitem.href} target={subitem?.target}>{subitem.name}</a>
+											<a href={subitem.href} target={subitem?.target}>
+												{subitem.name}
+											</a>
 										</li>
 									))}
 								</ul>
@@ -90,7 +105,9 @@ import menuItems from "./menuItems";
 						</li>
 					) : (
 						<li>
-							<a href={item.href} target={item?.target}>{item.name}</a>
+							<a href={item.href} target={item?.target}>
+								{item.name}
+							</a>
 						</li>
 					),
 				)
@@ -98,21 +115,44 @@ import menuItems from "./menuItems";
 		</ul>
 	</div>
 	<div class='navbar-end'>
-		<input type="checkbox" value='dark' class="toggle theme-controller" id='button-navbar-theme'/>
-		<button class='btn btn-ghost btn-circle'>
+		<input
+			type='checkbox'
+			value='dark'
+			class='toggle theme-controller'
+			id='button-navbar-theme'
+		/>
+		<!-- <button class='btn btn-ghost btn-circle'>
 			<div class='indicator'>
 				<Icon name="bell" class='h-6 w-6'/>
 				<span class='badge badge-xs badge-primary indicator-item'></span>
 			</div>
-		</button>
+		</button> -->
+		<div class='dropdown dropdown-end mx-2'>
+			<button tabindex='0' role='button' class='btn btn-ghost btn-circle'>
+				<div class='indicator'>
+					<Icon name='bell' class='h-6 w-6' />
+					<span class='badge badge-xs badge-primary indicator-item'></span>
+				</div>
+			</button>
+			<ul
+				tabindex='0'
+				class='menu menu-sm dropdown-content bg-base-300 rounded-box z-[1] mt-1 w-56 p-2 shadow'
+			>
+				{announcements.map((announcement: any) => (
+					<li>
+						<div class='flex flex-col gap-1 items-start'>
+							<p class='font-bold'>{announcement.name}</p>
+							<p class='text-xs text-gray-500'>{announcement.scheduled_at}</p>
+						</div>
+					</li>
+				))}
+			</ul>
+		</div>
+
 		<div class='dropdown dropdown-end' id='dropdown-navbar-profile'>
 			<div tabindex='0' role='button' class='btn btn-ghost btn-circle avatar'>
 				<div class='w-8 rounded-full ring-primary ring-offset-base-100 ring ring-offset-2'>
-					<img
-						id='dropdown-navbar-avatar'
-						alt='avatar'
-						src=''
-					/>
+					<img id='dropdown-navbar-avatar' alt='avatar' src='' />
 				</div>
 			</div>
 			<ul
@@ -126,16 +166,16 @@ import menuItems from "./menuItems";
 						<span class='badge badge-sm badge-primary'>New</span>
 					</a>
 				</li>
-				<li><a id="button-navbar-settings">Settings</a></li>
+				<li><a id='button-navbar-settings'>Settings</a></li>
 				<li><a id='button-navbar-logout'>Logout</a></li>
 			</ul>
 		</div>
 	</div>
-	<SettingsDialog/>
-	<Modal id="signin" open="Sign in" showButtons={false}>
-		<SignInForm dialog="signin" slot='main' client:load/>
+	<SettingsDialog />
+	<Modal id='signin' open='Sign in' showButtons={false}>
+		<SignInForm dialog='signin' slot='main' client:load />
 	</Modal>
-	<Modal id="signup" open="Sign up" showButtons={false}>
-		<SignUpForm dialog="signup" slot='main' client:load/>
+	<Modal id='signup' open='Sign up' showButtons={false}>
+		<SignUpForm dialog='signup' slot='main' client:load />
 	</Modal>
 </div>
