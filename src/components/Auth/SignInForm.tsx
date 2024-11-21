@@ -79,7 +79,7 @@ export default function LoginForm({ dialog }: { dialog: string }) {
 					required
 				/>
 			</label>
-			<p className={`text-error text-sm h-4 transition-opacity duration-300 ${!error ? 'opacity-0' : 'opacity-100'}`}>
+			<p className={`text-error text-xs h-4 transition-opacity duration-300 ${!error ? 'opacity-0' : 'opacity-100'}`}>
 				{error || ' '}
 			</p>
 			<div className='flex justify-end gap-2'>

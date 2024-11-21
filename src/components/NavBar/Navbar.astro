@@ -8,7 +8,7 @@ import menuItems from './menuItems';
 
 <script>
 	import { session } from '@stores/sessionStore';
-	import { update, logout, updateUser, setTheme, openSettings } from './helper';
+	import { update, updateUser, setTheme, handleLogout, handleOpenSettings } from './helper';
 
 	session.subscribe(() => {
 		update();
@@ -16,11 +16,11 @@ import menuItems from './menuItems';
 	});
 
 	document.addEventListener('astro:page-load', () => {
-		updateUser();
 		update();
-		logout();
+		updateUser();
 		setTheme();
-		openSettings();
+		handleLogout();
+		handleOpenSettings();
 	});
 </script>
 

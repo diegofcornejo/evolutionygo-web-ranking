@@ -2,7 +2,7 @@ import { getSession, updateSession } from '@stores/sessionStore';
 import { theme } from '@stores/themeStore';
 import type { Session } from '@types';
 
-const handleLogout = () => {
+const logout = () => {
 	const session: Session = {
 		isLoggedIn: false,
 		token: '',
@@ -11,24 +11,24 @@ const handleLogout = () => {
 	updateSession(session);
 }
 
-const logout = () => {
+const handleLogout = () => {
 	// @ts-ignore
-	document.getElementById('button-navbar-logout').addEventListener('click', handleLogout);
+	document.getElementById('button-navbar-logout').addEventListener('click', logout);
 }
 
 const toggleTheme = () => {
 	theme.set(theme.get() === 'night' ? 'dark' : 'night');
 }
 
-const handleSettings = () => {
+const openSettings = () => {
 	const dialog = document.getElementById('dialog-settings');
 	// @ts-ignore
 	dialog.showModal();
 }
 
-const openSettings = () => {
+const handleOpenSettings = () => {
 	// @ts-ignore
-	document.getElementById('button-navbar-settings').addEventListener('click', handleSettings);
+	document.getElementById('button-navbar-settings').addEventListener('click', openSettings);
 }
 
 const update = () => {
@@ -69,4 +69,4 @@ const setTheme = () => {
 	document.getElementById('button-navbar-theme').addEventListener('change', toggleTheme);
 }
 
-export { update, logout, updateUser, setTheme, openSettings, handleLogout };
+export { update, updateUser, setTheme, handleLogout, logout, handleOpenSettings, openSettings };

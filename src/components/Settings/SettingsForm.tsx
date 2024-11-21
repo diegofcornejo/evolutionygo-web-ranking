@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ReactSVG } from 'react-svg';
 import { toast } from 'sonner';
-import { handleLogout } from '@components/NavBar/helper';
+import { logout } from '@components/NavBar/helper';
 import { getSession } from '@stores/sessionStore';
 
 export default function SettingsForm({ dialog }: { dialog: string }) {
@@ -43,7 +43,7 @@ export default function SettingsForm({ dialog }: { dialog: string }) {
 
 			if (response.ok) {
 				setError(null);
-				handleLogout();
+				logout();
 				closeModal();
 				toast.success('Updated successfully, please login again', {
 					position: 'bottom-center',
