@@ -16,7 +16,7 @@ export default function Ranking() {
 	const getBanListOptions = async () => {
 		const response = await fetch(`${apiUrl}/ban-lists`);
 		const data = await response.json();
-		setBanListOptions(data);
+		setBanListOptions(data.filter((option: string) => option !== 'N/A'));
 	};
 
 	const handleSeasonChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -70,7 +70,7 @@ export default function Ranking() {
         className='grid grid-cols-1 md:grid-cols-4 gap-6 mt-8 p-0 place-items-stretch'
       >
         {topDuelists.map((duelist: Duelist, index: number) => (
-          <DuelistCard key={duelist.userId} {...duelist} borderColor={index === 0 ? 'gold' : index === 1 ? 'silver' : 'bronze'} />
+          <DuelistCard key={duelist.userId} {...duelist} borderColor={index === 0 ? 'gold' : index === 1 ? 'silver' : 'bronze'} banListName={banList} />
         ))}
       </ul>
       <div className='overflow-x-auto mt-8'>
