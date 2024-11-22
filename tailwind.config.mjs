@@ -18,13 +18,6 @@ export default {
 		require('@tailwindcss/typography'),
 	],
 	safelist: [
-		'w-8',
-		'w-12',
-		'w-16',
-		'w-24',
-		'ring-primary', 
-		'ring-secondary', 
-		'ring-accent',
 		'rating-sm',
 		'rating-md',
 		'rating-lg',

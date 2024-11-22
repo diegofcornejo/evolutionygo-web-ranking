@@ -1,18 +1,8 @@
 ---
 import { Icon } from 'astro-icon/components';
+import type { Achievement } from 'src/types/types';
 
-interface Props {
-	id: string;
-	icon: string;
-	name: string;
-	labels: string[];
-	unlockedAt: Date;
-	description: string;
-	earnedPoints: number;
-	color?: string;
-}
-
-const { icon, name, labels = [], unlockedAt, description, earnedPoints, color = '#F5BF50'} = Astro.props;
+const { icon, name, labels = [], unlockedAt, description, earnedPoints, color = '#F5BF50' } = Astro.props as Achievement;
 ---
 
 <div class='card bg-base-300 w-full shadow-xl max-w-xs'>

@@ -10,6 +10,8 @@ interface Props {
 import '@fontsource-variable/plus-jakarta-sans';
 
 const { title } = Astro.props;
+const { PUBLIC_ANALYTICS_ID, PUBLIC_ANALYTICS_URL } = import.meta.env;
+
 ---
 
 <!doctype html>
@@ -17,7 +19,7 @@ const { title } = Astro.props;
 	<head>
 		<link rel="sitemap" href="/sitemap-index.xml" />
 		<meta charset="UTF-8" />
-		<script is:inline defer src="https://analytics.diegocornejo.com/script.js" data-website-id="d49d0638-0710-4b43-91c8-e887c1afb079"></script>
+		<script is:inline defer src={PUBLIC_ANALYTICS_URL} data-website-id={PUBLIC_ANALYTICS_ID}></script>
 		<meta name="description" content="Welcome to Evolution Server, a versatile platform for creating Yu-Gi-Oh! matches, fully compatible with EDOPro, Koishi, and YGO Mobile!" />
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" href="/favicon.ico" />
@@ -51,17 +53,6 @@ const { title } = Astro.props;
 		@media (prefers-reduced-motion: reduce) {
 			scroll-behavior: auto;
 		}
-	}
-	code {
-		font-family:
-			Menlo,
-			Monaco,
-			Lucida Console,
-			Liberation Mono,
-			DejaVu Sans Mono,
-			Bitstream Vera Sans Mono,
-			Courier New,
-			monospace;
 	}
 	.text-gradient {
 		background-image: var(--accent-gradient);

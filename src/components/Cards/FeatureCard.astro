@@ -1,15 +1,14 @@
 ---
 import { Icon } from 'astro-icon/components';
-interface Props {
-	title: string;
-	description: string;
-	icon: string;
-}
-const { title, description, icon } = Astro.props;
+import type { Feature } from 'src/types/types';
+
+const { title, description, icon } = Astro.props as Feature;
 ---
 
 <div class='card glass w-full'>
-	<div class='bg-success-content h-24 w-full flex items-center justify-center rounded-t-xl border-t-2 border-secondary'>
+	<div
+		class='bg-success-content h-24 w-full flex items-center justify-center rounded-t-xl border-t-2 border-secondary'
+	>
 		<Icon name={icon} class='text-6xl text-secondary' />
 	</div>
 	<div class='card-body'>

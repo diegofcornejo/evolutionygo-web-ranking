@@ -25,7 +25,7 @@ export default defineConfig({
 			}
 		}
 	},
-	site: 'https://beta.evolutionygo.com',
+	site: 'https://evolutionygo.com',
 	output: 'server',
 	adapter: vercel()
 });

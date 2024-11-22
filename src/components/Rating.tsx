@@ -1,9 +1,9 @@
-interface RatingProps {
+interface Props {
 	rating: number;
 	size?: 'sm' | 'md' | 'lg';
 }
 
-export default function Rating({ rating, size = 'md' }: RatingProps) {
+export default function Rating({ rating, size = 'md' }: Props) {
 	return (
 		<div className={`rating rating-${size}`}>
 			{Array.from({ length: rating }).map((_, index) => (
