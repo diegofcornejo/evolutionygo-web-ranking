@@ -1,8 +1,8 @@
 ---
-import Layout from '../../../layouts/Layout.astro';
+import Layout from '@layouts/Layout.astro';
 import DuelistCard from '@components/Cards/DuelistCard';
 import AchievementCard from '@components/Cards/AchievementCard.astro';
-import type { Match, Achievement } from '@types';
+import type { Match, Achievement } from 'src/types/types';
 
 const { id, banlist = 'Global' } = Astro.params;
 
@@ -16,10 +16,9 @@ const duelistResponse = await fetch(`${import.meta.env.PUBLIC_API_URL}/users/${i
 const duelist = await duelistResponse.json();
 const matchHistoryResponse = await fetch(`${import.meta.env.PUBLIC_API_URL}/users/${id}/matches?banListName=${banlistName}`);
 const matchHistory = await matchHistoryResponse.json();
-const getIsPvP = (match: Match) =>
-	match.playerNames.length === 1 || match.opponentNames.length === 1;
-const getDuelMode = (match: Match) =>
-	`${match.playerNames.length} vs ${match.opponentNames.length} | Best of ${match.bestOf}`;
+
+const getIsPvP = (match: Match) => match.playerNames.length === 1 || match.opponentNames.length === 1;
+const getDuelMode = (match: Match) =>`${match.playerNames.length} vs ${match.opponentNames.length} | Best of ${match.bestOf}`;
 const getDuelistName = (names: string[]) => names.join(', ');
 ---
 

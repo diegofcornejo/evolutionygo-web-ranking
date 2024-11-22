@@ -139,9 +139,6 @@ export default function SettingsForm({ dialog }: { dialog: string }) {
 					</button>
 				</form>
 			</div>
-			{/* <div className='flex justify-end gap-2'>
-				<button className="btn btn-outline" type="button" onClick={closeModal}>Close</button>
-			</div> */}
 		</div>
 	);
 }

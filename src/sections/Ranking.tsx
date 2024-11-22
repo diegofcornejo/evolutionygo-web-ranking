@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import DuelistCard from '@components/Cards/DuelistCard';
 import Rating from '@components/Rating';
-import type { Duelist } from '@types';
+import type { Duelist } from 'src/types/types';
 
 const apiUrl = import.meta.env.PUBLIC_API_URL;
 

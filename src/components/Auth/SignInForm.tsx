@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ReactSVG } from 'react-svg'
-import type { Session } from '@types';
+import type { Session } from 'src/types/types';
 import { updateSession } from '@stores/sessionStore';
 
 export default function LoginForm({ dialog }: { dialog: string }) {

@@ -1,6 +1,6 @@
 import { getSession, updateSession } from '@stores/sessionStore';
 import { theme } from '@stores/themeStore';
-import type { Session } from '@types';
+import type { Session } from 'src/types/types';
 
 const logout = () => {
 	const session: Session = {

@@ -1,7 +1,6 @@
 ---
 import { Icon } from "astro-icon/components";
-const webRepo = 'https://github.com/Evolution-YGO/evolution-web';
-const serverRepo = 'https://github.com/Evolution-YGO/evolution-server';
+const githubUrl = 'https://github.com/evolutionygo';
 ---
 
 <footer class="footer bg-base-200 text-base-content p-10">
@@ -25,17 +24,18 @@ const serverRepo = 'https://github.com/Evolution-YGO/evolution-server';
 </footer>
 <footer class="footer bg-base-200 text-base-content border-base-300 border-t px-10 py-4 flex justify-between">
   <aside class="grid-flow-col items-center">
-    <img src="/logo.svg" alt="Evolution YGO" class="w-auto h-10" />
+    <!-- <img src="/logo.svg" alt="Evolution YGO" class="w-auto h-10" /> -->
     <p>
-      Evolution
-      <br />
-      a YGOPro Server since 2023
+      Evolution a YGOPro Server since 2023, We Love Open Source ❤️. You can find the code for the Server and the Web in <a href={githubUrl} target="_blank">github</a>.
     </p>
   </aside>
   <nav class="md:place-self-center md:justify-self-end">
     <div class="grid grid-flow-col gap-4">
       <a href="https://www.youtube.com/watch?v=p75116MjEoY" target="_blank">
 				<Icon name="mdi:youtube" class="fill-current text-3xl"/>
+      </a>
+			<a href={githubUrl} target="_blank">
+				<Icon name="mdi:github" class="fill-current text-3xl"/>
       </a>
     </div>
   </nav>
