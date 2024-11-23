@@ -15,9 +15,15 @@ import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-	integrations: [tailwind(), react(), icon(), playformCompress(), sitemap({
-		customPages: ['https://status.evolutionygo.com']
-	})],
+	integrations: [
+		tailwind(), 
+		react(), 
+		icon(), 
+		playformCompress(), 
+		sitemap({
+			customPages: ['https://status.evolutionygo.com']
+		})
+	],
 	vite: {
 		resolve: {
 			alias: {
