@@ -1,5 +1,3 @@
-import Rating from '@components/Rating';
-
 export default () => {
 	const rating = 1 + (50 / 100) * 4;
 	const match = {
