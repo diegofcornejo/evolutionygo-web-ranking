@@ -15,11 +15,13 @@ import sitemap from '@astrojs/sitemap';
 
 import svelte from '@astrojs/svelte';
 
+import partytown from '@astrojs/partytown';
+
 // https://astro.build/config
 export default defineConfig({
     integrations: [tailwind(), react(), icon(), playformCompress(), sitemap({
         customPages: ['https://status.evolutionygo.com']
-		}), svelte()],
+        }), svelte(), partytown()],
     vite: {
         resolve: {
             alias: {

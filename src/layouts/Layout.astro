@@ -19,7 +19,7 @@ const { PUBLIC_ANALYTICS_ID, PUBLIC_ANALYTICS_URL } = import.meta.env;
 	<head>
 		<link rel="sitemap" href="/sitemap-index.xml" />
 		<meta charset="UTF-8" />
-		<script is:inline defer src={PUBLIC_ANALYTICS_URL} data-website-id={PUBLIC_ANALYTICS_ID}></script>
+		<script is:inline type="text/partytown" async src={PUBLIC_ANALYTICS_URL} data-website-id={PUBLIC_ANALYTICS_ID}></script>
 		<meta name="description" content="Welcome to Evolution Server, a versatile platform for creating Yu-Gi-Oh! matches, fully compatible with EDOPro, Koishi, and YGO Mobile!" />
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" href="/favicon.ico" />

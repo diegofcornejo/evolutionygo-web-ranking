@@ -104,6 +104,9 @@ const members: CrewMember[] = [
 						alt={member.name}
 						src={member.picture}
 						class='rounded-full w-24 aspect-square'
+						loading="lazy"
+						decoding="async"
+						fetchpriority="low"
 					/>
 					<div class='flex flex-col gap-2'>
 						<h3 class='font-bold'>{member.name}</h3>

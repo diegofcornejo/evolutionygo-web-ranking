@@ -96,6 +96,9 @@ export default function Ranking() {
                         src={`https://ui-avatars.com/api/?name=${duelist.username}&background=random&size=128`}
                         alt={duelist.username}
                         className='w-12 h-12 rounded-full'
+												loading="lazy"
+												decoding="async"
+												fetchPriority="low"
                       />
                       <div>
                         <div className='font-bold'>{duelist.username}</div>
