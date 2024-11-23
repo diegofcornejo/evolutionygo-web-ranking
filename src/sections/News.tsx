@@ -1,4 +1,4 @@
-import { Pagination, Autoplay, Virtual } from 'swiper/modules';
+import { Pagination, Autoplay} from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import Banner from '@components/Banner.tsx';
 import type { News } from 'src/types/types';
@@ -6,7 +6,6 @@ import type { News } from 'src/types/types';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/autoplay';
-import 'swiper/css/virtual';
 
 export default () => {
 	const news: News[] = [
@@ -32,7 +31,7 @@ export default () => {
 	return (
 		<div className='mb-8 mx-4'>
 			<Swiper
-				modules={[Pagination, Autoplay, Virtual]}
+				modules={[Pagination, Autoplay]}
 				slidesPerView={1}
 				autoplay={{
 					delay: 5000,
@@ -43,10 +42,9 @@ export default () => {
 				pagination={{
 					clickable: true,
 				}}
-				virtual
 			>
 				{news.map((newsItem) => (
-					<SwiperSlide key={newsItem.id} virtualIndex={newsItem.id}>
+					<SwiperSlide key={newsItem.id}>
 						<Banner
 							id={newsItem.id}
 							image={newsItem.image}
