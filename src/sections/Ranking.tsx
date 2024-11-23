@@ -3,14 +3,13 @@ import DuelistCard from '@components/Cards/DuelistCard';
 import Rating from '@components/Rating';
 import type { Duelist } from 'src/types/types';
 
-const apiUrl = import.meta.env.PUBLIC_API_URL;
-
 export default function Ranking() {
   const [duelists, setDuelists] = useState<Duelist[]>([]);
   const [topDuelists, setTopDuelists] = useState<Duelist[]>([]);
 	const [season, setSeason] = useState<string>('Season 3');
 	const [banList, setBanList] = useState<string>('Global');
 	const [banListOptions, setBanListOptions] = useState<string[]>([]);
+	const apiUrl = import.meta.env.PUBLIC_API_URL;
 
   
 	const getBanListOptions = async () => {
@@ -96,9 +95,8 @@ export default function Ranking() {
                         src={`https://ui-avatars.com/api/?name=${duelist.username}&background=random&size=128`}
                         alt={duelist.username}
                         className='w-12 h-12 rounded-full'
-												loading="lazy"
-												decoding="async"
-												fetchPriority="low"
+												loading='lazy'
+												decoding='async'
                       />
                       <div>
                         <div className='font-bold'>{duelist.username}</div>

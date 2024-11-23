@@ -17,9 +17,8 @@ export default ({ userId, username, points, wins, losses, winRate, position, bor
 						src={image}
 						alt={username}
 						className='w-24 h-24 rounded-full mt-8'
-						loading="lazy"
-						decoding="async"
-						fetchPriority='low'
+						loading='lazy'
+						decoding='async'
 					/>
 				</figure>
 				<Rating rating={rating} />
