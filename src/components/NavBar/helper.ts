@@ -59,7 +59,7 @@ const updateUser = () => {
 	// @ts-ignore
 	document.getElementById('dropdown-navbar-avatar').src = `https://ui-avatars.com/api/?name=${session?.user?.username}&background=random&size=128`;
 	// @ts-ignore
-	document.getElementById('dropdown-navbar-profile-link').href = `/duelists/${session?.user?.id}/Global`;
+	document.getElementById('dropdown-navbar-profile-link').href = `/duelists/${session?.user?.id}/Global?username=${session?.user?.username}`;
 }
 
 const setTheme = () => {

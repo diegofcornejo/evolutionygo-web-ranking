@@ -5,6 +5,7 @@ import AchievementCard from '@components/Cards/AchievementCard.astro';
 import type { Match, Achievement } from 'src/types/types';
 
 const { id, banlist = 'Global' } = Astro.params;
+const username = Astro.url.searchParams.get('username') || '';
 
 let banlistName = banlist;
 
@@ -12,8 +13,23 @@ if(banlist === 'Global') {
 	banlistName = '';
 }
 
+let duelist;
 const duelistResponse = await fetch(`${import.meta.env.PUBLIC_API_URL}/users/${id}/stats${banlistName ? `?banListName=${banlistName}` : ''}`);
-const duelist = await duelistResponse.json();
+if(!duelistResponse.ok) {
+	duelist = {
+		userId: id,
+		username,
+		points: 0,
+		wins: 0,
+		losses: 0,
+		winRate: 0,
+		position: 0,
+		achievements: [],
+	};
+} else {
+	duelist = await duelistResponse.json();
+}
+
 const matchHistoryResponse = await fetch(`${import.meta.env.PUBLIC_API_URL}/users/${id}/matches?banListName=${banlistName}`);
 const matchHistory = await matchHistoryResponse.json();
 
