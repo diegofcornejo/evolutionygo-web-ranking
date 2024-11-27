@@ -27,7 +27,7 @@
 	"dependencies": {
 		"@astrojs/check": "^0.9.4",
 		"@astrojs/partytown": "^2.1.2",
-		"@astrojs/react": "^3.6.2",
+		"@astrojs/react": "^3.6.3",
 		"@astrojs/sitemap": "^3.2.1",
 		"@astrojs/svelte": "^6.0.2",
 		"@astrojs/tailwind": "^5.1.2",
@@ -40,7 +40,7 @@
 		"@playform/compress": "^0.1.6",
 		"@types/react": "^18.3.12",
 		"@types/react-dom": "^18.3.1",
-		"astro": "^4.16.8",
+		"astro": "^4.16.15",
 		"astro-icon": "^1.1.2",
 		"nanostores": "0.11.3",
 		"react": "^18.3.1",

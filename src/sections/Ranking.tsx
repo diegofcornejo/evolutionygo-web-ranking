@@ -6,8 +6,8 @@ import type { Duelist } from 'src/types/types';
 export default function Ranking() {
   const [duelists, setDuelists] = useState<Duelist[]>([]);
   const [topDuelists, setTopDuelists] = useState<Duelist[]>([]);
-	const [season, setSeason] = useState<string>('Season 3');
-	const [banList, setBanList] = useState<string>('Global');
+	const [season, setSeason] = useState<string>(import.meta.env.PUBLIC_DEFAULT_SEASON);
+	const [banList, setBanList] = useState<string>(import.meta.env.PUBLIC_DEFAULT_BAN_LIST);
 	const [banListOptions, setBanListOptions] = useState<string[]>([]);
 	const apiUrl = import.meta.env.PUBLIC_API_URL;
 
