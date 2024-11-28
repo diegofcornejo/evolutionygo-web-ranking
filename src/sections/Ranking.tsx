@@ -56,7 +56,9 @@ export default function Ranking() {
       </div>
       <div className="flex flex-row justify-center gap-4 pt-4">
         <select className="select select-secondary w-full max-w-xs" value={season} onChange={handleSeasonChange}>
-          <option disabled>{season}</option>
+				<option disabled value={season}>
+					{`Season ${season}`}
+				</option>
         </select>
         <select className="select select-secondary w-full max-w-xs" value={banList} onChange={handleBanListChange}>
           {banListOptions.map((option: string) => (

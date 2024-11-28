@@ -6,6 +6,7 @@ import type { Match, Achievement } from 'src/types/types';
 
 const { id, banlist = 'Global' } = Astro.params;
 const username = Astro.url.searchParams.get('username') || '';
+const season = import.meta.env.PUBLIC_DEFAULT_SEASON;
 
 let banlistName = banlist;
 
@@ -14,7 +15,7 @@ if(banlist === 'Global') {
 }
 
 let duelist;
-const duelistResponse = await fetch(`${import.meta.env.PUBLIC_API_URL}/users/${id}/stats${banlistName ? `?banListName=${banlistName}` : ''}`);
+const duelistResponse = await fetch(`${import.meta.env.PUBLIC_API_URL}/users/${id}/stats?season=${season}${banlistName ? `&banListName=${banlistName}` : ''}`);
 if(!duelistResponse.ok) {
 	duelist = {
 		userId: id,
@@ -30,7 +31,7 @@ if(!duelistResponse.ok) {
 	duelist = await duelistResponse.json();
 }
 
-const matchHistoryResponse = await fetch(`${import.meta.env.PUBLIC_API_URL}/users/${id}/matches?banListName=${banlistName}`);
+const matchHistoryResponse = await fetch(`${import.meta.env.PUBLIC_API_URL}/users/${id}/matches?season=${season}&banListName=${banlistName}`);
 const matchHistory = await matchHistoryResponse.json();
 
 const getIsPvP = (match: Match) => match.playerNames.length === 1 || match.opponentNames.length === 1;
