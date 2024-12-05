@@ -1,4 +1,5 @@
 ---
+import { Icon } from "astro-icon/components";
 import Modal from '@components/Modal.astro';
 import { SignInForm, SignUpForm } from '@components/Auth';
 import SettingsDialog from '@components/Settings/Modal.astro';
@@ -81,11 +82,15 @@ import menuItems from './menuItems';
 					item.submenu ? (
 						<li>
 							<details>
-								<summary>{item.name}</summary>
+								<summary>
+									{item.icon && <Icon name={item.icon} class='fill-current text-2xl'/>}
+									{item.name}
+								</summary>
 								<ul class='p-2 w-48'>
 									{item.submenu.map((subitem) => (
 										<li>
 											<a href={subitem.href} target={subitem?.target}>
+												{subitem.icon && <Icon name={subitem.icon} class='fill-current text-2xl'/>}
 												{subitem.name}
 											</a>
 										</li>
@@ -96,6 +101,7 @@ import menuItems from './menuItems';
 					) : (
 						<li>
 							<a href={item.href} target={item?.target}>
+								{item.icon && <Icon name={item.icon} class='fill-current text-2xl'/>}
 								{item.name}
 							</a>
 						</li>

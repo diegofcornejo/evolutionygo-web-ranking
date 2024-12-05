@@ -45,6 +45,12 @@ const menuItems: MenuItem[] = [
     href: 'https://status.evolutionygo.com',
     target: '_blank',
   },
+	{
+		name: 'Discord',
+		href: 'https://discord.gg/bgjddgWkWk',
+		target: '_blank',
+		icon: 'mdi:discord',
+	},
 ];
 
 export default menuItems;

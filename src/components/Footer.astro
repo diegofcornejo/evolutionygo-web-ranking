@@ -1,6 +1,22 @@
 ---
 import { Icon } from "astro-icon/components";
+
 const githubUrl = 'https://github.com/evolutionygo';
+
+const links = [
+	{
+		icon: 'mdi:discord',
+		url: 'https://discord.gg/bgjddgWkWk',
+	},
+	{
+		icon: 'mdi:youtube',
+		url: 'https://www.youtube.com/watch?v=p75116MjEoY',
+	},
+	{
+		icon: 'mdi:github',
+		url: githubUrl,
+	},
+];
 ---
 
 <footer class="footer bg-base-200 text-base-content p-10">
@@ -26,17 +42,16 @@ const githubUrl = 'https://github.com/evolutionygo';
   <aside class="grid-flow-col items-center">
     <!-- <img src="/logo.svg" alt="Evolution YGO" class="w-auto h-10" /> -->
     <p>
-      Evolution a YGOPro Server since 2023, We Love Open Source ❤️. You can find the code for the Server and the Web in <a href={githubUrl} target="_blank">github</a>.
+      Evolution a YGOPro Server since 2023, We Love Open Source ❤️. You can find the code for the Server and the Web in <a href={githubUrl} target="_blank" class="text-primary font-bold hover:underline">Github</a>.
     </p>
   </aside>
   <nav class="md:place-self-center md:justify-self-end">
     <div class="grid grid-flow-col gap-4">
-      <a href="https://www.youtube.com/watch?v=p75116MjEoY" target="_blank">
-				<Icon name="mdi:youtube" class="fill-current text-3xl"/>
-      </a>
-			<a href={githubUrl} target="_blank">
-				<Icon name="mdi:github" class="fill-current text-3xl"/>
-      </a>
+			{links.map((link) => (
+				<a href={link.url} target="_blank">
+					<Icon name={link.icon} class="fill-current text-3xl hover:text-secondary"/>
+				</a>
+			))}
     </div>
   </nav>
 </footer>
