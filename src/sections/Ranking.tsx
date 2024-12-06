@@ -56,9 +56,14 @@ export default function Ranking() {
       </div>
       <div className="flex flex-row justify-center gap-4 pt-4">
         <select className="select select-secondary w-full max-w-xs" value={season} onChange={handleSeasonChange}>
-				<option disabled value={season}>
+				{/* <option disabled value={season}>
 					{`Season ${season}`}
-				</option>
+				</option> */}
+				{Array.from({ length: parseInt(import.meta.env.PUBLIC_DEFAULT_SEASON) }, (_, index) => (
+					<option key={index} value={index + 1}>
+						{`Season ${index + 1}`}
+					</option>
+				))}
         </select>
         <select className="select select-secondary w-full max-w-xs" value={banList} onChange={handleBanListChange}>
           {banListOptions.map((option: string) => (
@@ -71,7 +76,7 @@ export default function Ranking() {
         className='grid grid-cols-1 md:grid-cols-4 gap-6 mt-8 p-0 place-items-stretch'
       >
         {topDuelists.map((duelist: Duelist, index: number) => (
-          <DuelistCard key={duelist.userId} {...duelist} borderColor={index === 0 ? 'gold' : index === 1 ? 'silver' : 'bronze'} banListName={banList} />
+          <DuelistCard key={duelist.userId} {...duelist} borderColor={index === 0 ? 'gold' : index === 1 ? 'silver' : 'bronze'} banListName={banList} season={season} />
         ))}
       </ul>
       <div className='overflow-x-auto mt-8'>
@@ -91,7 +96,7 @@ export default function Ranking() {
               <tr key={duelist.userId} className='hover:bg-secondary'>
                 <th className='max-w-[75px] text-center'>{duelist.position}</th>
                 <td className='min-w-[200px]'>
-                  <a href={`/duelists/${duelist.userId}/${banList}?username=${duelist.username}`}>
+                  <a href={`/duelists/${duelist.userId}/${banList}?username=${duelist.username}&season=${season}`}>
                     <div className='flex items-center gap-3'>
                       <img
                         src={`https://ui-avatars.com/api/?name=${duelist.username}&background=random&size=128`}

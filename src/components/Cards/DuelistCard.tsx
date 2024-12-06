@@ -4,13 +4,14 @@ import Rating from '@components/Rating';
 
 interface Props extends Duelist {
 	banListName: string;
+	season: string;
 }
 
-export default ({ userId, username, points, wins, losses, winRate, position, borderColor = 'transparent', banListName }: Props) => {
+export default ({ userId, username, points, wins, losses, winRate, position, borderColor = 'transparent', banListName, season }: Props) => {
 	const image = `https://ui-avatars.com/api/?name=${username}&background=random&size=128`;
 	const rating = 1 + (winRate / 100) * 4;
 	return (
-		<a href={`/duelists/${userId}/${banListName}?username=${username}`}
+		<a href={`/duelists/${userId}/${banListName}?username=${username}&season=${season}`}
 			className={`card bg-base-300 w-full shadow-xl cursor-pointer max-w-sm hover:bg-neutral transition-all duration-200 ease-in-out border-2 border-${borderColor}`}>
 			<div className='flex flex-col items-center gap-4'>
 				<figure>
