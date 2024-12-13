@@ -1,4 +1,4 @@
-import type { MenuItem } from 'src/types/types';
+import type { MenuItem } from '@types';
 
 // Exportación por defecto de `menuItems`
 const menuItems: MenuItem[] = [

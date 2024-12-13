@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import DuelistCard from '@components/Cards/DuelistCard';
 import Rating from '@components/Rating';
-import type { Duelist } from 'src/types/types';
+import type { Duelist } from '@types';
 
 export default function Ranking() {
   const [duelists, setDuelists] = useState<Duelist[]>([]);

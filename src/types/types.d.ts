@@ -1,25 +1,11 @@
-import type { News } from './New';
-import type { Session } from './Session';
-import type { Duelist } from './Duelist';
-import type { MenuItem } from './MenuItem';
-import type { Match } from './Match';
-import type { CrewMember } from './CrewMember';
-import type { GameClient } from './GameClient';
-import type { Faq } from './Faqs';
-import type { Feature } from './Features';
-import type { User } from './User';
-import type { Achievement } from './Achievement';
-
-export type { 
-	News, 
-	Session, 
-	Duelist, 
-	MenuItem, 
-	Match,
-	CrewMember,
-	GameClient,
-	Faq,
-	Feature,
-	User,
-	Achievement
-};
+export type { News } from './New';
+export type { Session } from './Session';
+export type { Duelist } from './Duelist';
+export type { MenuItem } from './MenuItem';
+export type { Match } from './Match';
+export type { CrewMember } from './CrewMember';
+export type { GameClient } from './GameClient';
+export type { Faq } from './Faqs';
+export type { Feature } from './Features';
+export type { User } from './User';
+export type { Achievement } from './Achievement';

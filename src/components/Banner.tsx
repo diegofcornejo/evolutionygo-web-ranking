@@ -1,4 +1,4 @@
-import type { News as Props} from 'src/types/types';
+import type { News as Props} from '@types';
 import { ReactSVG } from 'react-svg'
 
 export default ({ image, title, description, buttonText, buttonLink }: Props) => {

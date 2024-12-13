@@ -1,7 +1,7 @@
 import { Pagination, Autoplay} from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import Banner from '@components/Banner.tsx';
-import type { News } from 'src/types/types';
+import type { News } from '@types';
 
 import 'swiper/css';
 import 'swiper/css/pagination';

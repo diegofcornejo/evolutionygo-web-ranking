@@ -1,5 +1,5 @@
 import { persistentAtom } from '@nanostores/persistent';
-import type { Session } from 'src/types/types';
+import type { Session } from '@types';
 
 const session = persistentAtom<string>('session', '', {
 	encode: JSON.stringify,

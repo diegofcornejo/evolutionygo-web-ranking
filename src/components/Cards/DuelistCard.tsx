@@ -1,5 +1,5 @@
 
-import type { Duelist } from 'src/types/types';
+import type { Duelist } from '@types';
 import Rating from '@components/Rating';
 
 interface Props extends Duelist {
