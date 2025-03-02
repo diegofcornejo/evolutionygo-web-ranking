@@ -17,7 +17,7 @@ const handleLogout = () => {
 }
 
 const toggleTheme = () => {
-	theme.set(theme.get() === 'night' ? 'dark' : 'night');
+	theme.set(theme.get() === 'night' ? 'dracula' : 'night');
 }
 
 const openSettings = () => {
@@ -64,7 +64,7 @@ const updateUser = () => {
 
 const setTheme = () => {
 	// @ts-ignore
-	document.getElementById('button-navbar-theme').checked = theme.get() === 'dark';
+	document.getElementById('button-navbar-theme').checked = theme.get() === 'dracula';
 	// @ts-ignore
 	document.getElementById('button-navbar-theme').addEventListener('change', toggleTheme);
 }
