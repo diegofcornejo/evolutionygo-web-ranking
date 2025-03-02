@@ -23,7 +23,7 @@ export default ({ userId, username, points, wins, losses, winRate, position, bor
 						decoding='async'
 					/>
 				</figure>
-				<Rating rating={rating} />
+				<Rating rating={rating} size='lg' />
 			</div>
 			<div className='card-body text-center'>
 				<h2
