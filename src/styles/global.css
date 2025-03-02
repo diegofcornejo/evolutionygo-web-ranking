@@ -1,2 +1,10 @@
 @import "tailwindcss";
-@plugin "daisyui";
+@plugin "@tailwindcss/typography";
+@plugin "daisyui" {
+    themes: 'night', 'dark'
+}
+@theme {
+	--color-gold: #FFD700;
+	--color-silver: #C0C0C0;
+	--color-bronze: #CD7F32;
+}

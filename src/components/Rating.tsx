@@ -10,8 +10,9 @@ export default function Rating({ rating, size = 'md' }: Props) {
 				<input 
 					key={index}
 					type="radio" 
-					name="rating-2" 
-					className="mask mask-star-2 bg-warning pointer-events-none"
+					name={`rating-${rating}-${index}`} 
+					className="mask mask-star-2 bg-orange-300 pointer-events-none"
+					defaultChecked
 				/>
 			))}
 		</div>

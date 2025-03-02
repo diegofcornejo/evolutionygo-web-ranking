@@ -28,7 +28,6 @@ export default defineConfig({
 				'@fontsource-variable/plus-jakarta-sans': '@fontsource-variable/plus-jakarta-sans'
 			}
 		},
-
 		plugins: [tailwindcss()]
 	},
 	site: 'https://evolutionygo.com',
