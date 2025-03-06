@@ -1,0 +1,7 @@
+rating-sm
+rating-md
+rating-lg
+border-gold
+border-silver
+border-bronze
+border-transparent
