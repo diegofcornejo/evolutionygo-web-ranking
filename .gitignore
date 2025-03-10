@@ -29,3 +29,9 @@ pnpm-debug.log*
 
 # vercel
 .vercel/
+
+# yarn
+.yarn/
+
+#cursor
+.cursor/
