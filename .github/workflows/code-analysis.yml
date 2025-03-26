@@ -19,8 +19,8 @@ jobs:
       uses: SonarSource/sonarqube-scan-action@v5.1.0 # Ex: v4.1.0, See the latest version at https://github.com/marketplace/actions/official-sonarqube-scan
       with:
         projectBaseDir: ./src
-      args: >
-        -Dsonar.organization=${{ secrets.SONAR_CLOUD_ORG }}
+        args: >
+          --Dsonar.organization=${{ secrets.SONAR_CLOUD_ORG }}
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
