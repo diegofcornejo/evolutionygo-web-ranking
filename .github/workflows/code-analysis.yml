@@ -21,6 +21,7 @@ jobs:
         projectBaseDir: ./src
         args: >
           -Dsonar.organization=${{ secrets.SONAR_CLOUD_ORG }}
+          -Dsonar.projectKey=${{ secrets.SONAR_CLOUD_PROJECT_KEY }}
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
