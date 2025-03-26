@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { logout } from '@components/NavBar/helper';
 import { getSession } from '@stores/sessionStore';
 
-export default function SettingsForm({ dialog }: { dialog: string }) {
+export default function SettingsForm({ dialog }: Readonly<{ dialog: string }>) {
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
 	const [newPassword, setNewPassword] = useState('');

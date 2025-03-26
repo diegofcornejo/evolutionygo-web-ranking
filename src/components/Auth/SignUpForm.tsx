@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import { ReactSVG } from 'react-svg'
 
-export function SignUpForm({ dialog }: { dialog: string }) {
+export function SignUpForm({ dialog }: Readonly<{ dialog: string }>) {
 	const [email, setEmail] = useState('');
 	const [username, setUsername] = useState('');
 	const [error, setError] = useState<string | null>(null);

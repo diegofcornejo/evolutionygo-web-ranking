@@ -3,7 +3,7 @@ interface Props {
 	size?: 'sm' | 'md' | 'lg';
 }
 
-export default function Rating({ rating, size = 'md' }: Props) {
+export default function Rating({ rating, size = 'md' }: Readonly<Props>) {
 	return (
 		<div className={`rating rating-${size}`}>
 			{Array.from({ length: rating }).map((_, index) => (

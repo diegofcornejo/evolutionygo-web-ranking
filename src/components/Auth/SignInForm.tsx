@@ -3,7 +3,7 @@ import { ReactSVG } from 'react-svg'
 import type { Session } from '@types';
 import { updateSession } from '@stores/sessionStore';
 
-export function SignInForm({ dialog }: { dialog: string }) {
+export function SignInForm({ dialog }: Readonly<{ dialog: string }>) {
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [error, setError] = useState<string | null>(null);

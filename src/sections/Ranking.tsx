@@ -72,7 +72,6 @@ export default function Ranking() {
         </select>
       </div>
       <ul
-        role='list'
         className='grid grid-cols-1 md:grid-cols-4 gap-6 mt-8 p-0 place-items-stretch'
       >
         {topDuelists.map((duelist: Duelist, index: number) => (
