@@ -52,7 +52,7 @@ export function SignUpForm({ dialog }: Readonly<{ dialog: string }>) {
 
 	return (
 		<form className='space-y-4' onSubmit={handleSubmit}>
-			<label className="input input-bordered flex items-center gap-2">
+			<label className="input input-bordered flex items-center gap-2 w-full">
 				<ReactSVG src='/icons/email.svg' className='w-4 h-4 opacity-70'/>
 				<input
 					type="text"
@@ -64,7 +64,7 @@ export function SignUpForm({ dialog }: Readonly<{ dialog: string }>) {
 					required
 				/>
 			</label>
-			<label className="input input-bordered flex items-center gap-2">
+			<label className="input input-bordered flex items-center gap-2 w-full">
 				<ReactSVG src='/icons/username.svg' className='w-4 h-4 opacity-70'/>
 				<input
 					type="text"
