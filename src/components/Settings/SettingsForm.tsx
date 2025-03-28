@@ -74,7 +74,7 @@ export default function SettingsForm({ dialog }: Readonly<{ dialog: string }>) {
 				<div className="divider">Change Username</div>
 				<form className="space-y-2 mt-8"
 					onSubmit={handleSaveUsername}>
-					<label className="input input-bordered flex items-center gap-2">
+					<label className="input input-bordered flex items-center gap-2 w-full">
 						<ReactSVG src="/icons/username.svg" className="w-4 h-4 opacity-70" />
 						<input
 							type="text"
@@ -102,7 +102,7 @@ export default function SettingsForm({ dialog }: Readonly<{ dialog: string }>) {
 			<div className='mt-12'>
 				<div className="divider">Change Password</div>
 				<form className="space-y-2 mt-8" onSubmit={handleSavePassword}>
-					<label className="input input-bordered flex items-center gap-2">
+					<label className="input input-bordered flex items-center gap-2 w-full">
 						<ReactSVG src="/icons/password.svg" className="w-4 h-4 opacity-70" />
 						<input
 							type="password"
@@ -113,7 +113,7 @@ export default function SettingsForm({ dialog }: Readonly<{ dialog: string }>) {
 							required
 						/>
 					</label>
-					< label className="input input-bordered flex items-center gap-2" >
+					< label className="input input-bordered flex items-center gap-2 w-full">
 						<ReactSVG src="/icons/password.svg" className="w-4 h-4 opacity-70" />
 						<input
 							type="password"
