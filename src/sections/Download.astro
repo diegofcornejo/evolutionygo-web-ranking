@@ -94,11 +94,7 @@ const clients: GameClient[] = [
 						<span class='text-purple-500'>•</span>
 						{instruction.description}
 						{instruction.link && (
-							<a
-								href={instruction.link}
-								download={userConfigFileName}
-								target='_blank'
-							>
+							<a href='#' onclick='downloadFile(event)'>
 								<Icon
 									name='mdi:download'
 									class='text-xl text-primary hover:text-white'
@@ -111,3 +107,20 @@ const clients: GameClient[] = [
 		</div>
 	</div>
 </div>
+
+<script is:inline>
+	function downloadFile(event) {
+		event.preventDefault();
+		const userConfigFileName = 'user_configs.json';
+		const userConfigLink = `https://cdn02.vercelify.com/evolutionygo/config/${userConfigFileName}`;
+		fetch(userConfigLink)
+			.then((res) => res.blob())
+			.then((blob) => {
+				const a = document.createElement('a');
+				a.href = URL.createObjectURL(blob);
+				a.download = userConfigFileName;
+				a.click();
+				URL.revokeObjectURL(a.href);
+			});
+	}
+</script>
