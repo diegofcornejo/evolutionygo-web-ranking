@@ -4,7 +4,29 @@ import type { GameClient } from '@types';
 
 const title = 'Ready to duel?';
 const subtitle = 'Just download a client';
-const description = 'Evolution does not have its own client. We recommend downloading the official EDOPro client or any of the other clients listed below.';
+const description =
+	'Evolution does not have its own client. We recommend downloading the official EDOPro client or any of the other clients listed below.';
+
+const title2 = 'Setup your client';
+const description2 =
+	'Once you have downloaded a client, you can setup your client by following the instructions below.';
+const userConfigFileName = 'user_configs.json';
+const userConfigLink = `https://cdn02.vercelify.com/evolutionygo/config/${userConfigFileName}`;
+const instructions = [
+	{
+		description: `Download the ${userConfigFileName} file from the next link`,
+		link: userConfigLink,
+	},
+	{
+		description: `Move the ${userConfigFileName} file to the client folder in the config folder, along side the config.json file`,
+	},
+	{
+		description: `Open the client, on server list you should see "Evolution Server" as an option`,
+	},
+	{
+		description: `Select "Evolution Server" and enjoy!`,
+	},
+];
 
 const clients: GameClient[] = [
 	{ name: 'YGO Mobile', link: 'https://ygom.top/', platforms: ['android'] },
@@ -30,7 +52,7 @@ const clients: GameClient[] = [
 		>
 			{title}<br />{subtitle}
 		</h1>
-		<h2 class='text-lg text-gray-400 leading-8 max-w-4xl'>{description}</h2>
+		<h3 class='text-lg text-gray-400 leading-8 max-w-4xl'>{description}</h3>
 	</div>
 
 	<div class='flex flex-col md:flex-row gap-8 justify-center py-8'>
@@ -57,5 +79,35 @@ const clients: GameClient[] = [
 				</a>
 			))
 		}
+	</div>
+	<div class='flex flex-col gap-0 text-center place-items-center'>
+		<h1
+			class='text-2xl md:text-3xl md:leading-[3.5rem] font-bold pt-6 bg-gradient-to-r from-purple-500 via-blue-500 to-indigo-500 bg-clip-text text-transparent'
+		>
+			{title2}<br />
+		</h1>
+		<h3 class='text-lg text-gray-400 leading-8 max-w-4xl'>{description2}</h3>
+		<div class='flex flex-col gap-2 text-left my-8 bg-base-300 p-4 rounded-lg'>
+			{
+				instructions.map((instruction) => (
+					<div class='flex flex-row gap-2 items-center justify-start text-base'>
+						<span class='text-purple-500'>•</span>
+						{instruction.description}
+						{instruction.link && (
+							<a
+								href={instruction.link}
+								download={userConfigFileName}
+								target='_blank'
+							>
+								<Icon
+									name='mdi:download'
+									class='text-xl text-primary hover:text-white'
+								/>
+							</a>
+						)}
+					</div>
+				))
+			}
+		</div>
 	</div>
 </div>

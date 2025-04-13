@@ -15,7 +15,7 @@ const menuItems: MenuItem[] = [
 		href: '/#section-features',
 	},
   {
-    name: 'Download',
+    name: 'Downloads',
     href: '/#section-download',
   },
   // {
