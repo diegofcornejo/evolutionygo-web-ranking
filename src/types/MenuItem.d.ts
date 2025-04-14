@@ -6,4 +6,5 @@ export type MenuItem = {
 	disabled?: boolean;
 	comingSoon?: boolean;
 	icon?: string;
+	trackEvent?: string;
 };

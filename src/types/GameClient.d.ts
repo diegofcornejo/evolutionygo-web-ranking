@@ -6,4 +6,5 @@ export type GameClient = {
 		classes: string;
 	};
 	platforms: string[];
+	trackEvent?: string;
 }
