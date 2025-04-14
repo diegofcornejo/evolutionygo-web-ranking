@@ -1,5 +1,5 @@
 import { addRoom, deleteRoom, listRooms, updateRoom } from '@stores/rooms/rooms-actions';
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 
 export const RoomsWebSocketListener = () => {
   useEffect(() => {
