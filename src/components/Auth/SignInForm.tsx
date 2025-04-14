@@ -83,8 +83,8 @@ export function SignInForm({ dialog }: Readonly<{ dialog: string }>) {
 				{error || ' '}
 			</p>
 			<div className='flex justify-end gap-2'>
-				<button className="btn btn-primary" type="submit">Sign in</button>
-				<button className="btn btn-outline" type="button" onClick={closeModal}>Close</button>
+				<button className="btn btn-primary" type="submit" data-umami-event='signin-submit'>Sign in</button>
+				<button className="btn btn-outline" type="button" onClick={closeModal} data-umami-event='signin-close'>Close</button>
 			</div>
 		</form>
 	);

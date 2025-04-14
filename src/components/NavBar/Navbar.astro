@@ -51,11 +51,11 @@ import menuItems from './menuItems';
 					menuItems.map((item) =>
 						item.submenu ? (
 							<li>
-								<a>{item.name}</a>
+								<a data-umami-event={item.trackEvent}>{item.name}</a>
 								<ul class='p-2'>
 									{item.submenu.map((subitem) => (
 										<li>
-											<a href={subitem.href} target={subitem?.target}>
+											<a data-umami-event={subitem.trackEvent} href={subitem.href} target={subitem?.target}>
 												{subitem.name}
 											</a>
 										</li>
@@ -64,7 +64,7 @@ import menuItems from './menuItems';
 							</li>
 						) : (
 							<li>
-								<a href={item.href} target={item?.target}>
+								<a data-umami-event={item.trackEvent} href={item.href} target={item?.target}>
 									{item.name}
 								</a>
 							</li>
@@ -89,7 +89,7 @@ import menuItems from './menuItems';
 								<ul class='p-2 w-48'>
 									{item.submenu.map((subitem) => (
 										<li>
-											<a href={subitem.href} target={subitem?.target}>
+											<a href={subitem.href} target={subitem?.target} data-umami-event={subitem.trackEvent}>
 												{subitem.icon && <Icon name={subitem.icon} class='fill-current text-2xl'/>}
 												{subitem.name}
 											</a>
@@ -100,7 +100,7 @@ import menuItems from './menuItems';
 						</li>
 					) : (
 						<li>
-							<a href={item.href} target={item?.target}>
+							<a href={item.href} target={item?.target} data-umami-event={item.trackEvent}>
 								{item.icon && <Icon name={item.icon} class='fill-current text-2xl'/>}
 								{item.name}
 							</a>
@@ -116,9 +116,10 @@ import menuItems from './menuItems';
 			value='dracula'
 			class='toggle theme-controller'
 			id='button-navbar-theme'
+			data-umami-event='navbar-click-theme'
 		/>
 		<AnnouncementsDropdown />
-		<div class='dropdown dropdown-end' id='dropdown-navbar-profile'>
+		<div class='dropdown dropdown-end' id='dropdown-navbar-profile' data-umami-event='navbar-click-profile-dropdown'>
 			<div tabindex='0' role='button' class='btn btn-ghost btn-circle avatar'>
 				<div class='w-8 rounded-full ring-primary ring-offset-base-100 ring ring-offset-2'>
 					<img id='dropdown-navbar-avatar' alt='avatar' src='' loading='lazy' decoding='async' fetchpriority='low'/>
@@ -130,13 +131,13 @@ import menuItems from './menuItems';
 			>
 				<li class='text-lg font-bold text-center pt-2 pb-4' id='navbar-username'></li>
 				<li>
-					<a class='justify-between' id='dropdown-navbar-profile-link' href='#'>
+					<a class='justify-between' id='dropdown-navbar-profile-link' href='#' data-umami-event='navbar-click-profile'>
 						Profile
 						<span class='badge badge-sm badge-primary'>New</span>
 					</a>
 				</li>
-				<li><a id='button-navbar-settings'>Settings</a></li>
-				<li><a id='button-navbar-logout'>Logout</a></li>
+				<li><a id='button-navbar-settings' href='#' data-umami-event='navbar-click-settings'>Settings</a></li>
+				<li><a id='button-navbar-logout' href='#' data-umami-event='navbar-click-logout'>Logout</a></li>
 			</ul>
 		</div>
 	</div>

@@ -4,22 +4,56 @@ import type { GameClient } from '@types';
 
 const title = 'Ready to duel?';
 const subtitle = 'Just download a client';
-const description = 'Evolution does not have its own client. We recommend downloading the official EDOPro client or any of the other clients listed below.';
+const description =
+	'Evolution does not have its own client. We recommend downloading the official EDOPro client or any of the other clients listed below.';
+
+const title2 = 'Setup your client';
+const description2 =
+	'Once you have downloaded a client, you can setup your client by following the instructions below.';
+const userConfigFileName = 'user_configs.json';
+const userConfigLink = `https://cdn02.vercelify.com/evolutionygo/config/${userConfigFileName}`;
+const instructions = [
+	{
+		description: `Download the ${userConfigFileName} file from the next link`,
+		link: userConfigLink,
+	},
+	{
+		description: `Move the ${userConfigFileName} file to the client folder in the config folder, along side the config.json file`,
+	},
+	{
+		description: `Open the client, on server list you should see "Evolution Server" as an option`,
+	},
+	{
+		description: `Select "Evolution Server" and enjoy!`,
+	},
+];
 
 const clients: GameClient[] = [
-	{ name: 'YGO Mobile', link: 'https://ygom.top/', platforms: ['android'] },
+	{
+		name: 'YGO Mobile',
+		link: 'https://ygom.top/',
+		platforms: ['android'],
+		trackEvent: 'download-click-ygomobile',
+	},
 	{
 		name: 'EDOPro',
 		link: 'https://projectignis.github.io/download.html',
 		icon: { name: 'mdi:star', classes: 'text-warning text-xl' },
 		platforms: ['windows', 'apple', 'linux', 'android'],
+		trackEvent: 'download-click-edopro',
 	},
 	{
 		name: 'MDPro3',
 		link: 'https://discord.gg/C3bkVgfb',
 		platforms: ['discord', 'windows', 'android'],
+		trackEvent: 'download-click-mdpro3',
 	},
-	{ name: 'Koishi Pro', link: 'https://koishi.pro/download/', platforms: ['windows', 'apple'] },
+	{
+		name: 'Koishi Pro',
+		link: 'https://koishi.pro/download/',
+		platforms: ['windows', 'apple'],
+		trackEvent: 'download-click-koishi',
+	},
 ];
 ---
 
@@ -30,7 +64,7 @@ const clients: GameClient[] = [
 		>
 			{title}<br />{subtitle}
 		</h1>
-		<h2 class='text-lg text-gray-400 leading-8 max-w-4xl'>{description}</h2>
+		<h3 class='text-lg text-gray-400 leading-8 max-w-4xl'>{description}</h3>
 	</div>
 
 	<div class='flex flex-col md:flex-row gap-8 justify-center py-8'>
@@ -40,6 +74,7 @@ const clients: GameClient[] = [
 					href={client.link}
 					target='_blank'
 					class='btn btn-neutral btn-lg text-white hover:bg-secondary min-w-[200px] h-auto py-2'
+					data-umami-event={client.trackEvent}
 				>
 					<div class='flex flex-col gap-2'>
 						<div class='flex flex-row gap-2 items-center'>
@@ -58,4 +93,52 @@ const clients: GameClient[] = [
 			))
 		}
 	</div>
+	<div class='flex flex-col gap-0 text-center place-items-center'>
+		<h1
+			class='text-2xl md:text-3xl md:leading-[3.5rem] font-bold pt-6 bg-gradient-to-r from-purple-500 via-blue-500 to-indigo-500 bg-clip-text text-transparent'
+		>
+			{title2}<br />
+		</h1>
+		<h3 class='text-lg text-gray-400 leading-8 max-w-4xl'>{description2}</h3>
+		<div class='flex flex-col gap-2 text-left my-8 bg-base-300 p-4 rounded-lg'>
+			{
+				instructions.map((instruction) => (
+					<div class='flex flex-row gap-2 items-center justify-start text-base'>
+						<span class='text-purple-500'>•</span>
+						{instruction.description}
+						{instruction.link && (
+							<a
+								href='#'
+								onclick='downloadFile(event)'
+								data-umami-event='download-user-config'
+							>
+								<Icon
+									name='mdi:download'
+									class='text-xl text-primary hover:text-white'
+								/>
+							</a>
+						)}
+					</div>
+				))
+			}
+		</div>
+	</div>
 </div>
+
+<script is:inline>
+	function downloadFile(event) {
+		event.preventDefault();
+		const userConfigFileName = 'user_configs.json';
+		const userConfigLink = `https://cdn02.vercelify.com/evolutionygo/config/${userConfigFileName}`;
+		fetch(userConfigLink)
+			.then((res) => res.blob())
+			.then((blob) => {
+				const a = document.createElement('a');
+				a.href = URL.createObjectURL(blob);
+				a.download = userConfigFileName;
+				document.body.appendChild(a);
+				a.click();
+				URL.revokeObjectURL(a.href);
+			});
+	}
+</script>

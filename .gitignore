@@ -35,3 +35,6 @@ pnpm-debug.log*
 
 #cursor
 .cursor/
+
+#bun
+.bun/
