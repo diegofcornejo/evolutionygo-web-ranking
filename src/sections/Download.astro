@@ -16,6 +16,24 @@ const instructions = [
 	{
 		description: `Download the ${userConfigFileName} file from the next link`,
 		link: userConfigLink,
+		included: [
+			{
+				title: `Evolution Server`,
+				link: 'http://server.evolutionygo.com',
+			},
+			{
+				title: `Evolution Server Beta`,
+				link: 'http://beta.server.evolutionygo.com',
+			},
+			{
+				title: `Evolution Forbidden & Limited Card Lists`,
+				link: 'https://github.com/termitaklk/lflist',
+			},
+			{
+				title: `Team13.fr Multilanguage updates`,
+				link: 'https://github.com/Team13fr/IgnisMulti',
+			}
+		]
 	},
 	{
 		description: `Move the ${userConfigFileName} file to the client folder in the config folder, along side the config.json file`,
@@ -117,6 +135,21 @@ const clients: GameClient[] = [
 									class='text-xl text-primary hover:text-white'
 								/>
 							</a>
+						)}
+					</div>
+					<div class='pl-4 text-sm text-gray-400'>
+						{instruction.included && (
+							// <span class='text-secondary'>Included:</span>
+							<div class='flex flex-col gap-2'>
+								{instruction.included.map((included) => (
+									<div class='flex flex-row gap-2 items-center justify-start'>
+										<span class='text-secondary'>•</span>
+										<a href={included.link} target='_blank' class='hover:text-white'>
+											{included.title}
+										</a>
+									</div>
+								))}
+							</div>
 						)}
 					</div>
 				))
