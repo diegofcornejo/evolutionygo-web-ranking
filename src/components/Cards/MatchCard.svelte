@@ -3,8 +3,11 @@
 
   export let room: Room;
 
-  const team0 = room.players.filter((p) => p.team === 0);
-  const team1 = room.players.filter((p) => p.team === 1);
+  let team0 = [];
+  let team1 = [];
+
+  $: team0 = room.players.filter((p) => p.team === 0);
+  $: team1 = room.players.filter((p) => p.team === 1);
 </script>
 
 <div
