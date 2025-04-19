@@ -6,11 +6,17 @@ export const addRoom = (room: Room) => {
 };
 
 export const deleteRoom = (room: Room) => {
-  roomsStore.set(roomsStore.get().filter(r => r.id !== room.id));
+  roomsStore.set(roomsStore.get().filter(_room => _room.id !== room.id));
 };
 
 export const updateRoom = (room: Room) => {
-  roomsStore.set(roomsStore.get().map(r => r.id === room.id ? room : r));
+  roomsStore.set(roomsStore.get().map(_room => {
+    if (_room.id === room.id) {
+      console.log(room)
+      return room;
+    }
+    return _room;
+  }))
 };
 
 export const listRooms = (rooms: Room[]) => {
