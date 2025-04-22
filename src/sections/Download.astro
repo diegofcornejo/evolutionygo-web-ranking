@@ -1,6 +1,7 @@
 ---
 import { Icon } from 'astro-icon/components';
 import type { GameClient } from '@types';
+import CommandTable from '@components/CommandTable.astro';
 
 const title = 'Ready to duel?';
 const subtitle = 'Just download a client';
@@ -155,6 +156,9 @@ const clients: GameClient[] = [
 				))
 			}
 		</div>
+	</div>
+	<div class='flex flex-col text-center place-items-center'>
+		<CommandTable/>
 	</div>
 </div>
 

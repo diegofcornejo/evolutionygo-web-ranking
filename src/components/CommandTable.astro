@@ -1,0 +1,66 @@
+---
+import type { Command } from '@types';
+
+const title = 'Special Commands';
+const description =
+	'Use these commands to play with special formats. You can combine them with well-known commands such as M, S, ST, TM, and others.';
+const commands: Command[] = [
+	{ code: 'TCG', description: 'Current TCG format.', example: 'TCG,M#123' },
+	{ code: 'OCG', description: 'Current OCG format.', example: 'OCG,S#123' },
+	{ code: 'PRE', description: 'Play with pre-released TCG cards.', example: 'PRE,M,ST7#123' },
+	{
+		code: 'TCGPRE',
+		description: 'Play with pre-released TCG cards.',
+		example: 'TCGPRE,S,TM800#123',
+	},
+	{
+		code: 'OCGPRE',
+		description: 'Play with pre-released OCG cards.',
+		example: 'OCGPRE,M,ST5#123',
+	},
+	{
+		code: '⁠EDISON',
+		description: 'Traditional Edison with its original erratas.',
+		example: 'EDISON,ST6#123',
+	},
+	{ code: 'GOAT', description: 'Traditional Goat.', example: 'GOAT,S#123' },
+	{ code: 'GX', description: 'Official GX.', example: 'GX,S,TM500#123' },
+	{
+		code: 'MD',
+		description: 'Allows playing the updated Master Duel format.',
+		example: 'MD,M,ST6,TM400#123',
+	},
+	{ code: 'HAT', description: 'Traditional Hat.', example: 'HAT,S#123' },
+	{ code: 'TENGU', description: 'Traditional Tengu Plant.', example: 'TENGU,M#123' },
+	{ code: 'JTP', description: 'Classic Joey The Passions.', example: 'JTP,ST5#123' },
+];
+---
+
+<h1
+	class='text-2xl md:text-3xl md:leading-[3.5rem] font-bold pt-6 bg-gradient-to-r from-purple-500 via-blue-500 to-indigo-500 bg-clip-text text-transparent'
+>
+	{title}<br />
+</h1>
+<h3 class='text-lg text-gray-400 leading-8 max-w-4xl'>{description}</h3>
+<div class='overflow-x-auto mt-2 w-full max-w-3xl'>
+	<table class='table bg-base-300'>
+		<thead>
+			<tr>
+				<th class='max-w-[75px]'>Code</th>
+				<th class='min-w-[200px]'>Description</th>
+				<th>Example</th>
+			</tr>
+		</thead>
+		<tbody>
+			{
+				commands.map((command) => (
+					<tr>
+						<td>{command.code}</td>
+						<td>{command.description}</td>
+						<td>{command.example}</td>
+					</tr>
+				))
+			}
+		</tbody>
+	</table>
+</div>
