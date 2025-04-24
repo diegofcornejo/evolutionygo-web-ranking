@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import DuelistCard from '@components/Cards/DuelistCard';
 import Rating from '@components/Rating';
 import type { Duelist } from '@types';
+import { banlists } from '@stores/banlistsStore';
 
 export default function Ranking() {
   const [duelists, setDuelists] = useState<Duelist[]>([]);
@@ -16,6 +17,7 @@ export default function Ranking() {
 		const response = await fetch(`${apiUrl}/ban-lists`);
 		const data = await response.json();
 		setBanListOptions(data.filter((option: string) => option !== 'N/A'));
+		banlists.set(data.filter((option: string) => option !== 'N/A'));
 	};
 
 	const handleSeasonChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
