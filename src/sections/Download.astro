@@ -127,9 +127,9 @@ const clients: GameClient[] = [
 						{instruction.description}
 						{instruction.link && (
 							<a
-								href='#'
 								onclick='downloadFile(event)'
 								data-umami-event='download-user-config'
+								class="cursor-pointer"
 							>
 								<Icon
 									name='mdi:download'
