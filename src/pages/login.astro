@@ -1,0 +1,25 @@
+---
+import Layout from '@layouts/Layout.astro';
+---
+
+<Layout title='Login'>
+	<h1 class='text-gradient text-center'>Login</h1>
+</Layout>
+<style>
+	.text-gradient {
+		background-image: var(--accent-gradient);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-size: 400%;
+		background-position: 0%;
+	}
+</style>
+<script>
+	import { getSession } from '@stores/sessionStore';
+	if (getSession().isLoggedIn) {
+		window.location.href = '/';
+	}else{
+		const signinButton = document.getElementById("button-modal-signin");
+		signinButton?.click();
+	}
+</script>
