@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Room } from 'src/types/Room';
+	import { roomsStore } from '@stores/rooms/roomsStore';
 
   export let room: Room;
 
@@ -8,10 +9,21 @@
 
   $: team0 = room.players.filter((p) => p.team === 0);
   $: team1 = room.players.filter((p) => p.team === 1);
+
+  const openLiveRoomTable = () => {
+    const dialog = document.getElementById('match-card-dialog') as HTMLDialogElement;
+    dialog?.showModal();
+  };
+
+  const closeDialog = () => {
+    const dialog = document.getElementById('match-card-dialog') as HTMLDialogElement;
+    dialog?.close();
+  };
 </script>
 
-<div
-  class="card w-full max-w-sm hover:bg-neutral transition-all duration-200 ease-in-out border-2 border-transparent"
+<button
+  class="card w-full max-w-sm hover:bg-neutral transition-all duration-200 ease-in-out border-2 border-transparent cursor-pointer"
+  on:click={openLiveRoomTable}
 >
   <div class="flex flex-col items-center gap-2 m-4 text-sm">
     <div class="flex flex-row justify-between w-full text-center">
@@ -53,4 +65,53 @@
       </div>
     </div>
   </div>
-</div>
+</button>
+
+<!-- TODO: Move to a separate component -->
+<dialog id="match-card-dialog" class="modal">
+	<div class='overflow-x-auto mt-2 w-full max-w-6xl bg-base-300'>
+		<h3 class="font-bold text-lg bg-base-300 p-4">Live Rooms ({$roomsStore.length})</h3>
+		<table class='table table-zebra bg-base-300'>
+			<thead class="sticky top-0 bg-base-300">
+				<tr>
+					<th class='max-w-[75px]'>Best of</th>
+					<th class='min-w-[75px]'>Banlist</th>
+					<th class='text-center'>Player 1</th>
+					<th class='text-center'></th>
+					<th class='text-center'>VS</th>
+					<th class='text-center'></th>
+					<th class='text-center'>Player 2</th>
+					<th>Notes</th>
+				</tr>
+			</thead>
+			<tbody>
+					{#each $roomsStore as room (room.id)}
+						<tr>
+							<td>{room.bestOf}</td>
+							<td>{room.banList.name}</td>
+							<td class='text-center'>
+								{room.players.find((p) => p.team === 0)?.username}
+							</td>
+							<td class='text-center text-lg'>
+								{room.players.find((p) => p.team === 0)?.lps}
+							</td>
+							<td class='text-center'>
+								<p class="text-sm mt-1">{room.players.find((p) => p.team === 0)?.score} - {room.players.find((p) => p.team === 1)?.score}</p>
+								<p class="text-xs mt-1 text-base-content">{room.turn}</p>
+							</td>
+							<td class='text-center text-lg'>
+								{room.players.find((p) => p.team === 0)?.lps}
+							</td>
+							<td class='text-center'>
+								{room.players.find((p) => p.team === 1)?.username}
+							</td>
+							<td>{room.notes}</td>
+						</tr>
+					{/each}
+			</tbody>
+		</table>
+		<div class="flex justify-center my-4">
+			<button class="btn btn-sm btn-primary" on:click={closeDialog}>Close</button>
+		</div>
+	</div>
+</dialog>

@@ -3,7 +3,7 @@ export type Room = {
 	turn: number;
 	bestOf: number;
 	notes: string;
-	banlist: {
+	banList: {
 		name: string;
 	};
 	players: {
