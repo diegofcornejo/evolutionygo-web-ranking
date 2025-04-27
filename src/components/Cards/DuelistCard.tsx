@@ -31,7 +31,7 @@ export default ({ userId, username, points, wins, losses, winRate, position, bor
 				>
 					#{position} {username}
 				</h2>
-				<p className='text-sm font-bold'>Points: {points}</p>
+				<p className='text-lg font-bold text-orange-300'>Points: {points}</p>
 				<p className='text-sm text-success'>Wins: {wins}</p>
 				<p className='text-sm text-error'>Losses: {losses}</p>
 				<p className='text-sm'>Win Rate: {winRate.toFixed(2)}%</p>

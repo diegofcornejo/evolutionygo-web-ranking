@@ -81,7 +81,7 @@ export default function Ranking() {
         ))}
       </ul>
       <div className='overflow-x-auto mt-8'>
-        <table className='table bg-base-300'>
+        <table className='table table-zebra bg-base-300'>
           <thead>
             <tr>
               <th className='max-w-[75px] text-center'>Position</th>
@@ -94,9 +94,9 @@ export default function Ranking() {
           </thead>
           <tbody>
             {duelists.map((duelist: Duelist) => (
-              <tr key={duelist.userId} className='hover:bg-secondary'>
+              <tr key={duelist.userId}>
                 <th className='max-w-[75px] text-center'>{duelist.position}</th>
-                <td className='min-w-[200px]'>
+                <td className='min-w-[200px] hover:bg-secondary'>
                   <a href={`/duelists/${duelist.userId}/${banList}?username=${duelist.username}&season=${season}`}>
                     <div className='flex items-center gap-3'>
                       <img
@@ -113,9 +113,9 @@ export default function Ranking() {
                     </div>
                   </a>
                 </td>
-                <td className='font-bold'>{duelist.points}</td>
-                <td>{duelist.wins}</td>
-                <td>{duelist.losses}</td>
+                <td className='font-bold text-lg text-orange-300'>{duelist.points}</td>
+                <td className='text-success'>{duelist.wins}</td>
+                <td className='text-error'>{duelist.losses}</td>
                 <td>{duelist.winRate.toFixed(2)}%</td>
               </tr>
             ))}

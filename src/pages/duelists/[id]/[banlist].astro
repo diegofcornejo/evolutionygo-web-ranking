@@ -37,6 +37,19 @@ const matchHistory = await matchHistoryResponse.json();
 const getIsPvP = (match: Match) => match.playerNames.length === 1 || match.opponentNames.length === 1;
 const getDuelMode = (match: Match) =>`${match.playerNames.length} vs ${match.opponentNames.length} | Best of ${match.bestOf}`;
 const getDuelistName = (names: string[]) => names.join(', ');
+
+const localDateString = (date: string) => {
+	const utcDate = new Date(date);
+	return utcDate.toLocaleString('en-CA', {
+		year: 'numeric',
+		month: '2-digit',
+		day: '2-digit',
+		hour: '2-digit',
+		minute: '2-digit',
+		second: '2-digit',
+		hour12: false
+	}).replace(',', ' ');
+};
 ---
 
 <Layout title={`Duelist ${duelist.username} Stats`}>
@@ -71,7 +84,7 @@ const getDuelistName = (names: string[]) => names.join(', ');
 						checked='checked'
 					/>
 					<div role='tabpanel' class='tab-content pt-4'>
-						<table class='table bg-base-300'>
+						<table class='table table-zebra bg-base-300'>
 							<thead class='sticky top-0 bg-base-300'>
 								<tr>
 									<th>Season</th>
@@ -88,10 +101,10 @@ const getDuelistName = (names: string[]) => names.join(', ');
 							<tbody>
 								{
 									matchHistory.map((match: Match) => (
-										<tr class='hover:bg-secondary'>
-											<td class='text-center'>{match.season}</td>
-											<th class='max-w-[200px]'>{getDuelMode(match)}</th>
-											<td class='min-w-[100px]'>
+										<tr>
+											<td class='max-w-[50px] text-center'>{match.season}</td>
+											<th class='min-w-[150px]'>{getDuelMode(match)}</th>
+											<td class='max-w-[50px]'>
 												{getIsPvP(match) ? 'PvP' : 'Tag'}
 											</td>
 											<td class=''>{match.banListName}</td>
@@ -107,7 +120,7 @@ const getDuelistName = (names: string[]) => names.join(', ');
 											>
 												{match.points}
 											</td>
-											<td>{match.date}</td>
+											<td>{localDateString(match.date)}</td>
 										</tr>
 									))
 								}
