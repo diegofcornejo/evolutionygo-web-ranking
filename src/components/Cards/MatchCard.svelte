@@ -90,7 +90,11 @@
 							<td class='text-center'>{room.bestOf}</td>
 							<td>{room.banList.name}</td>
 							<td class='text-center'>
-								{room.players.find((p) => p.team === 0)?.username}
+								{#each room.players as player}
+									{#if player.team === 0}
+										<p>{player.username}</p>
+									{/if}
+								{/each}
 							</td>
 							<td class='text-center text-lg'>
 								{room.players.find((p) => p.team === 0)?.lps}
@@ -103,7 +107,11 @@
 								{room.players.find((p) => p.team === 1)?.lps}
 							</td>
 							<td class='text-center'>
-								{room.players.find((p) => p.team === 1)?.username}
+								{#each room.players as player}
+									{#if player.team === 1}
+										<p>{player.username}</p>
+									{/if}
+								{/each}
 							</td>
 							<td>{room.notes}</td>
 						</tr>
