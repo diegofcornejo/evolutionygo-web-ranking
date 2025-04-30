@@ -10,11 +10,11 @@ export default function Ranking() {
 	const [season, setSeason] = useState<string>(import.meta.env.PUBLIC_DEFAULT_SEASON);
 	const [banList, setBanList] = useState<string>(import.meta.env.PUBLIC_DEFAULT_BAN_LIST);
 	const [banListOptions, setBanListOptions] = useState<string[]>([]);
-	const apiUrl = import.meta.env.PUBLIC_API_URL;
+	const API_URL = import.meta.env.PUBLIC_API_URL;
 
   
 	const getBanListOptions = async () => {
-		const response = await fetch(`${apiUrl}/ban-lists`);
+		const response = await fetch(`${API_URL}/ban-lists`);
 		const data = await response.json();
 		setBanListOptions(data.filter((option: string) => option !== 'N/A'));
 		banlists.set(data.filter((option: string) => option !== 'N/A'));
@@ -31,7 +31,7 @@ export default function Ranking() {
   useEffect(() => {
     const fetchDuelists = async () => {
       const response = await fetch(
-        `${apiUrl}/stats/?page=1&limit=20&banListName=${banList}&season=${season}`
+        `${API_URL}/stats/?page=1&limit=20&banListName=${banList}&season=${season}`
       );
       const data = await response.json();
       setTopDuelists(data.slice(0, 4));
@@ -39,7 +39,7 @@ export default function Ranking() {
     };
 
     fetchDuelists();
-  }, [apiUrl, season, banList]);
+  }, [API_URL, season, banList]);
 
 	useEffect(() => {
 		getBanListOptions();
