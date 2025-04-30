@@ -87,6 +87,7 @@ export default function Ranking() {
               <th className='max-w-[75px] text-center'>Position</th>
               <th className='min-w-[200px]'>Username</th>
               <th>Points</th>
+							<th>Games</th>
               <th>Wins</th>
               <th>Losses</th>
               <th>Win Rate</th>
@@ -114,6 +115,7 @@ export default function Ranking() {
                   </a>
                 </td>
                 <td className='font-bold text-lg text-orange-300'>{duelist.points}</td>
+								<td>{duelist.wins + duelist.losses}</td>
                 <td className='text-success'>{duelist.wins}</td>
                 <td className='text-error'>{duelist.losses}</td>
                 <td>{duelist.winRate.toFixed(2)}%</td>
