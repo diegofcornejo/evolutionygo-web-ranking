@@ -65,7 +65,7 @@ export default function Ranking() {
 					<option key={index} value={index + 1}>
 						{`Season ${index + 1}`}
 					</option>
-				))}
+				)).reverse()}
         </select>
         <select className="select select-secondary w-full max-w-xs" value={banList} onChange={handleBanListChange}>
           {banListOptions.map((option: string) => (

@@ -4,19 +4,22 @@ import DuelistCard from '@components/Cards/DuelistCard';
 import AchievementCard from '@components/Cards/AchievementCard.astro';
 import type { Match, Achievement } from '@types';
 
-const { id, banlist = 'Global' } = Astro.params;
+let { id, banlist = 'Global' } = Astro.params;
 const username = Astro.url.searchParams.get('username') || '';
-const season = Astro.url.searchParams.get('season') || import.meta.env.PUBLIC_DEFAULT_SEASON;
+let season = Astro.url.searchParams.get('season') || import.meta.env.PUBLIC_DEFAULT_SEASON;
+const API_URL = import.meta.env.PUBLIC_API_URL;
 
 let banlistName = banlist;
 
-if(banlist === 'Global') {
+if (banlist === 'Global') {
 	banlistName = '';
 }
 
 let duelist;
-const duelistResponse = await fetch(`${import.meta.env.PUBLIC_API_URL}/users/${id}/stats?season=${season}${banlistName ? `&banListName=${banlistName}` : ''}`);
-if(!duelistResponse.ok) {
+const duelistResponse = await fetch(
+	`${API_URL}/users/${id}/stats?season=${season}${banlistName ? `&banListName=${banlistName}` : ''}`,
+);
+if (!duelistResponse.ok) {
 	duelist = {
 		userId: id,
 		username,
@@ -31,45 +34,106 @@ if(!duelistResponse.ok) {
 	duelist = await duelistResponse.json();
 }
 
-const matchHistoryResponse = await fetch(`${import.meta.env.PUBLIC_API_URL}/users/${id}/matches?season=${season}&banListName=${banlistName}`);
+const matchHistoryResponse = await fetch(
+	`${API_URL}/users/${id}/matches?season=${season}&banListName=${banlistName}`,
+);
 const matchHistory = await matchHistoryResponse.json();
 
-const getIsPvP = (match: Match) => match.playerNames.length === 1 || match.opponentNames.length === 1;
-const getDuelMode = (match: Match) =>`${match.playerNames.length} vs ${match.opponentNames.length} | Best of ${match.bestOf}`;
+const getIsPvP = (match: Match) =>
+	match.playerNames.length === 1 || match.opponentNames.length === 1;
+const getDuelMode = (match: Match) =>
+	`${match.playerNames.length} vs ${match.opponentNames.length} | Best of ${match.bestOf}`;
 const getDuelistName = (names: string[]) => names.join(', ');
+
+const banlistResponse = await fetch(`${API_URL}/ban-lists`);
+const banListOptions = await banlistResponse.json();
+const seasonOptions = Array.from(
+	{ length: parseInt(import.meta.env.PUBLIC_DEFAULT_SEASON) },
+	(_, index) => `${index + 1}`,
+).reverse();
 
 const localDateString = (date: string) => {
 	const utcDate = new Date(date);
-	return utcDate.toLocaleString('en-CA', {
-		year: 'numeric',
-		month: '2-digit',
-		day: '2-digit',
-		hour: '2-digit',
-		minute: '2-digit',
-		second: '2-digit',
-		hour12: false
-	}).replace(',', ' ');
+	return utcDate
+		.toLocaleString('en-CA', {
+			year: 'numeric',
+			month: '2-digit',
+			day: '2-digit',
+			hour: '2-digit',
+			minute: '2-digit',
+			second: '2-digit',
+			hour12: false,
+		})
+		.replace(',', ' ');
 };
 ---
 
+<!-- TODO: This could be refactored to a react component, at this time it's to learn how to do this in astro -->
+<script>
+	const seasonSelect = document.getElementById('season-select');
+	const banlistSelect = document.getElementById('banlist-select');
+	const id = document.querySelector('[data-id]')?.getAttribute('data-id') || null;
+	const username = document.querySelector('[data-username]')?.getAttribute('data-username') || null;
+
+	const reloadDuelistPage = () => {
+		const season = (seasonSelect as HTMLSelectElement)?.value || null;
+		const banlist = (banlistSelect as HTMLSelectElement)?.value || null;
+
+		const newUrl = new URL(`${window.location.origin}/duelists/${id}/${banlist}`);
+		newUrl.searchParams.set('season', season || '');
+		newUrl.searchParams.set('username', username || '');
+
+		window.location.href = newUrl.toString();
+	};
+
+	seasonSelect?.addEventListener('change', reloadDuelistPage);
+	banlistSelect?.addEventListener('change', reloadDuelistPage);
+</script>
+
 <Layout title={`Duelist ${duelist.username} Stats`}>
 	<main class='w-full max-w-[calc(100%_-_2rem)] text-[white] text-lg leading-[1.6] mx-auto my-4'>
-		<h1 class='text-2xl sm:text-4xl font-bold leading-none text-center mb-[1em]'>
-			<span class='text-gradient'>{duelist.username} {banlistName} Season {season}</span>
+		<div class='flex flex-row gap-2 justify-center items-center my-8'>
+			<select class='select select-bordered select-sm' name='season' id='season-select'>
+				{
+					seasonOptions.map((s: string) => (
+						<option value={s} selected={s === season}>
+							Season {s}
+						</option>
+					))
+				}
+			</select>
+
+			<select class='select select-bordered select-sm' name='banlist' id='banlist-select'>
+				{
+					banListOptions.map((b: string) => (
+						<option value={b} selected={b === banlist}>
+							{' '}
+							{b}{' '}
+						</option>
+					))
+				}
+			</select>
+		</div>
+		<h1
+			class='text-2xl sm:text-4xl font-bold leading-none text-center mb-[1em]'
+			data-id={id}
+			data-username={duelist.username}
+		>
+			<span class='text-gradient'
+				>{duelist.username} • Season {season} • {banlistName || 'Global'}</span
+			>
 		</h1>
 		<div class='flex flex-col md:flex-row gap-2 md:gap-4 lg:gap-0'>
 			<div class='flex flex-col gap-4 md:w-1/4'>
 				<DuelistCard
 					{...duelist}
-					borderColor={
-						duelist.position == 1
-							? 'gold'
-							: duelist.position == 2
+					borderColor={duelist.position == 1
+						? 'gold'
+						: duelist.position == 2
 							? 'silver'
 							: duelist.position == 3 || duelist.position == 4
-							? 'bronze'
-							: 'transparent'
-					}
+								? 'bronze'
+								: 'transparent'}
 					season={season}
 				/>
 			</div>
@@ -120,7 +184,9 @@ const localDateString = (date: string) => {
 											>
 												{match.points}
 											</td>
-											<td>{localDateString(match.date)}</td>
+											<td class='min-w-[200px]'>
+												{localDateString(match.date)}
+											</td>
 										</tr>
 									))
 								}
