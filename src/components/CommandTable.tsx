@@ -25,7 +25,7 @@ const getCurrentBanlist = (banlists: string[], banlist: string) => {
 export default function CommandTable() {
 	const $banlists = useStore(banlists);
 	const title = 'Special Commands';
-	const description = 'Use these commands to play with special formats. You can combine them with well-known commands such as M, S, ST, TM, and others.';
+	const description = 'Use these commands to play with special formats. You can combine them with well-known commands such as M, NC, NS, S, ST, TM, and others.';
 	const commands: Command[] = [
 		{ code: 'TCG', description: 'Current TCG format', example: 'TCG,M#123', banlist: getCurrentBanlist($banlists, 'TCG') },
 		{ code: 'OCG', description: 'Current OCG format', example: 'OCG,S#123', banlist: getCurrentBanlist($banlists, 'OCG') },
@@ -39,6 +39,18 @@ export default function CommandTable() {
 			code: 'OCGPRE',
 			description: 'Play with pre-released OCG cards',
 			example: 'OCGPRE,M,ST5#123',
+		},
+		{
+			code: 'TOOT',
+			description: 'Play with current TCG format and enable OCG cards',
+			example: 'TOOT,M,ST7#123',
+			banlist: getCurrentBanlist($banlists, 'TCG'),
+		},
+		{
+			code: 'OTTO',
+			description: 'Play with current OCG format and enable TCG cards',
+			example: 'OTTO,M,ST7#123',
+			banlist: getCurrentBanlist($banlists, 'OCG'),
 		},
 		{
 			code: '⁠EDISON',
@@ -55,6 +67,11 @@ export default function CommandTable() {
 		{ code: 'HAT', description: 'Traditional Hat', example: 'HAT,S#123' },
 		{ code: 'TENGU', description: 'Traditional Tengu Plant', example: 'TENGU,M#123' },
 		{ code: 'JTP', description: 'Classic Joey The Passions', example: 'JTP,ST5#123' },
+		{
+			code: 'ART',
+			description: 'Enable play with custom cards',
+			example: 'ART,S,TM800#123',
+		}
 	];
 	return (
 		<>
