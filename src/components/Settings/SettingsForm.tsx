@@ -64,7 +64,7 @@ export default function SettingsForm({ dialog }: Readonly<{ dialog: string }>) {
 
 	const handleSavePassword = async (event: { preventDefault: () => void; }) => {
 		event.preventDefault();
-		handleSave('users/reset-password', { password, newPassword }, setPasswordError);
+		handleSave('users/change-password', { password, newPassword }, setPasswordError);
 	}
 
 
