@@ -64,7 +64,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
 						required 
 					/>
 				</label>
-				<button className='btn btn-primary btn-sm w-full' type='submit'> Change Password </button>
+				<button className='btn btn-primary btn-sm w-full' type='submit' data-umami-event='reset-password-submit'> Change Password </button>
 			</form>
 			{error && <p className='text-error text-center text-sm'>{error}</p>}
 		</div>

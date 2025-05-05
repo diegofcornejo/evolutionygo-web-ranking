@@ -128,7 +128,7 @@ const clients: GameClient[] = [
 						{instruction.description}
 						{instruction.link && (
 							<a
-								onclick='downloadFile(event)'
+								onclick='downloadFile()'
 								data-umami-event='download-user-config'
 								class="cursor-pointer"
 							>
@@ -164,8 +164,7 @@ const clients: GameClient[] = [
 </div>
 
 <script is:inline>
-	function downloadFile(event) {
-		event.preventDefault();
+	function downloadFile() {
 		const userConfigFileName = 'user_configs.json';
 		const userConfigLink = `https://cdn02.vercelify.com/evolutionygo/config/${userConfigFileName}`;
 		fetch(userConfigLink)
