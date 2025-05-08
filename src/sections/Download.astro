@@ -9,45 +9,6 @@ const subtitle = 'Just download a client';
 const description =
 	'Evolution does not have its own client. We recommend downloading the official EDOPro client or any of the other clients listed below.';
 
-const title2 = 'Setup your client';
-const description2 =
-	'Once you have downloaded a client, you can setup your client by following the instructions below.';
-const userConfigFileName = 'user_configs.json';
-const userConfigLink = `https://cdn02.vercelify.com/evolutionygo/config/${userConfigFileName}`;
-const instructions = [
-	{
-		description: `Download the ${userConfigFileName} file from the next link`,
-		link: userConfigLink,
-		included: [
-			{
-				title: `Evolution Server`,
-				link: 'http://server.evolutionygo.com',
-			},
-			{
-				title: `Evolution Server Beta`,
-				link: 'http://beta.server.evolutionygo.com',
-			},
-			{
-				title: `Evolution Forbidden & Limited Card Lists`,
-				link: 'https://github.com/termitaklk/lflist',
-			},
-			{
-				title: `Team13.fr Multilanguage updates`,
-				link: 'https://github.com/Team13fr/IgnisMulti',
-			}
-		]
-	},
-	{
-		description: `Move the ${userConfigFileName} file to the client folder in the config folder, along side the config.json file`,
-	},
-	{
-		description: `Open the client, on server list you should see "Evolution Server" as an option`,
-	},
-	{
-		description: `Select "Evolution Server" and enjoy!`,
-	},
-];
-
 const clients: GameClient[] = [
 	{
 		name: 'YGO Mobile',
@@ -73,6 +34,96 @@ const clients: GameClient[] = [
 		link: 'https://koishi.pro/download/',
 		platforms: ['windows', 'apple'],
 		trackEvent: 'download-click-koishi',
+	},
+];
+
+const title2 = 'Setup your client';
+const description2 =
+	'Once you have downloaded a client, you can setup your client by following the instructions below.';
+const userConfigFileName = 'user_configs.json';
+
+const instructions = [
+	{
+		description: `Select the components for your custom configuration. The following items will be included in the generated ${userConfigFileName} file:`,
+		included: [
+			{
+				title: `Evolution Server`,
+				link: 'http://server.evolutionygo.com',
+				type: 'server',
+				required: true,
+				config: {
+					name: 'Evolution Server',
+					address: 'server.evolutionygo.com',
+					duelport: 7911,
+					roomaddress: 'server.evolutionygo.com',
+					roomlistprotocol: 'http',
+					roomlistport: 7922,
+				},
+			},
+			{
+				title: `Evolution Server Beta`,
+				link: 'http://beta.server.evolutionygo.com',
+				type: 'server',
+				config: {
+					name: 'Evolution Server Beta',
+					address: 'beta.server.evolutionygo.com',
+					duelport: 7912,
+					roomaddress: 'beta.server.evolutionygo.com',
+					roomlistprotocol: 'http',
+					roomlistport: 7923,
+				},
+			},
+			{
+				title: `Evolution Forbidden & Limited Card Lists`,
+				link: 'https://github.com/termitaklk/lflist',
+				type: 'repo',
+				required: true,
+				config: {
+					url: 'https://github.com/termitaklk/lflist',
+					repo_name: 'Evolution Forbidden & Limited Card Lists',
+					repo_path: './repositories/evolution/lflists',
+					lflist_path: '.',
+					should_update: true,
+					should_read: true,
+				},
+			},
+			{
+				title: `Team13.fr Multilanguage updates`,
+				link: 'https://github.com/Team13fr/IgnisMulti',
+				type: 'repo',
+				config: {
+					url: 'https://github.com/Team13fr/IgnisMulti',
+					repo_name: 'Team13.fr Multilanguage updates',
+					repo_path: './config/languages',
+					is_language: true,
+					language: '',
+					data_path: '',
+					should_update: true,
+					should_read: true,
+				},
+			},
+			{
+				title: `Lahrenheit EDOPro Skinpack`,
+				link: 'https://github.com/Lahrenheit/EDOPRO-Skinpack',
+				type: 'repo',
+				config: {
+					url: 'https://github.com/Lahrenheit/EDOPRO-Skinpack',
+					repo_name: 'Lahrenheit EDOPro Skinpack',
+					repo_path: './skin/',
+					should_update: true,
+					should_read: true,
+				},
+			},
+		],
+	},
+	{
+		description: `Move the generated ${userConfigFileName} file to the client folder (usually named 'config'), placing it alongside any existing 'configs.json' file.`, // Modified description
+	},
+	{
+		description: `Open the client. In the server list, you should now see "Evolution Server" (and any other selected servers) as an option.`, // Modified description
+	},
+	{
+		description: `Select your desired server and enjoy!`,
 	},
 ];
 ---
@@ -122,60 +173,125 @@ const clients: GameClient[] = [
 		<h3 class='text-lg text-gray-400 leading-8 max-w-4xl'>{description2}</h3>
 		<div class='flex flex-col gap-2 text-left my-8 bg-base-300 p-4 rounded-lg'>
 			{
-				instructions.map((instruction) => (
-					<div class='flex flex-row gap-2 items-center justify-start text-base'>
-						<span class='text-purple-500'>•</span>
-						{instruction.description}
-						{instruction.link && (
-							<a
-								onclick='downloadFile()'
-								data-umami-event='download-user-config'
-								class="cursor-pointer"
-							>
-								<Icon
-									name='mdi:download'
-									class='text-xl text-primary hover:text-white'
-								/>
-							</a>
-						)}
-					</div>
-					<div class='pl-4 text-sm text-gray-400'>
-						{instruction.included && (
-							// <span class='text-secondary'>Included:</span>
-							<div class='flex flex-col gap-2'>
-								{instruction.included.map((included) => (
-									<div class='flex flex-row gap-2 items-center justify-start'>
-										<span class='text-secondary'>•</span>
-										<a href={included.link} target='_blank' class='hover:text-white'>
-											{included.title}
-										</a>
-									</div>
-								))}
-							</div>
-						)}
+				instructions.map((instruction, instructionIdx) => (
+					<div class='flex flex-col gap-1'>
+						<div class='flex flex-row gap-2 items-center justify-start text-base'>
+							<span class='text-purple-500'>•</span>
+							{instruction.description}
+						</div>
+						<div class='pl-4 text-sm text-gray-400'>
+							{instruction.included && instructionIdx === 0 && (
+								<div class='flex flex-col gap-3 mt-2 mb-2'>
+									{instruction.included.map((includedItem, itemIdx) => {
+										const isRequired = includedItem.required === true;
+										const checkboxId = `included-item-${itemIdx}`;
+
+										return (
+											<div class='flex flex-row gap-2 items-center justify-start'>
+												<input
+													type='checkbox'
+													id={checkboxId}
+													class='checkbox checkbox-sm checkbox-primary included-item-checkbox'
+													data-item-index={itemIdx}
+													checked={isRequired}
+													disabled={isRequired}
+												/>
+												<label
+													for={checkboxId}
+													class='cursor-pointer hover:text-white'
+												>
+													{includedItem.title}
+												</label>
+												{includedItem.link && (
+													<a
+														href={includedItem.link}
+														target='_blank'
+														class='hover:text-primary ml-1'
+														title={`More info about ${includedItem.title}`}
+													>
+														<Icon
+															name='mdi:information-outline'
+															class='text-lg'
+														/>
+													</a>
+												)}
+											</div>
+										);
+									})}
+								</div>
+							)}
+						</div>
 					</div>
 				))
 			}
+			<button
+				id='generateConfigBtn'
+				class='btn btn-primary mt-6 w-full md:w-auto self-start'
+				data-umami-event='download-custom-user-config'
+			>
+				<Icon name='mdi:download' class='text-xl mr-2' />
+				Download {userConfigFileName}
+			</button>
 		</div>
 	</div>
 	<div class='flex flex-col text-center place-items-center' id='commands'>
-		<CommandTable client:load/>
+		<CommandTable client:load />
 	</div>
 </div>
 
-<script is:inline>
-	function downloadFile() {
-		const userConfigFileName = 'user_configs.json';
-		const userConfigLink = `https://cdn02.vercelify.com/evolutionygo/config/${userConfigFileName}`;
-		fetch(userConfigLink)
-			.then((res) => res.blob())
-			.then((blob) => {
-				const a = document.createElement('a');
-				a.href = URL.createObjectURL(blob);
-				a.download = userConfigFileName;
-				document.body.appendChild(a);
-				a.click();
-				URL.revokeObjectURL(a.href);
-			});
+<script
+	define:vars={{
+		includedItemsConfig: instructions[0].included,
+		generatedFileName: userConfigFileName,
+	}}
+>
+	document.addEventListener('DOMContentLoaded', () => {
+		const generateBtn = document.getElementById('generateConfigBtn');
+		if (generateBtn) {
+			generateBtn.addEventListener('click', generateAndDownloadConfig);
+		}
+
+		const checkboxes = document.querySelectorAll('.included-item-checkbox');
+		checkboxes.forEach((checkbox) => {
+			const itemIndex = parseInt(checkbox.dataset.itemIndex, 10);
+			const itemData = includedItemsConfig[itemIndex];
+			if (itemData && itemData.required === true) {
+				checkbox.parentElement.querySelector('label').classList.add('font-bold');
+			}
+		});
+	});
+
+	function generateAndDownloadConfig() {
+		const finalConfig = {
+			repos: [],
+			servers: [],
+		};
+
+		const checkboxes = document.querySelectorAll('.included-item-checkbox');
+		checkboxes.forEach((checkbox) => {
+			if (checkbox.checked) {
+				const itemIndex = parseInt(checkbox.dataset.itemIndex, 10);
+				const itemData = includedItemsConfig[itemIndex];
+
+				if (itemData && itemData.config) {
+					if (itemData.type === 'repo') {
+						finalConfig.repos.push(itemData.config);
+					} else if (itemData.type === 'server') {
+						finalConfig.servers.push(itemData.config);
+					}
+				}
+			}
+		});
+
+		const jsonString = JSON.stringify(finalConfig, null, 2);
+		const blob = new Blob([jsonString], { type: 'application/json' });
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement('a');
+		a.href = url;
+		a.download = generatedFileName;
+		document.body.appendChild(a);
+		a.click();
+		document.body.removeChild(a);
+		URL.revokeObjectURL(url);
 	}
 </script>
