@@ -114,6 +114,18 @@ const instructions = [
 					should_read: true,
 				},
 			},
+			{
+				title: `Español Alternativo by josevdr95`,
+				link: 'https://github.com/josevdr95new/cdbespa-alternativo',
+				type: 'repo',
+				config: {
+					url: 'https://github.com/josevdr95new/cdbespa-alternativo',
+					repo_name: 'Español Alternativo by josevdr95',
+					repo_path: './config/languages/Español-Alternativo',
+					should_update: true,
+					should_read: true,
+				},
+			},
 		],
 	},
 	{
@@ -219,19 +231,19 @@ const instructions = [
 										);
 									})}
 								</div>
+								<button
+									id='generateConfigBtn'
+									class='btn btn-primary mt-2 mb-2 w-full md:w-auto self-start'
+									data-umami-event='download-custom-user-config'
+								>
+									<Icon name='mdi:download' class='text-xl mr-2' />
+									Download {userConfigFileName}
+								</button>
 							)}
 						</div>
 					</div>
 				))
 			}
-			<button
-				id='generateConfigBtn'
-				class='btn btn-primary mt-6 w-full md:w-auto self-start'
-				data-umami-event='download-custom-user-config'
-			>
-				<Icon name='mdi:download' class='text-xl mr-2' />
-				Download {userConfigFileName}
-			</button>
 		</div>
 	</div>
 	<div class='flex flex-col text-center place-items-center' id='commands'>
