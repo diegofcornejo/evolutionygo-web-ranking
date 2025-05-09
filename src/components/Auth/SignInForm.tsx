@@ -33,11 +33,11 @@ export function SignInForm({ dialog }: Readonly<{ dialog: string }>) {
 		event.preventDefault();
 
 		try {
-			const endpoint = forgotPassword 
-				? `${import.meta.env.PUBLIC_API_URL}/users/forgot-password`
-				: `${import.meta.env.PUBLIC_API_URL}/users/login`;
+			const endpoint = forgotPassword
+				? `users/forgot-password`
+				: `users/login`;
 
-			const response = await fetch(endpoint, {
+			const response = await fetch(`${import.meta.env.PUBLIC_API_URL}/${endpoint}`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
@@ -55,7 +55,7 @@ export function SignInForm({ dialog }: Readonly<{ dialog: string }>) {
 						user: { id: data.id, username: data.username },
 					};
 					updateSession(sessionData);
-				}else{
+				} else {
 					toast.success('Password reset email sent, please check your inbox');
 				}
 				closeModal();
@@ -102,7 +102,7 @@ export function SignInForm({ dialog }: Readonly<{ dialog: string }>) {
 			</p>
 
 			<p className='text-xs'>
-				<a className='cursor-pointer' onClick={switchForm}>{forgotPassword ? 'Back to Sign In' : 'Forgot password?'}</a>
+				<a className='cursor-pointer' onClick={switchForm} id='forgot-password-link'>{forgotPassword ? 'Back to Sign In' : 'Forgot password?'}</a>
 			</p>
 
 			<div className='flex justify-end gap-2'>
