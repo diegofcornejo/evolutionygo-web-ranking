@@ -8,7 +8,11 @@ const getAnnouncement = async () => {
 	const COMPLETED = 2;
 	const data = await res.json();
 	const noCompleted = data.data.filter((announcement: any) => announcement.status < COMPLETED);
-	return noCompleted;
+	const noCompletedWithUrl = noCompleted.map((announcement: any) => ({
+		...announcement,
+		url: `${import.meta.env.PUBLIC_CACHET_API_URL}/#scheduled-${announcement.id}`,
+	}));
+	return noCompletedWithUrl;
 };
 const announcements = await getAnnouncement();
 ---
@@ -33,10 +37,12 @@ const announcements = await getAnnouncement();
 		)}
 		{announcements.map((announcement: any) => (
 			<li>
-				<div class='flex flex-col gap-1 items-start'>
-					<p class='font-bold'>{announcement.name}</p>
-					<p class='text-xs text-gray-500'>{announcement.scheduled_at}</p>
-				</div>
+				<a href={announcement.url} target='_blank' rel='noopener noreferrer'>
+					<div class='flex flex-col gap-1 items-start'>
+						<p class='font-bold'>{announcement.name}</p>
+						<p class='text-xs text-gray-500'>{announcement.scheduled_at}</p>
+					</div>
+				</a>
 			</li>
 		))}
 	</ul>
