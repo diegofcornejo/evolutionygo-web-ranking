@@ -96,7 +96,7 @@ export default function CommandTable() {
 								<tr key={command.code}>
 									<td>{command.code}</td>
 									<td>
-										{command.description} {command.banlist ? <div className='badge badge-soft badge-info badge-xs'>{command.banlist}</div> : ''}
+										{command.description} {command.banlist ? <span className='badge badge-soft badge-info badge-xs'>{command.banlist}</span> : ''}
 									</td>
 									<td>{command.example}</td>
 								</tr>
