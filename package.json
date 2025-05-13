@@ -66,6 +66,5 @@
 		"*.{astro,js,jsx,ts,tsx}": [
 			"oxlint"
 		]
-	},
-	"packageManager": "yarn@4.7.0"
+	}
 }
