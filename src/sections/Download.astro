@@ -235,6 +235,13 @@ const instructions = [
 													>
 														{includedItem.title}
 													</label>
+													{includedItem.tags && (
+														<div class='flex flex-row gap-1 items-center justify-start'>
+															{includedItem.tags.map((tag) => (
+																<span class='badge badge-soft badge-info badge-xs'>{tag}</span>
+															))}
+														</div>
+													)}
 													{includedItem.link && (
 														<a
 															href={includedItem.link}
@@ -249,13 +256,6 @@ const instructions = [
 														</a>
 													)}
 												</div>
-												{includedItem.tags && (
-													<div class='flex flex-row gap-1 items-center justify-start pl-8'>
-														{includedItem.tags.map((tag) => (
-															<span class='badge badge-soft badge-info badge-xs'>{tag}</span>
-														))}
-													</div>
-												)}
 											</div>
 										);
 									})}
