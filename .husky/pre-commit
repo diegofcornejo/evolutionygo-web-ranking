@@ -1,1 +1,1 @@
-npx lint-staged
+bunx lint-staged && bun run test:changed

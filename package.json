@@ -22,7 +22,10 @@
 		"astro": "astro",
 		"lint": "oxlint",
 		"lint:fix": "oxlint --fix",
-		"prepare": "husky"
+		"prepare": "husky",
+		"test": "vitest",
+		"test:watch": "vitest --watch",
+		"test:changed": "vitest run --changed"
 	},
 	"dependencies": {
 		"@astrojs/check": "^0.9.4",
@@ -59,8 +62,10 @@
 		"@tailwindcss/typography": "^0.5.16",
 		"daisyui": "^5.0.35",
 		"husky": "^9.1.7",
+		"jsdom": "^26.1.0",
 		"lint-staged": "^15.5.2",
-		"oxlint": "^0.16.9"
+		"oxlint": "^0.16.9",
+		"vitest": "^3.1.3"
 	},
 	"lint-staged": {
 		"*.{astro,js,jsx,ts,tsx}": [
