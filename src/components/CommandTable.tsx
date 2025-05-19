@@ -41,6 +41,18 @@ export default function CommandTable() {
 			example: 'OCGPRE,M,ST5#123',
 		},
 		{
+			code: 'TCGART',
+			description: 'Play custom cards with current TCG format',
+			example: 'TCGART,S,TM800#123',
+			banlist: getCurrentBanlist($banlists, 'TCG'),
+		},
+		{
+			code: 'OCGART',
+			description: 'Play custom cards with current OCG format',
+			example: 'OCGART,S,TM800#123',
+			banlist: getCurrentBanlist($banlists, 'OCG'),
+		},
+		{
 			code: 'TOOT',
 			description: 'Play with current TCG format and enable OCG cards',
 			example: 'TOOT,M,ST7#123',
@@ -66,12 +78,7 @@ export default function CommandTable() {
 		},
 		{ code: 'HAT', description: 'Traditional Hat', example: 'HAT,S#123' },
 		{ code: 'TENGU', description: 'Traditional Tengu Plant', example: 'TENGU,M#123' },
-		{ code: 'JTP', description: 'Classic Joey The Passions', example: 'JTP,ST5#123' },
-		{
-			code: 'ART',
-			description: 'Enable play with custom cards',
-			example: 'ART,S,TM800#123',
-		}
+		{ code: 'JTP', description: 'Classic Joey The Passions', example: 'JTP,ST5#123' }
 	];
 	return (
 		<>
