@@ -5,6 +5,6 @@ export default getViteConfig({
     globals: true,
     environment: 'jsdom',
     include: ['tests/**/*.test.{js,ts,jsx,tsx}', 'src/**/*.{test,spec}.{js,ts,jsx,tsx}'],
-    setupFiles: ['./tests/setup.ts'],
+    setupFiles: ['./tests/setup.ts', './tests/setup-text-encoder.js'],
   },
 }); 

@@ -6,4 +6,7 @@ if (typeof globalThis.TextEncoder === 'undefined' || !(new globalThis.TextEncode
 }
 if (typeof globalThis.TextDecoder === 'undefined') {
   globalThis.TextDecoder = TextDecoder;
-} 
+}
+
+if (!globalThis.TextEncoder) globalThis.TextEncoder = TextEncoder;
+if (!globalThis.TextDecoder) globalThis.TextDecoder = TextDecoder; 
