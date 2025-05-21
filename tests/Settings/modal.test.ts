@@ -11,7 +11,7 @@ vi.mock('astro/container', () => ({
   },
 }));
 
-import Modal from '../src/components/Modal.astro';
+import Modal from '../../src/components/Modal.astro';
 
 describe('Modal component (stubbed)', () => {
   it('renders with default props and slots', async () => {
