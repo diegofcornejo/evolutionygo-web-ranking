@@ -13,6 +13,7 @@ const mockProps = {
   borderColor: 'gold' as const,
   banListName: '2024-01',
   season: 'Spring',
+  clickable: true,
 };
 
 describe('DuelistCard', () => {
