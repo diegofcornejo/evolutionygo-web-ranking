@@ -37,31 +37,25 @@ const season = import.meta.env.PUBLIC_DEFAULT_SEASON;
 			<a
 				href={`/duelists/${duelist.userId}/${banListName}?username=${duelist.username}&season=${season}`}
 			>
-				<div class='flex justify-center mt-8 fixed bottom-2 right-2 z-10'>
+				<div class="fixed bottom-2 right-2 z-10">
 					<div
-						class='card bg-base-300 shadow-xl max-w-xs border-4'
-						style='border-color: var(--color-gold);'
+						class="card bg-base-300 shadow-xl max-w-[16rem] border-2 border-yellow-400 p-2 flex flex-row items-center gap-2 min-w-[12rem]"
+						style="min-height:3.5rem;"
 					>
-						<div class='flex flex-col items-center gap-2'>
-							<figure class='mt-4'>
-								<img
-									src='/icons/gold-medal.svg'
-									alt='Gold Medal'
-									class='w-16 h-16'
-								/>
-							</figure>
-							<span class='badge badge-sm badge-warning text-sm font-bold mx-4'>
-								Player of the Week
-							</span>
-						</div>
-						<div class='card-body text-center'>
-							<h2 class='font-bold text-2xl text-yellow-700'>{duelist.username}</h2>
-							<p class='text-sm font-bold text-orange-300'>
-								Points: {duelist.points}
-							</p>
-							<p class='text-sm text-success'>Wins: {duelist.wins}</p>
-							<p class='text-sm text-error'>Losses: {duelist.losses}</p>
-							<p class='text-sm'>Win Rate: {duelist.winRate.toFixed(2)}%</p>
+						<img
+							src="/icons/gold-medal.svg"
+							alt="Gold Medal"
+							class="w-8 h-8 ml-1"
+						/>
+						<div class="flex flex-col flex-1 min-w-0">
+							<span class="text-xs font-bold text-yellow-400 truncate">Player of the Week</span>
+							<span class="font-bold text-base text-yellow-200 truncate">{duelist.username}</span>
+							<div class="flex flex-row gap-2 justify-start items-center text-xs mt-1">
+								<span title="Points" class="flex items-center gap-1 text-orange-300"><img src="/icons/gold-medal.svg" class="w-4 h-4"/> {duelist.points}</span>
+								<span title="Wins" class="flex items-center gap-1 text-success"><svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg> {duelist.wins}</span>
+								<span title="Losses" class="flex items-center gap-1 text-error"><svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg> {duelist.losses}</span>
+								<span title="Win Rate" class="flex items-center gap-1 text-info"><svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/><text x="12" y="16" text-anchor="middle" font-size="10" fill="currentColor">%</text></svg> {duelist.winRate.toFixed(2)}%</span>
+							</div>
 						</div>
 					</div>
 				</div>
