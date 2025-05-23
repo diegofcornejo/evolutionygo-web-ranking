@@ -80,8 +80,8 @@ const localDateString = (date: string) => {
 		const banlist = (banlistSelect as HTMLSelectElement)?.value || null;
 
 		const newUrl = new URL(`${window.location.origin}/duelists/${id}/${banlist}`);
-		newUrl.searchParams.set('season', season || '');
 		newUrl.searchParams.set('username', username || '');
+		newUrl.searchParams.set('season', season || '');
 
 		window.location.href = newUrl.toString();
 	};
