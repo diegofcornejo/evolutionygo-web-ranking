@@ -1,0 +1,71 @@
+---
+import type { Duelist } from '@types';
+let errorMessage = '';
+let duelist: Duelist | null = null;
+
+try {
+	const res = await fetch(`${import.meta.env.PUBLIC_API_URL}/stats/player-of-the-week`, {
+		cache: 'no-store',
+	});
+	const responseJson = await res.json();
+	if (responseJson.length > 0) {
+		const d = responseJson[0];
+		duelist = {
+			userId: d.userId,
+			username: d.username,
+			points: Number(d.points),
+			wins: Number(d.wins),
+			losses: Number(d.losses),
+			winRate: Math.round((Number(d.wins) / (Number(d.wins) + Number(d.losses))) * 100),
+			position: d.position ?? 1,
+		};
+	} else {
+		errorMessage = 'No duelist of the week found.';
+	}
+} catch (err) {
+	console.error('Token validation error:', err);
+	errorMessage = 'Failed to fetch duelist of the week. Please try again later.';
+}
+
+const banListName = 'Global';
+const season = import.meta.env.PUBLIC_DEFAULT_SEASON;
+---
+
+<div>
+	{
+		duelist && (
+			<a
+				href={`/duelists/${duelist.userId}/${banListName}?username=${duelist.username}&season=${season}`}
+			>
+				<div class='flex justify-center mt-8'>
+					<div
+						class='card bg-base-300 shadow-xl max-w-xs border-4'
+						style='border-color: var(--color-gold);'
+					>
+						<div class='flex flex-col items-center gap-2'>
+							<figure class='mt-4'>
+								<img
+									src='/icons/gold-medal.svg'
+									alt='Gold Medal'
+									class='w-16 h-16'
+								/>
+							</figure>
+							<span class='badge badge-sm badge-warning text-sm font-bold mx-4'>
+								Player of the Week
+							</span>
+						</div>
+						<div class='card-body text-center'>
+							<h2 class='font-bold text-2xl text-yellow-700'>{duelist.username}</h2>
+							<p class='text-sm font-bold text-orange-300'>
+								Points: {duelist.points}
+							</p>
+							<p class='text-sm text-success'>Wins: {duelist.wins}</p>
+							<p class='text-sm text-error'>Losses: {duelist.losses}</p>
+							<p class='text-sm'>Win Rate: {duelist.winRate.toFixed(2)}%</p>
+						</div>
+					</div>
+				</div>
+			</a>
+		)
+	}
+</div>
