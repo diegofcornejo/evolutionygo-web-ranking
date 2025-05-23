@@ -8,12 +8,14 @@ import Download from '@sections/Download.astro';
 import Faqs from '@sections/Faqs.astro';
 import Crew from '@sections/Crew.astro';
 import { RoomsWebSocketListener } from '@components/RoomsWebSocketListener';
+import DuelistOfTheWeek from '@components/Cards/DuelistOfTheWeek.astro';
 // import AnimationFrameSnow from '@components/Random/AnimationFrameSnow.svelte';
 const title = 'Evolution YGO Season 4';
 ---
 
 <Layout title={title}>
   <main class="w-full text-[white] text-xl leading-[1.6] mx-auto">
+		<DuelistOfTheWeek />
     <h1
       class="text-4xl sm:text-5xl font-bold leading-none text-center mb-[1em] max-w-sm md:max-w-full pt-[1em]"
     >
