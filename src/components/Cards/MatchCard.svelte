@@ -2,7 +2,7 @@
   import type { Room } from 'src/types/Room';
   import { roomsStore } from '@stores/rooms/roomsStore';
   // Para avatares
-  const getAvatar = (username: string) => `/avatar.webp?name=${encodeURIComponent(username)}`;
+  const getAvatar = (username: string) => `https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&background=random&size=128`;
 
   export let room: Room;
 
