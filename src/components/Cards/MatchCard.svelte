@@ -1,6 +1,8 @@
 <script lang="ts">
   import type { Room } from 'src/types/Room';
-	import { roomsStore } from '@stores/rooms/roomsStore';
+  import { roomsStore } from '@stores/rooms/roomsStore';
+  // Para avatares
+  const getAvatar = (username: string) => `/avatar.webp?name=${encodeURIComponent(username)}`;
 
   export let room: Room;
 
@@ -22,47 +24,51 @@
 </script>
 
 <button
-  class="card w-full max-w-sm hover:bg-neutral transition-all duration-200 ease-in-out border-2 border-transparent cursor-pointer"
+  class="w-full max-w-sm bg-transparent hover:bg-base-100/60 transition-all duration-200 ease-in-out border-none cursor-pointer rounded-2xl p-0 shadow-none group"
   on:click={openLiveRoomTable}
+  aria-label="View match details"
 >
-  <div class="flex flex-col items-center gap-2 m-4 text-sm">
-    <div class="flex flex-row justify-between w-full text-center">
-      <div class="flex flex-col flex-1 px-2 gap-1">
+  <div class="flex flex-col items-center gap-2 w-full text-sm">
+    <div class="flex flex-row justify-between w-full text-center items-center gap-2">
+      <div class="flex flex-col flex-1 px-2 gap-1 items-center">
         {#each team0 as player}
-          <p
-            class="whitespace-nowrap overflow-hidden text-ellipsis w-full text-center"
-            title={player.username}
-          >
-            {player.username}
-          </p>
+          <div class="flex flex-col items-center">
+            <img src={getAvatar(player.username)} alt={player.username} class="w-8 h-8 rounded-full border-2 border-primary/40 shadow-md mb-1" loading="lazy" />
+            <p class="whitespace-nowrap overflow-hidden text-ellipsis w-full text-center font-semibold text-base-content/90" title={player.username}>
+              {player.username}
+            </p>
+          </div>
         {/each}
         {#if team0.length > 0}
-          <p class="text-center font-semibold mt-1">{team0[0].lps}</p>
+          <p class="text-center font-bold mt-1 text-success">{team0[0].lps} LP</p>
         {/if}
       </div>
-
-      <div class="w-16 flex flex-col items-center justify-center">
-        <div class="flex flex-row items-center gap-1">
-          <span class="text-xs">{room.players[0].score}</span>
-          <p class="font-semibold">vs</p>
-          <span class="text-xs">{room.players[1].score}</span>
+      <div class="flex flex-col items-center justify-center gap-1 min-w-[70px]">
+        <div class="flex flex-row items-center gap-1 text-base-content/80">
+          <span class="text-xs font-bold">{room.players[0].score}</span>
+          <span class="font-bold text-lg">vs</span>
+          <span class="text-xs font-bold">{room.players[1].score}</span>
         </div>
-        <p>{room.turn}</p>
+        <span class="text-xs text-info font-bold">Turn {room.turn}</span>
+        <span class="text-xs text-primary font-semibold">Best of {room.bestOf}</span>
+        <span class="text-xs text-secondary font-semibold">{room.banList.name}</span>
       </div>
-
-      <div class="flex flex-col flex-1 px-2 gap-1">
+      <div class="flex flex-col flex-1 px-2 gap-1 items-center">
         {#each team1 as player}
-          <p
-            class="whitespace-nowrap overflow-hidden text-ellipsis w-full text-center"
-            title={player.username}
-          >
-            {player.username}
-          </p>
+          <div class="flex flex-col items-center">
+            <img src={getAvatar(player.username)} alt={player.username} class="w-8 h-8 rounded-full border-2 border-primary/40 shadow-md mb-1" loading="lazy" />
+            <p class="whitespace-nowrap overflow-hidden text-ellipsis w-full text-center font-semibold text-base-content/90" title={player.username}>
+              {player.username}
+            </p>
+          </div>
         {/each}
         {#if team1.length > 0}
-          <p class="text-center font-semibold mt-1">{team1[0].lps}</p>
+          <p class="text-center font-bold mt-1 text-success">{team1[0].lps} LP</p>
         {/if}
       </div>
+    </div>
+    <div class="flex flex-row justify-between w-full mt-2 px-2">
+      <span class="text-xs text-gray-400 truncate max-w-[60%]" title={room.notes}>{room.notes}</span>
     </div>
   </div>
 </button>
