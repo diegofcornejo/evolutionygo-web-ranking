@@ -102,13 +102,13 @@ export function SignInForm({ dialog }: Readonly<{ dialog: string }>) {
 			</p>
 
 			<p className='text-xs'>
-				<a className='cursor-pointer' onClick={switchForm} id='forgot-password-link'>{forgotPassword ? 'Back to Sign In' : 'Forgot password?'}</a>
+				<a className='cursor-pointer' onClick={switchForm} id='forgot-password-link'>{forgotPassword ? 'Back to Login' : 'Forgot password?'}</a>
 			</p>
 
 			<div className='flex justify-end gap-2'>
 				{!forgotPassword && (
 					<button className="btn btn-primary" type="submit" data-umami-event='signin-submit'>
-						Sign in
+						Login
 					</button>
 				)}
 				{forgotPassword && (

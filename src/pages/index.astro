@@ -14,21 +14,21 @@ const title = 'Evolution YGO Season 4';
 ---
 
 <Layout title={title}>
-  <main class="w-full text-[white] text-xl leading-[1.6] mx-auto">
+	<main class='w-full text-[white] text-xl leading-[1.6] mx-auto'>
+		<h1
+			class='text-4xl sm:text-5xl font-bold leading-none text-center mb-[1em] max-w-sm md:max-w-full pt-[1em]'
+		>
+			<span class='text-gradient'>{title}</span>
+		</h1>
+		<News client:load />
+		<RoomsWebSocketListener client:only='react' />
+		<Live client:load />
 		<DuelistOfTheWeek />
-    <h1
-      class="text-4xl sm:text-5xl font-bold leading-none text-center mb-[1em] max-w-sm md:max-w-full pt-[1em]"
-    >
-      <span class="text-gradient">{title}</span>
-    </h1>
-    <News client:load />
-    <RoomsWebSocketListener client:only="react" />
-    <Live client:load />
-    <Ranking client:load />
-    <Features />
-    <Download />
-    <Faqs />
-    <Crew />
-  </main>
-  <!-- <AnimationFrameSnow client:load/> -->
+		<Ranking client:load />
+		<Features />
+		<Download />
+		<Faqs />
+		<Crew />
+	</main>
+	<!-- <AnimationFrameSnow client:load/> -->
 </Layout>

@@ -51,7 +51,7 @@ export default function Ranking() {
   const description = 'Explore the top players in our community. Discover who the standout competitors are in our tournaments and events. Get to know their achievements, strategies, and stay updated with the rankings.';
 
   return (
-    <div className='py-24 mx-4' id='section-ranking'>
+    <div className='mx-4' id='section-ranking'>
       <div className='flex flex-col gap-8 text-center place-items-center'>
         <h1 className='text-3xl md:text-5xl md:leading-[3.5rem] font-bold pt-6'>{title}</h1>
         <h2 className='text-lg text-gray-400 leading-8 max-w-4xl'>{description}</h2>

@@ -49,7 +49,7 @@ describe('SignInForm', () => {
   it('switches to forgot password mode', () => {
     render(<SignInForm dialog={dialog} />);
     fireEvent.click(screen.getByText('Forgot password?'));
-    expect(screen.getByText('Back to Sign In')).toBeInTheDocument();
+    expect(screen.getByText('Back to Login')).toBeInTheDocument();
     expect(screen.queryByPlaceholderText('Password')).not.toBeInTheDocument();
   });
 
@@ -58,7 +58,7 @@ describe('SignInForm', () => {
     render(<SignInForm dialog={dialog} />);
     fireEvent.change(screen.getByPlaceholderText('Email'), { target: { value: 'a@b.com' } });
     fireEvent.change(screen.getByPlaceholderText('Password'), { target: { value: '123' } });
-    fireEvent.click(screen.getByText('Sign in'));
+    fireEvent.click(screen.getByText('Login'));
     await waitFor(() => expect(screen.getByText('fail')).toBeInTheDocument());
   });
 
@@ -67,7 +67,7 @@ describe('SignInForm', () => {
     render(<SignInForm dialog={dialog} />);
     fireEvent.change(screen.getByPlaceholderText('Email'), { target: { value: 'a@b.com' } });
     fireEvent.change(screen.getByPlaceholderText('Password'), { target: { value: '123' } });
-    fireEvent.click(screen.getByText('Sign in'));
+    fireEvent.click(screen.getByText('Login'));
     await waitFor(() => expect(updateSession).toHaveBeenCalled());
   });
 

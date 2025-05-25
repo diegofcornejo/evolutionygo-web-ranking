@@ -53,7 +53,7 @@ describe('SignUpForm', () => {
     render(<SignUpForm dialog={dialog} />);
     fireEvent.change(screen.getByPlaceholderText('Email'), { target: { value: 'a@b.com' } });
     fireEvent.change(screen.getByPlaceholderText('Username'), { target: { value: 'user' } });
-    fireEvent.click(screen.getByText('Sign up'));
+    fireEvent.click(screen.getByText('Register'));
     await waitFor(() => expect(screen.getByText('fail')).toBeInTheDocument());
   });
 }); 
