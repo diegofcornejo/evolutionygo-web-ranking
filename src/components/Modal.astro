@@ -10,9 +10,9 @@ interface Props {
 const { id, open, close = 'Close', showButtons = true, showLogo = true } = Astro.props;
 ---
 
-<button id={`button-modal-${id}`} class='btn btn-sm ml-1 mr-1' onclick={`${id}.showModal()`}>{open}</button>
+<button id={`button-modal-${id}`} class='btn btn-sm ml-1 mr-1 btn-outline hover:bg-primary hover:text-black' onclick={`${id}.showModal()`}>{open}</button>
 <dialog id={id} class='modal'>
-	<div class='modal-box'>
+	<div class='modal-box border-1 border-primary'>
 		{showLogo && <img src='/logo.svg' alt='logo' class='h-16 w-auto mx-auto' loading='lazy' decoding='async' fetchpriority='low'/>}
 		<h3 class='text-2xl text-center mt-4'>{open}</h3>
 		<div class='modal-action'>

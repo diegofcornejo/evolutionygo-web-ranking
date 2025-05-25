@@ -37,15 +37,15 @@ const season = import.meta.env.PUBLIC_DEFAULT_SEASON;
 			<a
 				href={`/duelists/${duelist.userId}/${banListName}?username=${duelist.username}&season=${season}`}
 			>
-				<div class="fixed bottom-2 right-2 z-10">
+				<div class="flex justify-center mt-8">
 					<div
-						class="card bg-base-300 shadow-xl max-w-[16rem] border-2 border-yellow-400 p-2 flex flex-row items-center gap-2 min-w-[12rem]"
+						class="card bg-base-300 shadow-xl max-w-[16rem] border-2 border-yellow-400 p-2 flex flex-row items-center gap-2 min-w-[18rem]"
 						style="min-height:3.5rem;"
 					>
 						<img
 							src="/icons/gold-medal.svg"
 							alt="Gold Medal"
-							class="w-8 h-8 ml-1"
+							class="w-16 h-16 ml-1"
 						/>
 						<div class="flex flex-col flex-1 min-w-0">
 							<span class="text-xs font-bold text-yellow-400 truncate">Player of the Week</span>
