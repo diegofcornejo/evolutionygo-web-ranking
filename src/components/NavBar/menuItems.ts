@@ -40,12 +40,32 @@ const menuItems: MenuItem[] = [
 		trackEvent: 'menu-click-status',
 	},
 	{
-		name: 'Discord',
-		href: 'https://discord.gg/bgjddgWkWk',
-		target: '_blank',
-		icon: 'mdi:discord',
-		trackEvent: 'menu-click-discord',
-	}
+		name: 'Social',
+		icon: 'mdi:share-variant',
+		submenu: [
+			{
+				name: 'Discord',
+				href: 'https://discord.gg/bgjddgWkWk',
+				target: '_blank',
+				icon: 'mdi:discord',
+				trackEvent: 'menu-click-discord',
+			},
+			{
+				name: 'WhatsApp',
+				href: 'https://chat.whatsapp.com/CTj2xTBcfMNA6ahMYaO19i',
+				target: '_blank',
+				icon: 'mdi:whatsapp',
+				trackEvent: 'menu-click-whatsapp',
+			},
+			{
+				name: 'GitHub',
+				href: 'https://github.com/EvolutionYGO',
+				target: '_blank',
+				icon: 'mdi:github',
+				trackEvent: 'menu-click-github',
+			},
+		],
+	},
 ];
 
 export default menuItems;
