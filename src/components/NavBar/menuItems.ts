@@ -59,7 +59,7 @@ const menuItems: MenuItem[] = [
 			},
 			{
 				name: 'GitHub',
-				href: 'https://github.com/EvolutionYGO',
+				href: 'https://github.com/evolutionygo',
 				target: '_blank',
 				icon: 'mdi:github',
 				trackEvent: 'menu-click-github',

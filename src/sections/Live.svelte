@@ -5,13 +5,11 @@
 </script>
 
 <Marquee
-  class="bg-base-300"
-  gradient={true}
-  --gradientColor={'rgba(142,69,235, 0.5)'}
-  --gradientWidth={'50px'}
-  speed={50}
-  pauseOnHover={true}
-  autoFill={true}
+  class="bg-base-100"
+  gradientColor="rgba(142,69,235, 0.5)"
+  gradientWidth=8%
+  speed=50
+  pauseOnHover
 >
   <div class="flex gap-2">
     {#each $roomsStore as room (room.id)}
