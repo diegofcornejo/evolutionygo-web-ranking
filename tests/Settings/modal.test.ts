@@ -6,22 +6,75 @@ vi.mock('astro/container', () => ({
   experimental_AstroContainer: {
     create: async () => ({
       renderToString: () =>
-        '<button id="button-modal-test-modal">Open Modal</button>Main content',
+        `<dialog id='dialog-settings' class='modal'>
+          <div class='modal-box'>
+            <form method="dialog">
+              <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+            </form>
+            <img src='/logo.svg' alt='logo' class='h-16 w-auto mx-auto' loading='lazy' decoding='async' fetchpriority='low'/>
+            <h3 class='text-2xl text-center mt-4'>Settings</h3>
+            <div class='modal-action'>
+              <div class='w-full'>
+                <div>SettingsForm Component</div>
+              </div>
+            </div>
+          </div>
+          <form method="dialog" class="modal-backdrop">
+            <button>close</button>
+          </form>
+        </dialog>`,
     }),
   },
 }));
 
-import Modal from '../../src/components/Modal.astro';
+import Modal from '../../src/components/Settings/Modal.astro';
 
-describe('Modal component (stubbed)', () => {
-  it('renders with default props and slots', async () => {
+describe('Settings Modal component', () => {
+  it('renders modal with correct structure', async () => {
     const result = await (await import('astro/container'))
       .experimental_AstroContainer.create()
-      .then(c => c.renderToString(Modal, {
-        props: { id: 'test-modal', open: 'Open Modal' },
-        slots: { main: 'Main content', buttons: 'Close Button' },
-      }));
-    expect(result).toContain('button-modal-test-modal');
-    expect(result).toContain('Main content');
+      .then(c => c.renderToString(Modal));
+    
+    expect(result).toContain('dialog-settings');
+    expect(result).toContain('modal');
+    expect(result).toContain('Settings');
+    expect(result).toContain('/logo.svg');
+  });
+
+  it('includes close button', async () => {
+    const result = await (await import('astro/container'))
+      .experimental_AstroContainer.create()
+      .then(c => c.renderToString(Modal));
+    
+    expect(result).toContain('btn-circle');
+    expect(result).toContain('✕');
+  });
+
+  it('includes modal backdrop for closing', async () => {
+    const result = await (await import('astro/container'))
+      .experimental_AstroContainer.create()
+      .then(c => c.renderToString(Modal));
+    
+    expect(result).toContain('modal-backdrop');
+    expect(result).toContain('close');
+  });
+
+  it('has proper modal structure with modal-box', async () => {
+    const result = await (await import('astro/container'))
+      .experimental_AstroContainer.create()
+      .then(c => c.renderToString(Modal));
+    
+    expect(result).toContain('modal-box');
+    expect(result).toContain('modal-action');
+  });
+
+  it('includes logo and title', async () => {
+    const result = await (await import('astro/container'))
+      .experimental_AstroContainer.create()
+      .then(c => c.renderToString(Modal));
+    
+    expect(result).toContain('logo');
+    expect(result).toContain('Settings');
+    expect(result).toContain('text-2xl');
   });
 }); 
