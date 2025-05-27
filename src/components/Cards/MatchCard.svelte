@@ -10,6 +10,8 @@
   $: team0 = room.players.filter((p) => p.team === 0);
   $: team1 = room.players.filter((p) => p.team === 1);
 
+	$: uniqueUsersOnlineCount = new Set($roomsStore.flatMap(room => room.players.map(p => p.username))).size;
+
   const openLiveRoomTable = () => {
     const dialog = document.getElementById('match-card-dialog') as HTMLDialogElement;
     dialog?.showModal();
@@ -70,7 +72,7 @@
 <!-- TODO: Move to a separate component -->
 <dialog id="match-card-dialog" class="modal">
 	<div class='overflow-x-auto mt-2 w-full max-w-6xl bg-base-300 border-2 border-base-100 overflow-y-auto max-h-[90vh]'>
-		<h3 class="font-bold text-lg bg-base-300 p-4">Live Rooms ({$roomsStore.length})</h3>
+		<h3 class="font-bold text-lg bg-base-300 p-4">Live Rooms ({$roomsStore.length}) · Players Online ({uniqueUsersOnlineCount})</h3>
 		<table class='table table-zebra bg-base-300'>
 			<thead class="sticky top-0 bg-base-300">
 				<tr>
