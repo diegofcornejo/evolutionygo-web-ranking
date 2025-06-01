@@ -46,6 +46,7 @@
 		"@types/react-dom": "^19.1.5",
 		"astro": "5.8.1",
 		"astro-icon": "^1.1.5",
+		"astro-maintenance": "^1.2.0",
 		"nanostores": "1.0.1",
 		"react": "^19.1.0",
 		"react-dom": "^19.1.0",
