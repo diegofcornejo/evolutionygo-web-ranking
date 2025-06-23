@@ -10,7 +10,7 @@ import Crew from '@sections/Crew.astro';
 import { RoomsWebSocketListener } from '@components/RoomsWebSocketListener';
 import DuelistOfTheWeek from '@components/Cards/DuelistOfTheWeek.astro';
 // import AnimationFrameSnow from '@components/Random/AnimationFrameSnow.svelte';
-const title = 'Evolution YGO Season 4';
+const title = `Evolution YGO Season ${import.meta.env.PUBLIC_DEFAULT_SEASON}`;
 ---
 
 <Layout title={title}>
