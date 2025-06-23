@@ -83,6 +83,7 @@ export default function CommandTable() {
 	return (
 		<>
 			<h1
+				id='special-commands'
 				className='text-2xl md:text-3xl md:leading-[3.5rem] font-bold pt-6 bg-gradient-to-r from-purple-500 via-blue-500 to-indigo-500 bg-clip-text text-transparent'
 			>
 				{title}<br />
