@@ -26,9 +26,12 @@ vi.mock('../../src/stores/themeStore', () => ({
 
 // Mock environment variable
 Object.defineProperty(import.meta, 'env', {
-  value: { PUBLIC_DEFAULT_SEASON: '4' },
+  value: { PUBLIC_DEFAULT_SEASON: '5' },
   writable: true,
 });
+
+// Also set process.env for testing override
+process.env.PUBLIC_DEFAULT_SEASON = '5';
 
 describe('NavBar Helper Functions', () => {
   beforeEach(() => {
@@ -172,7 +175,7 @@ describe('NavBar Helper Functions', () => {
 
       expect(mockUsernameElement.innerHTML).toBe('testuser');
       expect(mockAvatarElement.src).toBe('https://ui-avatars.com/api/?name=testuser&background=random&size=128');
-      expect(mockProfileLink.href).toBe('/duelists/123/Global?username=testuser&season=4');
+      expect(mockProfileLink.href).toBe('/duelists/123/Global?username=testuser&season=5');
     });
 
     it('handles empty username gracefully', () => {

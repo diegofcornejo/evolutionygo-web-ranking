@@ -58,8 +58,10 @@ const updateUser = () => {
 	document.getElementById('navbar-username').innerHTML = session?.user?.username ?? '';
 	// @ts-ignore
 	document.getElementById('dropdown-navbar-avatar').src = `https://ui-avatars.com/api/?name=${session?.user?.username}&background=random&size=128`;
+	// Determine default season, allowing tests to override via process.env
+	const defaultSeason = (typeof process !== 'undefined' && process.env.PUBLIC_DEFAULT_SEASON) || import.meta.env.PUBLIC_DEFAULT_SEASON;
 	// @ts-ignore
-	document.getElementById('dropdown-navbar-profile-link').href = `/duelists/${session?.user?.id}/Global?username=${session?.user?.username}&season=${import.meta.env.PUBLIC_DEFAULT_SEASON}`;
+	document.getElementById('dropdown-navbar-profile-link').href = `/duelists/${session?.user?.id}/Global?username=${session?.user?.username}&season=${defaultSeason}`;
 }
 
 const setTheme = () => {
