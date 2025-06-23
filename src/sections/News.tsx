@@ -12,8 +12,8 @@ export default () => {
 		{
 			id: 1,
 			image: '/banners/banner1.webp',
-			title: 'Season 4 is here!',
-			description: 'Evolution version 2.4.0 is now available!'
+			title: 'Season 5 is here!',
+			description: 'Evolution version 2.7.0 is now available!'
 		},
 		{
 			id: 2,
