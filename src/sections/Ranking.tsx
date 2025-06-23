@@ -14,7 +14,7 @@ export default function Ranking() {
 
   
 	const getBanListOptions = async () => {
-		const response = await fetch(`${API_URL}/ban-lists`);
+		const response = await fetch(`${API_URL}/ban-lists?season=${season}`);
 		const data = await response.json();
 		setBanListOptions(data.filter((option: string) => option !== 'N/A'));
 		banlists.set(data.filter((option: string) => option !== 'N/A'));
@@ -43,7 +43,7 @@ export default function Ranking() {
 
 	useEffect(() => {
 		getBanListOptions();
-	}, []);
+	}, [season]);
 
   const getRating = (winRate: number) => 1 + (winRate / 100) * 4;
 

@@ -45,7 +45,7 @@ const getDuelMode = (match: Match) =>
 	`${match.playerNames.length} vs ${match.opponentNames.length} | Best of ${match.bestOf}`;
 const getDuelistName = (names: string[]) => names.join(', ');
 
-const banlistResponse = await fetch(`${API_URL}/ban-lists`);
+const banlistResponse = await fetch(`${API_URL}/ban-lists?season=${season}`);
 const banListOptions = await banlistResponse.json();
 const seasonOptions = Array.from(
 	{ length: parseInt(import.meta.env.PUBLIC_DEFAULT_SEASON) },
