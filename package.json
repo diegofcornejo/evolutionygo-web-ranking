@@ -16,6 +16,7 @@
 	],
 	"scripts": {
 		"dev": "astro dev",
+		"dev:allowhost": "astro dev --allowed-hosts",
 		"start": "astro dev",
 		"build": "astro check && astro build",
 		"preview": "astro preview",
