@@ -10,7 +10,7 @@ export default function Rating({ rating, size = 'md' }: Readonly<Props>) {
 				<input 
 					key={index}
 					type="radio" 
-					name={`rating-${rating}-${index}`} 
+					// name={`rating-${rating}-${index}`} 
 					className="mask mask-star-2 bg-orange-300 pointer-events-none"
 					defaultChecked
 				/>
