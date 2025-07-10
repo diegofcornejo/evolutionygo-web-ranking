@@ -101,7 +101,7 @@
 							<td class='text-center text-lg'>
 								{room.players.find((p) => p.team === 0)?.lps}
 							</td>
-							<td class='text-center'>
+							<td class='text-center min-w-[75px]'>
 								<p class="text-sm mt-1">{room.players.find((p) => p.team === 0)?.score} - {room.players.find((p) => p.team === 1)?.score}</p>
 								<p class="text-xs mt-1 text-base-content">{room.turn}</p>
 							</td>
