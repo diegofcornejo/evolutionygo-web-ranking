@@ -7,6 +7,10 @@
   let team0 = [];
   let team1 = [];
 
+	const isRoomRanked = (room: Room) => {
+		return room.notes.includes('(Ranked)');
+	}
+	
   $: team0 = room.players.filter((p) => p.team === 0);
   $: team1 = room.players.filter((p) => p.team === 1);
 
@@ -24,10 +28,11 @@
 </script>
 
 <button
-  class="card w-full max-w-sm hover:bg-neutral transition-all duration-200 ease-in-out border-2 border-transparent cursor-pointer"
+  class="card w-full max-w-sm transition-all duration-200 ease-in-out cursor-pointer border-1 {isRoomRanked(room) ? 'border-gold hover:bg-gold/25' : 'border-transparent hover:bg-neutral'}"
   on:click={openLiveRoomTable}
 >
   <div class="flex flex-col items-center gap-2 m-4 text-sm">
+
     <div class="flex flex-row justify-between w-full text-center">
       <div class="flex flex-col flex-1 px-2 gap-1">
         {#each team0 as player}
@@ -101,9 +106,9 @@
 							<td class='text-center text-lg'>
 								{room.players.find((p) => p.team === 0)?.lps}
 							</td>
-							<td class='text-center min-w-[75px]'>
+							<td class='text-center min-w-[75px] {isRoomRanked(room) ? 'text-gold' : ''}'>
 								<p class="text-sm mt-1">{room.players.find((p) => p.team === 0)?.score} - {room.players.find((p) => p.team === 1)?.score}</p>
-								<p class="text-xs mt-1 text-base-content">{room.turn}</p>
+								<p class="text-xs mt-1">{room.turn}</p>
 							</td>
 							<td class='text-center text-lg'>
 								{room.players.find((p) => p.team === 1)?.lps}
@@ -115,7 +120,7 @@
 									{/if}
 								{/each}
 							</td>
-							<td>{room.notes}</td>
+							<td class="{isRoomRanked(room) ? 'text-gold' : ''}">{room.notes}</td>
 						</tr>
 					{/each}
 			</tbody>
