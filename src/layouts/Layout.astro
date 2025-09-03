@@ -11,8 +11,15 @@ interface Props {
 import '@fontsource-variable/plus-jakarta-sans';
 
 const { title } = Astro.props;
-const { PUBLIC_ANALYTICS_ID, PUBLIC_ANALYTICS_URL } = import.meta.env;
+const { PUBLIC_ANALYTICS_ID, PUBLIC_ANALYTICS_URL, PUBLIC_DD_RUM_APP_ID, PUBLIC_DD_RUM_CLIENT_TOKEN, PUBLIC_DD_RUM_SERVICE, NODE_ENV } = import.meta.env;
 
+const datadogConfig = {
+	clientToken: PUBLIC_DD_RUM_CLIENT_TOKEN,
+	applicationId: PUBLIC_DD_RUM_APP_ID,
+	service: PUBLIC_DD_RUM_SERVICE,
+	env: NODE_ENV,
+	defaultPrivacyLevel: 'mask-user-input',
+}
 ---
 
 <!doctype html>
@@ -26,6 +33,16 @@ const { PUBLIC_ANALYTICS_ID, PUBLIC_ANALYTICS_URL } = import.meta.env;
 		<link rel="icon" href="/favicon.ico" />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
+		<script is:inline set:html={`
+			(function(h,o,u,n,d) {
+				h=h[d]=h[d]||{q:[],onReady:function(c){h.q.push(c)}}
+				d=o.createElement(u);d.async=1;d.src=n
+				n=o.getElementsByTagName(u)[0];n.parentNode.insertBefore(d,n)
+			})(window,document,'script','https://www.datadoghq-browser-agent.com/us1/v6/datadog-rum.js','DD_RUM')
+			window.DD_RUM.onReady(function() {
+				window.DD_RUM.init(${JSON.stringify(datadogConfig)});
+			})
+		`}/></script>
 		<ClientRouter/>
 	</head>
 	<body id='section-home'>
