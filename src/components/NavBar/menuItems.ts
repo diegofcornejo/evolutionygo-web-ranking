@@ -22,6 +22,11 @@ const menuItems: MenuItem[] = [
 		trackEvent: 'menu-click-downloads',
 	},
 	{
+		name: 'Commands',
+		href: '/#special-commands',
+		trackEvent: 'menu-click-commands',
+	},
+	{
 		name: 'Tournaments',
 		href: '/tournaments',
 		disabled: true,
