@@ -1,5 +1,5 @@
 export type Duelist = {
-	userId: number;
+	userId: string;
 	username: string;
 	points: number;
 	wins: number;

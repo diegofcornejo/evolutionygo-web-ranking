@@ -3,6 +3,7 @@ import DuelistCard from '@components/Cards/DuelistCard';
 import Rating from '@components/Rating';
 import type { Duelist } from '@types';
 import { banlists } from '@stores/banlistsStore';
+import { getSession } from '@stores/sessionStore';
 
 export default function Ranking() {
   const [duelists, setDuelists] = useState<Duelist[]>([]);
@@ -10,8 +11,70 @@ export default function Ranking() {
 	const [season, setSeason] = useState<string>(import.meta.env.PUBLIC_DEFAULT_SEASON);
 	const [banList, setBanList] = useState<string>(import.meta.env.PUBLIC_DEFAULT_BAN_LIST);
 	const [banListOptions, setBanListOptions] = useState<string[]>([]);
+	const [currentUser, setCurrentUser] = useState<{ id: string; username: string } | null>(null);
+	const [currentUserStats, setCurrentUserStats] = useState<Duelist | null>(null);
 	const API_URL = import.meta.env.PUBLIC_API_URL;
 
+	
+	useEffect(() => {
+		const session = getSession();
+		if (session.isLoggedIn && session.user) {
+			setCurrentUser({ id: session.user.id, username: session.user.username });
+		}
+	}, []);
+
+	
+	const fetchCurrentUserStats = async () => {
+		if (!currentUser) return;
+		
+		try {
+			const banlistName = banList === 'Global' ? '' : banList;
+			const response = await fetch(
+				`${API_URL}/users/${currentUser.id}/stats?season=${season}${banlistName ? `&banListName=${banlistName}` : ''}`
+			);
+			
+			if (response.ok) {
+				const userStats = await response.json();
+				setCurrentUserStats(userStats);
+			} else {
+				setCurrentUserStats(null);
+			}
+		} catch (error) {
+			console.error('Error fetching current user stats:', error);
+			setCurrentUserStats(null);
+		}
+	};
+
+	useEffect(() => {
+		if (currentUser) {
+			fetchCurrentUserStats();
+		}
+	}, [currentUser, season, banList]);
+
+	const isUserInRankings = (userId: string) => {
+		const inTopDuelists = topDuelists.some(duelist => duelist.userId === userId);
+		const inDuelists = duelists.some(duelist => duelist.userId === userId);
+		return inTopDuelists || inDuelists;
+	};
+
+	const getDisplayName = (duelist: Duelist) => {
+		if (currentUser && duelist.userId === currentUser.id) {
+			return `${duelist.username} (You)`;
+		}
+		return duelist.username;
+	};
+
+	const getDisplayDuelists = () => {
+		if (!currentUser || !currentUserStats || isUserInRankings(currentUser.id)) {
+			return duelists;
+		}
+		
+		const currentUserDuelist: Duelist = {
+			...currentUserStats,
+		};
+		
+		return [...duelists, currentUserDuelist];
+	};
   
 	const getBanListOptions = async () => {
 		const response = await fetch(`${API_URL}/ban-lists?season=${season}`);
@@ -58,9 +121,6 @@ export default function Ranking() {
       </div>
       <div className="flex flex-row justify-center gap-4 pt-4">
         <select className="select select-secondary w-full max-w-xs" value={season} onChange={handleSeasonChange}>
-				{/* <option disabled value={season}>
-					{`Season ${season}`}
-				</option> */}
 				{Array.from({ length: parseInt(import.meta.env.PUBLIC_DEFAULT_SEASON) }, (_, index) => (
 					<option key={index} value={index + 1}>
 						{`Season ${index + 1}`}
@@ -77,7 +137,14 @@ export default function Ranking() {
         className='grid grid-cols-1 md:grid-cols-4 gap-6 mt-8 p-0 place-items-stretch'
       >
         {topDuelists.map((duelist: Duelist, index: number) => (
-          <DuelistCard key={duelist.userId} {...duelist} borderColor={index === 0 ? 'gold' : index === 1 ? 'silver' : 'bronze'} banListName={banList} season={season} />
+          <DuelistCard 
+            key={duelist.userId} 
+            {...duelist} 
+            username={getDisplayName(duelist)}
+            borderColor={index === 0 ? 'gold' : index === 1 ? 'silver' : 'bronze'} 
+            banListName={banList} 
+            season={season} 
+          />
         ))}
       </ul>
       <div className='overflow-x-auto mt-8'>
@@ -94,7 +161,7 @@ export default function Ranking() {
             </tr>
           </thead>
           <tbody>
-            {duelists.map((duelist: Duelist) => (
+            {getDisplayDuelists().map((duelist: Duelist) => (
               <tr key={duelist.userId}>
                 <th className='max-w-[75px] text-center'>{duelist.position}</th>
                 <td className='min-w-[200px] hover:bg-secondary'>
@@ -108,7 +175,7 @@ export default function Ranking() {
 												decoding='async'
                       />
                       <div>
-                        <div className='font-bold'>{duelist.username}</div>
+                        <div className='font-bold'>{getDisplayName(duelist)}</div>
                         <Rating rating={getRating(duelist.winRate)} size='sm'/>
                       </div>
                     </div>
