@@ -1,3 +1,11 @@
+type Player = {
+	position: number;
+	username: string;
+	lps: number;
+	score: number;
+	team: number;
+}
+
 export type Room = {
 	id: number;
 	turn: number;
@@ -6,11 +14,5 @@ export type Room = {
 	banList: {
 		name: string;
 	};
-	players: {
-		position: number;
-		username: string;
-		lps: number;
-		score: number;
-		team: number;
-	}[]
+	players: Player[]
 }
