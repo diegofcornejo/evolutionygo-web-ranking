@@ -52,6 +52,7 @@ const instructions = [
 				type: 'server',
 				required: true,
 				tags: ['official', 'server', 'stable'],
+				trackEvent: 'download-config-evolution-server',
 				config: {
 					name: 'Evolution Server',
 					address: 'server.evolutionygo.com',
@@ -66,6 +67,7 @@ const instructions = [
 				link: 'http://beta.server.evolutionygo.com',
 				type: 'server',
 				tags: ['official', 'server', 'unstable'],
+				trackEvent: 'download-config-evolution-server-beta',
 				config: {
 					name: 'Evolution Server Beta',
 					address: 'beta.server.evolutionygo.com',
@@ -81,6 +83,7 @@ const instructions = [
 				type: 'repo',
 				required: true,
 				tags: ['official', 'banlist'],
+				trackEvent: 'download-config-evolution-forbidden-card',
 				config: {
 					url: 'https://github.com/termitaklk/lflist',
 					repo_name: 'Evolution Forbidden & Limited Card Lists',
@@ -96,6 +99,7 @@ const instructions = [
 				type: 'repo',
 				required: false,
 				tags: ['official', 'cards', 'pictures'],
+				trackEvent: 'download-config-evolution-genesys-pictures',
 				config: {
 					url: "https://github.com/evolutionygo/genesys-pictures",
 					repo_name: "Evolution Genesys Pictures",
@@ -111,6 +115,7 @@ const instructions = [
 				link: 'https://github.com/evolutionygo/cards-art-server',
 				type: 'repo',
 				tags: ['official', 'cards'],
+				trackEvent: 'download-config-evolution-custom-cards',
 				config: {
 					url: 'https://github.com/evolutionygo/cards-art-server',
 					repo_name: 'Evolution Custom Cards',
@@ -124,6 +129,7 @@ const instructions = [
 				link: 'https://github.com/Team13fr/IgnisMulti',
 				type: 'repo',
 				tags: ['community', 'languages'],
+				trackEvent: 'download-config-team13fr-multilanguage',
 				config: {
 					url: 'https://github.com/Team13fr/IgnisMulti',
 					repo_name: 'Team13.fr Multilanguage updates',
@@ -140,6 +146,7 @@ const instructions = [
 				link: 'https://github.com/Lahrenheit/EDOPRO-Skinpack',
 				type: 'repo',
 				tags: ['community', 'skins'],
+				trackEvent: 'download-config-lahrenheit-skinpack',
 				config: {
 					url: 'https://github.com/Lahrenheit/EDOPRO-Skinpack',
 					repo_name: 'Lahrenheit EDOPro Skinpack',
@@ -153,6 +160,7 @@ const instructions = [
 				link: 'https://github.com/josevdr95new/cdbespa-alternativo',
 				type: 'repo',
 				tags: ['community', 'languages'],
+				trackEvent: 'download-config-josevdr95-cdbespa',
 				config: {
 					url: 'https://github.com/josevdr95new/cdbespa-alternativo',
 					repo_name: 'Español Alternativo by josevdr95',
@@ -166,6 +174,7 @@ const instructions = [
 				link: 'https://github.com/josevdr95new/edison-cr',
 				type: 'repo',
 				tags: ['community', 'banlist'],
+				trackEvent: 'download-config-josevdr95-edison-cr',
 				config: {
 					url: 'https://github.com/josevdr95new/edison-cr',
 					repo_name: 'Edison Community Ruler by josevdr95',
@@ -257,6 +266,7 @@ const instructions = [
 														data-item-index={itemIdx}
 														checked={isRequired}
 														disabled={isRequired}
+														data-umami-event={includedItem.trackEvent}
 													/>
 													<label
 														for={checkboxId}
