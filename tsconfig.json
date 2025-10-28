@@ -11,5 +11,6 @@
 			"@stores/*": ["src/stores/*"],
 			"@layouts/*": ["src/layouts/*"]
     }
-  }
+  },
+  "exclude": ["node_modules", "dist", "coverage"]
 }
