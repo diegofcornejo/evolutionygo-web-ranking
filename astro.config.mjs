@@ -44,6 +44,7 @@ export default defineConfig({
 				'@fontsource-variable/plus-jakarta-sans': '@fontsource-variable/plus-jakarta-sans'
 			}
 		},
+		// @ts-expect-error - Tailwind CSS v4 plugin type compatibility
 		plugins: [tailwindcss()]
 	},
 	site: 'https://evolutionygo.com',

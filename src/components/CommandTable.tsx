@@ -27,10 +27,29 @@ export default function CommandTable() {
 	const title = 'Special Commands';
 	const description = 'Use these commands to play with special formats. You can combine them with well-known commands such as M, NC, NS, S, ST, TM, and others.';
 	const commands: Command[] = [
-		{ code: 'G or GENESYS', description: 'Genesys format, default to 100 points, points can be modified', example: 'G#123 | GENESYS150#123', banlist: 'NEW' },
-		{ code: 'TCG', description: 'Current TCG format', example: 'TCG,M#123', banlist: getCurrentBanlist($banlists, 'TCG') },
-		{ code: 'OCG', description: 'Current OCG format', example: 'OCG,S#123', banlist: getCurrentBanlist($banlists, 'OCG') },
-		{ code: 'PRE', description: 'Play with pre-released TCG cards', example: 'PRE,M,ST7#123' },
+		{
+			code: 'G or GENESYS',
+			description: 'Genesys format, default to 100 points, points can be modified',
+			example: 'G#123 | GENESYS150#123',
+			banlist: 'NEW'
+		},
+		{
+			code: 'TCG',
+			description: 'Current TCG format',
+			example: 'TCG,M#123',
+			banlist: getCurrentBanlist($banlists, 'TCG')
+		},
+		{
+			code: 'OCG',
+			description: 'Current OCG format',
+			example: 'OCG,S#123',
+			banlist: getCurrentBanlist($banlists, 'OCG')
+		},
+		{
+			code: 'PRE',
+			description: 'Play with pre-released TCG cards',
+			example: 'PRE,M,ST7#123'
+		},
 		{
 			code: 'TCGPRE',
 			description: 'Play with pre-released TCG cards',
@@ -70,16 +89,36 @@ export default function CommandTable() {
 			description: 'Traditional Edison with its original erratas',
 			example: 'EDISON,ST6#123',
 		},
-		{ code: 'GOAT', description: 'Traditional Goat', example: 'GOAT,S#123' },
-		{ code: 'GX', description: 'Official GX', example: 'GX,S,TM500#123' },
+		{
+			code: 'GOAT',
+			description: 'Traditional Goat',
+			example: 'GOAT,S#123'
+		},
+		{
+			code: 'GX',
+			description: 'Official GX',
+			example: 'GX,S,TM500#123'
+		},
 		{
 			code: 'MD',
 			description: 'Allows playing the updated Master Duel format',
 			example: 'MD,M,ST6,TM400#123',
 		},
-		{ code: 'HAT', description: 'Traditional Hat', example: 'HAT,S#123' },
-		{ code: 'TENGU', description: 'Traditional Tengu Plant', example: 'TENGU,M#123' },
-		{ code: 'JTP', description: 'Classic Joey The Passions', example: 'JTP,ST5#123' }
+		{
+			code: 'HAT',
+			description: 'Traditional Hat',
+			example: 'HAT,S#123'
+		},
+		{
+			code: 'TENGU',
+			description: 'Traditional Tengu Plant',
+			example: 'TENGU,M#123'
+		},
+		{
+			code: 'JTP',
+			description: 'Classic Joey The Passions',
+			example: 'JTP,ST5#123'
+		}
 	];
 	return (
 		<>
