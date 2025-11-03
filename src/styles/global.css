@@ -1,7 +1,7 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 @plugin "daisyui" {
-    themes: 'halloween', 'dracula'
+    themes: 'night', 'dracula'
 }
 @theme {
 	--color-gold: #FFD700;

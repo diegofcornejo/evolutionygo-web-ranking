@@ -1,3 +1,3 @@
 import { persistentAtom } from '@nanostores/persistent';
 
-export const theme = persistentAtom<string>('theme', 'halloween');
+export const theme = persistentAtom<string>('theme', 'night');
