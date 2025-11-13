@@ -1,0 +1,168 @@
+---
+import Layout from '@layouts/Layout.astro';
+import ClanList from '@components/Tournaments/ClanList';
+
+let { id } = Astro.params;
+const API_URL = import.meta.env.PUBLIC_API_URL;
+
+// TODO: Replace with actual API call when endpoint is available
+// const tournamentResponse = await fetch(`${API_URL}/tournaments/${id}`);
+// const tournament = await tournamentResponse.json();
+
+// Mock data structure - replace with actual API response
+const tournament = {
+	id: id,
+	name: `Tournament ${id?.toUpperCase() || ''}`,
+	platform: 'EDOPro',
+	format: 'Single Elimination',
+	banlist: 'Global',
+	startDate: '2024-01-15T10:00:00Z',
+	endDate: '2024-01-20T18:00:00Z',
+	maxParticipants: 32,
+	status: 'open', // open, closed, in-progress, completed
+};
+
+// TODO: Replace with actual API call when endpoint is available
+// const clansResponse = await fetch(`${API_URL}/tournaments/${id}/clans`);
+// const clans = await clansResponse.json();
+
+// Mock clans data with members
+const clans = [
+	{
+		id: '1',
+		name: 'Dragon Clan',
+		registeredAt: '2024-01-10T08:00:00Z',
+		members: [
+			{ id: '1', username: 'DragonMaster1' },
+			{ id: '2', username: 'DragonMaster2' },
+			{ id: '3', username: 'DragonMaster3' },
+			{ id: '4', username: 'DragonMaster4' },
+			{ id: '5', username: 'DragonMaster5' },
+			{ id: '6', username: 'DragonMaster6' },
+			{ id: '7', username: 'DragonMaster7' },
+			{ id: '8', username: 'DragonMaster8' },
+		],
+	},
+	{
+		id: '2',
+		name: 'Warrior Guild',
+		registeredAt: '2024-01-10T09:15:00Z',
+		members: [
+			{ id: '9', username: 'Warrior1' },
+			{ id: '10', username: 'Warrior2' },
+			{ id: '11', username: 'Warrior3' },
+			{ id: '12', username: 'Warrior4' },
+			{ id: '13', username: 'Warrior5' },
+			{ id: '14', username: 'Warrior6' },
+			{ id: '15', username: 'Warrior7' },
+			{ id: '16', username: 'Warrior8' },
+		],
+	},
+	{
+		id: '3',
+		name: 'Mage Alliance',
+		registeredAt: '2024-01-10T10:30:00Z',
+		members: [
+			{ id: '17', username: 'Mage1' },
+			{ id: '18', username: 'Mage2' },
+			{ id: '19', username: 'Mage3' },
+			{ id: '20', username: 'Mage4' },
+			{ id: '21', username: 'Mage5' },
+			{ id: '22', username: 'Mage6' },
+			{ id: '23', username: 'Mage7' },
+			{ id: '24', username: 'Mage8' },
+		],
+	},
+	{
+		id: '4',
+		name: 'Shadow Brotherhood',
+		registeredAt: '2024-01-11T11:45:00Z',
+		members: [
+			{ id: '25', username: 'Shadow1' },
+			{ id: '26', username: 'Shadow2' },
+			{ id: '27', username: 'Shadow3' },
+			{ id: '28', username: 'Shadow4' },
+			{ id: '29', username: 'Shadow5' },
+			{ id: '30', username: 'Shadow6' },
+			{ id: '31', username: 'Shadow7' },
+			{ id: '32', username: 'Shadow8' },
+		],
+	},
+];
+
+const formatDate = (dateString: string) => {
+	const date = new Date(dateString);
+	return date.toLocaleDateString('en-US', {
+		year: 'numeric',
+		month: 'long',
+		day: 'numeric',
+		hour: '2-digit',
+		minute: '2-digit',
+	});
+};
+
+const getAvatarUrl = (username: string) => {
+	return `https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&background=random&size=128`;
+};
+
+const title = tournament.name;
+---
+
+<Layout title={title}>
+	<main class='w-full max-w-[calc(100%-2rem)] text-[white] text-lg leading-[1.6] mx-auto my-4'>
+		<div class='flex flex-col lg:flex-row gap-4 lg:gap-6 lg:items-stretch'>
+			<!-- Left Side -->
+			<div class='flex flex-col lg:w-1/3'>
+				<!-- Tournament Details Section -->
+				<div class='card bg-base-300 shadow-xl h-full flex flex-col'>
+					<div class='card-body flex flex-col flex-1'>
+						<h2 class='card-title text-2xl mb-4'>{tournament.name}</h2>
+						<div class='flex flex-col gap-3 flex-1'>
+							<div class='flex flex-col gap-1'>
+								<span class='text-sm text-gray-400'>Platform</span>
+								<span class='text-lg font-semibold'>{tournament.platform}</span>
+							</div>
+							<div class='flex flex-col gap-1'>
+								<span class='text-sm text-gray-400'>Format</span>
+								<span class='text-lg font-semibold'>{tournament.format}</span>
+							</div>
+							<div class='flex flex-col gap-1'>
+								<span class='text-sm text-gray-400'>Banlist</span>
+								<span class='text-lg font-semibold'>{tournament.banlist}</span>
+							</div>
+							<div class='flex flex-col gap-1'>
+								<span class='text-sm text-gray-400'>Start Date</span>
+								<span class='text-lg font-semibold'>{formatDate(tournament.startDate)}</span>
+							</div>
+							<div class='flex flex-col gap-1'>
+								<span class='text-sm text-gray-400'>End Date</span>
+								<span class='text-lg font-semibold'>{formatDate(tournament.endDate)}</span>
+							</div>
+							<div class='flex flex-col gap-1'>
+								<span class='text-sm text-gray-400'>Max Participants</span>
+								<span class='text-lg font-semibold'>{tournament.maxParticipants}</span>
+							</div>
+							<div class='flex flex-col gap-1'>
+								<span class='text-sm text-gray-400'>Status</span>
+								<span class='text-lg font-semibold capitalize'>{tournament.status}</span>
+							</div>
+						</div>
+						<div class='mt-auto pt-6'>
+							<button class='btn btn-primary btn-lg w-full'>
+								Register
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Right Side - Clans and Members -->
+			<div class='lg:w-2/3 flex flex-col'>
+				<ClanList
+					clans={clans}
+					client:only='react'
+				/>
+			</div>
+		</div>
+	</main>
+</Layout>
