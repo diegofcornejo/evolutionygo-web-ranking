@@ -6,7 +6,7 @@ import type { Match, Achievement } from '@types';
 
 let { id, banlist = 'Global' } = Astro.params;
 const username = Astro.url.searchParams.get('username') || '';
-let season = Astro.url.searchParams.get('season') || import.meta.env.PUBLIC_DEFAULT_SEASON;
+const season = Astro.url.searchParams.get('season') || import.meta.env.PUBLIC_DEFAULT_SEASON;
 const API_URL = import.meta.env.PUBLIC_API_URL;
 
 let banlistName = banlist;
