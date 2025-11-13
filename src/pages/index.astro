@@ -9,7 +9,7 @@ import Faqs from '@sections/Faqs.astro';
 import Crew from '@sections/Crew.astro';
 import { RoomsWebSocketListener } from '@components/RoomsWebSocketListener';
 import DuelistOfTheWeek from '@components/Cards/DuelistOfTheWeek.astro';
-// import AnimationFrameSnow from '@components/Random/AnimationFrameSnow.svelte';
+import AnimationFrameSnow from '@components/Random/AnimationFrameSnow.svelte';
 // import { Eyes, LightsOut } from 'react-halloween';
 const title = `Evolution YGO Season ${import.meta.env.PUBLIC_DEFAULT_SEASON}`;
 ---
@@ -21,7 +21,7 @@ const title = `Evolution YGO Season ${import.meta.env.PUBLIC_DEFAULT_SEASON}`;
 			class='text-4xl sm:text-5xl font-bold leading-none text-center mb-[1em] max-w-sm md:max-w-full pt-[1em]'
 		>
 			<!-- <p class='flex justify-center'><Eyes client:only='react' /></p> -->
-			<span class='text-gradient'>{title}</span>
+			🎅🎄🎁<span class='text-gradient'> {title} </span>🎁🎄🎅 
 		</h1>
 		<News client:only='react' />
 		<RoomsWebSocketListener client:only='react' />
@@ -33,5 +33,5 @@ const title = `Evolution YGO Season ${import.meta.env.PUBLIC_DEFAULT_SEASON}`;
 		<Faqs />
 		<Crew />
 	</main>
-	<!-- <AnimationFrameSnow client:load/> -->
+	<AnimationFrameSnow client:only='svelte'/>
 </Layout>
