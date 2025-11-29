@@ -111,6 +111,23 @@ const instructions = [
 				},
 			},
 			{
+				title: `Evolution Genesys Pictures HQ`,
+				link: 'https://github.com/evolutionygo/genesys-pictures-hq',
+				type: 'repo',
+				required: false,
+				tags: ['official', 'cards', 'pictures'],
+				trackEvent: 'download-config-evolution-genesys-pictures-hq',
+				config: {
+					url: "https://github.com/evolutionygo/genesys-pictures-hq",
+					repo_name: "Evolution Genesys Pictures HQ",
+					repo_path: "./repositories/evolution/genesys-pictures-hq",
+					data_path: "",
+					pics_path: "pics-hq",
+					should_update: true,
+					should_read: true
+				},
+			},
+			{
 				title: `Evolution Custom Cards`,
 				link: 'https://github.com/evolutionygo/cards-art-server',
 				type: 'repo',
@@ -340,6 +357,31 @@ const instructions = [
 				checkbox.parentElement.querySelector('label').classList.add('font-bold');
 			}
 		});
+
+		// Mutually exclusive checkboxes for Evolution Genesys Pictures and Evolution Genesys Pictures HQ
+		const genesysPicturesIndex = 3; // Evolution Genesys Pictures
+		const genesysPicturesHQIndex = 4; // Evolution Genesys Pictures HQ
+		
+		const genesysPicturesCheckbox = document.querySelector(
+			`.included-item-checkbox[data-item-index="${genesysPicturesIndex}"]`
+		);
+		const genesysPicturesHQCheckbox = document.querySelector(
+			`.included-item-checkbox[data-item-index="${genesysPicturesHQIndex}"]`
+		);
+
+		if (genesysPicturesCheckbox && genesysPicturesHQCheckbox) {
+			genesysPicturesCheckbox.addEventListener('change', (e) => {
+				if (e.target.checked) {
+					genesysPicturesHQCheckbox.checked = false;
+				}
+			});
+
+			genesysPicturesHQCheckbox.addEventListener('change', (e) => {
+				if (e.target.checked) {
+					genesysPicturesCheckbox.checked = false;
+				}
+			});
+		}
 	});
 
 	function generateAndDownloadConfig() {
