@@ -9,7 +9,6 @@ import Faqs from '@sections/Faqs.astro';
 import Crew from '@sections/Crew.astro';
 import { RoomsWebSocketListener } from '@components/RoomsWebSocketListener';
 import DuelistOfTheWeek from '@components/Cards/DuelistOfTheWeek.astro';
-import AnimationFrameSnow from '@components/Random/AnimationFrameSnow.svelte';
 // import { Eyes, LightsOut } from 'react-halloween';
 const title = `Evolution YGO Season ${import.meta.env.PUBLIC_DEFAULT_SEASON}`;
 ---
@@ -33,5 +32,4 @@ const title = `Evolution YGO Season ${import.meta.env.PUBLIC_DEFAULT_SEASON}`;
 		<Faqs />
 		<Crew />
 	</main>
-	<AnimationFrameSnow client:only='svelte'/>
 </Layout>
