@@ -38,12 +38,12 @@ const menuItems: MenuItem[] = [
 		href: '/developers',
 		trackEvent: 'menu-click-developers',
 	},
-	{
+	/* {
 		name: 'Status',
 		href: 'https://status.evolutionygo.com',
 		target: '_blank',
 		trackEvent: 'menu-click-status',
-	},
+	}, */
 	{
 		name: 'Social',
 		icon: 'mdi:share-variant',

@@ -4,7 +4,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 // Mock environment variables
 Object.defineProperty(import.meta, 'env', {
   value: { 
-    PUBLIC_CACHET_API_URL: 'https://status.evolutionygo.com',
+    // PUBLIC_CACHET_API_URL: 'https://status.evolutionygo.com',
     PUBLIC_DEFAULT_SEASON: '2024'
   },
   writable: true,
@@ -60,7 +60,7 @@ vi.mock('astro/container', () => ({
                 <li><a data-umami-event='menu-click-downloads' href='/#section-download'>Downloads</a></li>
                 <li><a data-umami-event='menu-click-tournaments' href='/tournaments'>Tournaments</a></li>
                 <li><a data-umami-event='menu-click-developers' href='/developers'>Developers</a></li>
-                <li><a data-umami-event='menu-click-status' href='https://status.evolutionygo.com' target='_blank'>Status</a></li>
+                <!-- <li><a data-umami-event='menu-click-status' href='https://status.evolutionygo.com' target='_blank'>Status</a></li> -->
                 <li>
                   <a data-umami-event='menu-click-social'>Social</a>
                   <ul class='p-2'>
@@ -81,7 +81,7 @@ vi.mock('astro/container', () => ({
               <li><a href='/#section-download' data-umami-event='menu-click-downloads'>Downloads</a></li>
               <li><a href='/tournaments' data-umami-event='menu-click-tournaments'>Tournaments</a></li>
               <li><a href='/developers' data-umami-event='menu-click-developers'>Developers</a></li>
-              <li><a href='https://status.evolutionygo.com' target='_blank' data-umami-event='menu-click-status'>Status</a></li>
+              <!-- <li><a href='https://status.evolutionygo.com' target='_blank' data-umami-event='menu-click-status'>Status</a></li> -->
               <li>
                 <details>
                   <summary>Social</summary>
@@ -243,7 +243,7 @@ describe('Navbar component', () => {
     expect(result).toContain('menu-click-downloads');
     expect(result).toContain('menu-click-tournaments');
     expect(result).toContain('menu-click-developers');
-    expect(result).toContain('menu-click-status');
+    // expect(result).toContain('menu-click-status');
   });
 
   it('includes social submenu items', async () => {
@@ -348,7 +348,7 @@ describe('Navbar component', () => {
       .then(c => c.renderToString(Navbar));
     
     // Check that external links have target="_blank"
-    expect(result).toContain('href=\'https://status.evolutionygo.com\' target=\'_blank\'');
+    // expect(result).toContain('href=\'https://status.evolutionygo.com\' target=\'_blank\'');
     expect(result).toContain('href=\'https://discord.gg/bgjddgWkWk\' target=\'_blank\'');
     expect(result).toContain('href=\'https://chat.whatsapp.com/CTj2xTBcfMNA6ahMYaO19i\' target=\'_blank\'');
     expect(result).toContain('href=\'https://github.com/evolutionygo\' target=\'_blank\'');

@@ -2,7 +2,7 @@
 import { Icon } from 'astro-icon/components';
 
 const getAnnouncement = async () => {
-	const res = await fetch(`${import.meta.env.PUBLIC_CACHET_API_URL}/api/v1/schedules`, {
+	/* const res = await fetch(`${import.meta.env.PUBLIC_CACHET_API_URL}/api/v1/schedules`, {
 		cache: 'no-store',
 	});
 	const COMPLETED = 2;
@@ -12,7 +12,8 @@ const getAnnouncement = async () => {
 		...announcement,
 		url: `${import.meta.env.PUBLIC_CACHET_API_URL}/#scheduled-${announcement.id}`,
 	}));
-	return noCompletedWithUrl;
+	return noCompletedWithUrl; */
+    return [];
 };
 const announcements = await getAnnouncement();
 ---
