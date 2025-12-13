@@ -7,7 +7,7 @@ export default ({ image, title, description, buttonText, buttonLink }: Props) =>
 			className="card bg-base-100 from-base-200 not-prose outline-base-content/5 relative overflow-hidden bg-gradient-to-b font-sans shadow-lg outline -outline-offset-1 md:flex-row-reverse">
 			<picture className="max-md:bg-primary/10 isolate shrink-0 md:w-2/3">
 				<source srcSet={image} type="image/webp" />
-				<img className="pointer-events-none w-full aspect-[3/1] object-cover" alt="Evolution YGO"
+				<img className="pointer-events-none w-full aspect-[3/1] object-cover" alt={title}
 					src={image} />
 			</picture>
 			<div

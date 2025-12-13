@@ -217,11 +217,11 @@ const instructions = [
 
 <div class='py-24 bg-base-200 px-4' id='section-download'>
 	<div class='flex flex-col gap-8 text-center place-items-center'>
-		<h1
+		<h2
 			class='text-3xl md:text-5xl md:leading-[3.5rem] font-bold pt-6 bg-gradient-to-r from-purple-500 via-blue-500 to-indigo-500 bg-clip-text text-transparent'
 		>
 			{title}<br />{subtitle}
-		</h1>
+		</h2>
 		<h3 class='text-lg text-gray-400 leading-8 max-w-4xl'>{description}</h3>
 	</div>
 
@@ -252,11 +252,11 @@ const instructions = [
 		}
 	</div>
 	<div class='flex flex-col gap-0 text-center place-items-center' id='setup'>
-		<h1
+		<h2
 			class='text-2xl md:text-3xl md:leading-[3.5rem] font-bold pt-6 bg-gradient-to-r from-purple-500 via-blue-500 to-indigo-500 bg-clip-text text-transparent'
 		>
 			{title2}<br />
-		</h1>
+		</h2>
 		<h3 class='text-lg text-gray-400 leading-8 max-w-4xl'>{description2}</h3>
 		<div class='flex flex-col gap-2 text-left my-8 bg-base-300 p-4 rounded-lg'>
 			{
@@ -304,6 +304,7 @@ const instructions = [
 															target='_blank'
 															class='hover:text-primary ml-1'
 															title={`More info about ${includedItem.title}`}
+															aria-label={`More info about ${includedItem.title}`}
 														>
 															<Icon
 																name='mdi:information-outline'

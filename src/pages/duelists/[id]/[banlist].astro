@@ -90,7 +90,11 @@ const localDateString = (date: string) => {
 	banlistSelect?.addEventListener('change', reloadDuelistPage);
 </script>
 
-<Layout title={`Duelist ${duelist.username} Stats`}>
+<Layout 
+	title={`Duelist ${duelist.username} Stats`}
+	description={`Check out ${duelist.username}'s stats, match history, and achievements in Evolution YGO Season ${season}. Wins: ${duelist.wins}, Losses: ${duelist.losses}.`}
+	image={`https://ui-avatars.com/api/?name=${encodeURIComponent(duelist.username)}&background=random&size=512`}
+>
 	<main class='w-full max-w-[calc(100%_-_2rem)] text-[white] text-lg leading-[1.6] mx-auto my-4'>
 		<div class='flex flex-row gap-2 justify-center items-center my-8'>
 			<select class='select select-bordered select-sm' name='season' id='season-select'>

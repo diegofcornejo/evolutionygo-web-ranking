@@ -120,14 +120,14 @@ export default function Ranking() {
         <h2 className='text-lg text-gray-400 leading-8 max-w-4xl'>{description}</h2>
       </div>
       <div className="flex flex-row justify-center gap-4 pt-4">
-        <select className="select select-secondary w-full max-w-xs" value={season} onChange={handleSeasonChange}>
+        <select className="select select-secondary w-full max-w-xs" value={season} onChange={handleSeasonChange} aria-label="Filter by season">
 				{Array.from({ length: parseInt(import.meta.env.PUBLIC_DEFAULT_SEASON) }, (_, index) => (
 					<option key={index} value={index + 1}>
 						{`Season ${index + 1}`}
 					</option>
 				)).reverse()}
         </select>
-        <select className="select select-secondary w-full max-w-xs" value={banList} onChange={handleBanListChange}>
+        <select className="select select-secondary w-full max-w-xs" value={banList} onChange={handleBanListChange} aria-label="Filter by banlist">
           {banListOptions.map((option: string) => (
             <option key={option} value={option}>{option}</option>
           ))}
@@ -151,19 +151,19 @@ export default function Ranking() {
         <table className='table table-zebra bg-base-300'>
           <thead>
             <tr>
-              <th className='max-w-[75px] text-center'>Position</th>
-              <th className='min-w-[200px]'>Username</th>
-              <th>Points</th>
-							<th>Games</th>
-              <th>Wins</th>
-              <th>Losses</th>
-              <th>Win Rate</th>
+              <th scope="col" className='max-w-[75px] text-center'>Position</th>
+              <th scope="col" className='min-w-[200px]'>Username</th>
+              <th scope="col">Points</th>
+              <th scope="col">Games</th>
+              <th scope="col">Wins</th>
+              <th scope="col">Losses</th>
+              <th scope="col">Win Rate</th>
             </tr>
           </thead>
           <tbody>
             {getDisplayDuelists().map((duelist: Duelist) => (
               <tr key={duelist.userId}>
-                <th className='max-w-[75px] text-center'>{duelist.position}</th>
+                <th scope="row" className='max-w-[75px] text-center'>{duelist.position}</th>
                 <td className='min-w-[200px] hover:bg-secondary'>
                   <a href={`/duelists/${duelist.userId}/${banList}?username=${duelist.username}&season=${season}`}>
                     <div className='flex items-center gap-3'>

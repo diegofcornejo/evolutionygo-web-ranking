@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { mount, unmount } from 'svelte';
 import MatchCard from '../../src/components/Cards/MatchCard.svelte';
 import type { Room } from '../../src/types/Room';
 
@@ -50,7 +51,7 @@ describe('MatchCard.svelte', () => {
   });
 
   it('renders player usernames and scores', () => {
-    const instance = new MatchCard({
+    const instance = mount(MatchCard as any, {
       target,
       props: { room: mockRoom },
     });
@@ -61,11 +62,11 @@ describe('MatchCard.svelte', () => {
     expect(target.innerHTML).toContain('vs');
     // The 'Test match' text is only visible in the dialog, not in the initial render
     // expect(target.innerHTML).toContain('Test match');
-    instance.$destroy();
+    unmount(instance);
   });
 
   it('opens and closes the dialog when button is clicked', async () => {
-    const instance = new MatchCard({
+    const instance = mount(MatchCard as any, {
       target,
       props: { room: mockRoom },
     });
@@ -75,15 +76,15 @@ describe('MatchCard.svelte', () => {
     const dialog = document.getElementById('match-card-dialog') as HTMLDialogElement;
     expect(dialog).toBeTruthy();
     // JSDOM does not implement showModal/close, so we mock them
-    let open = false;
-    dialog.showModal = () => { open = true; Object.defineProperty(dialog, 'open', { value: true, configurable: true }); };
-    dialog.close = () => { open = false; Object.defineProperty(dialog, 'open', { value: false, configurable: true }); };
+    
+    dialog.showModal = () => { Object.defineProperty(dialog, 'open', { value: true, configurable: true }); };
+    dialog.close = () => { Object.defineProperty(dialog, 'open', { value: false, configurable: true }); };
     button?.click();
     expect(dialog.open).toBe(true);
     // Simulate close
     const closeBtn = dialog.querySelector('button.btn-primary') as HTMLButtonElement;
     closeBtn?.click();
     expect(dialog.open).toBe(false);
-    instance.$destroy();
+    unmount(instance);
   });
-}); 
+});

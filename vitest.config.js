@@ -7,4 +7,7 @@ export default getViteConfig({
     include: ['tests/**/*.test.{js,ts,jsx,tsx}', 'src/**/*.{test,spec}.{js,ts,jsx,tsx}'],
     setupFiles: ['./tests/setup.ts', './tests/setup-text-encoder.js'],
   },
+  resolve: {
+    conditions: ['browser', 'style'],
+  },
 }); 

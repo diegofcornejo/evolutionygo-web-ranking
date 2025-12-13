@@ -62,6 +62,7 @@ export function SignUpForm({ dialog }: Readonly<{ dialog: string }>) {
 					value={email}
 					onChange={(e) => setEmail(e.target.value)}
 					required
+					aria-label="Email"
 				/>
 			</label>
 			<label className="input input-bordered flex items-center gap-2 w-full">
@@ -74,6 +75,7 @@ export function SignUpForm({ dialog }: Readonly<{ dialog: string }>) {
 					maxLength={14}
 					onChange={(e) => setUsername(e.target.value)}
 					required
+					aria-label="Username"
 				/>
 			</label>
 			<p className={`text-error text-xs h-4 transition-opacity duration-300 ${!error ? 'opacity-0' : 'opacity-100'}`}>

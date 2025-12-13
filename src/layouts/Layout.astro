@@ -7,11 +7,15 @@ import Footer from '@components/Footer.astro';
 import AnimationFrameSnow from '@components/Random/AnimationFrameSnow.svelte';
 interface Props {
 	title: string;
+	description?: string;
+	image?: string;
+	type?: string;
+	canonicalURL?: string | URL;
 }
 
 import '@fontsource-variable/plus-jakarta-sans';
 
-const { title } = Astro.props;
+const { title, description = "Welcome to Evolution Server, a versatile platform for creating Yu-Gi-Oh! matches, fully compatible with EDOPro, Koishi, and YGO Mobile!", image = "/banner1.webp", type = 'website', canonicalURL = new URL(Astro.url.pathname, Astro.site) } = Astro.props;
 const { PUBLIC_ANALYTICS_ID, PUBLIC_ANALYTICS_URL, PUBLIC_DD_RUM_APP_ID, PUBLIC_DD_RUM_CLIENT_TOKEN, PUBLIC_DD_RUM_SERVICE, NODE_ENV } = import.meta.env;
 
 const datadogConfig = {
@@ -21,6 +25,8 @@ const datadogConfig = {
 	env: NODE_ENV,
 	defaultPrivacyLevel: 'mask-user-input',
 }
+
+const resolvedImage = new URL(image, Astro.site).toString();
 ---
 
 <!doctype html>
@@ -29,11 +35,27 @@ const datadogConfig = {
 		<link rel="sitemap" href="/sitemap-index.xml" />
 		<meta charset="UTF-8" />
 		<script is:inline type="text/partytown" async src={PUBLIC_ANALYTICS_URL} data-website-id={PUBLIC_ANALYTICS_ID}></script>
-		<meta name="description" content="Welcome to Evolution Server, a versatile platform for creating Yu-Gi-Oh! matches, fully compatible with EDOPro, Koishi, and YGO Mobile!" />
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" href="/favicon.ico" />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
+		<meta name="description" content={description} />
+		<link rel="canonical" href={canonicalURL} />
+
+		<!-- Open Graph / Facebook -->
+		<meta property="og:type" content={type} />
+		<meta property="og:url" content={canonicalURL} />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:image" content={resolvedImage} />
+
+		<!-- Twitter -->
+		<meta property="twitter:card" content="summary_large_image" />
+		<meta property="twitter:url" content={canonicalURL} />
+		<meta property="twitter:title" content={title} />
+		<meta property="twitter:description" content={description} />
+		<meta property="twitter:image" content={resolvedImage} />
+
 		<script is:inline set:html={`
 			(function(h,o,u,n,d) {
 				h=h[d]=h[d]||{q:[],onReady:function(c){h.q.push(c)}}

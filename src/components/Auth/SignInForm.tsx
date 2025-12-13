@@ -79,21 +79,23 @@ export function SignInForm({ dialog }: Readonly<{ dialog: string }>) {
 					value={email}
 					onChange={(e) => setEmail(e.target.value)}
 					required
+					aria-label="Email"
 				/>
 			</label>
 
 			{!forgotPassword && (
 				<label className="input input-bordered flex items-center gap-2 w-full">
 					<ReactSVG src='/icons/password.svg' className='w-4 h-4 opacity-70' />
-					<input
-						type="password"
-						className="grow"
-						name="password"
-						placeholder="Password"
-						value={password}
-						onChange={(e) => setPassword(e.target.value)}
-						required
-					/>
+				<input
+					type="password"
+					className="grow"
+					name="password"
+					placeholder="Password"
+					value={password}
+					onChange={(e) => setPassword(e.target.value)}
+					required
+					aria-label="Password"
+				/>
 				</label>
 			)}
 

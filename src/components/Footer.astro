@@ -7,14 +7,17 @@ const links = [
 	{
 		icon: 'mdi:discord',
 		url: 'https://discord.gg/bgjddgWkWk',
+		name: 'Discord',
 	},
 	{
 		icon: 'mdi:youtube',
 		url: 'https://www.youtube.com/watch?v=p75116MjEoY',
+		name: 'YouTube',
 	},
 	{
 		icon: 'mdi:github',
 		url: githubUrl,
+		name: 'GitHub',
 	},
 ];
 ---
@@ -48,7 +51,7 @@ const links = [
   <nav class="md:place-self-center md:justify-self-end">
     <div class="grid grid-flow-col gap-4">
 			{links.map((link) => (
-				<a href={link.url} target="_blank">
+				<a href={link.url} target="_blank" aria-label={link.name}>
 					<Icon name={link.icon} class="fill-current text-3xl hover:text-secondary"/>
 				</a>
 			))}

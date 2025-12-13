@@ -108,7 +108,10 @@ const getAvatarUrl = (username: string) => {
 const title = tournament.name;
 ---
 
-<Layout title={title}>
+<Layout 
+	title={title}
+	description={`Join ${tournament.name} on ${tournament.platform}. Format: ${tournament.format}, Banlist: ${tournament.banlist}. Status: ${tournament.status}.`}
+>
 	<main class='w-full max-w-[calc(100%-2rem)] text-[white] text-lg leading-[1.6] mx-auto my-4'>
 		<div class='flex flex-col lg:flex-row gap-4 lg:gap-6 lg:items-stretch'>
 			<!-- Left Side -->
