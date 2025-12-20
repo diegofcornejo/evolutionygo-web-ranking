@@ -32,11 +32,11 @@
 	"dependencies": {
 		"@astrojs/partytown": "2.1.4",
 		"@astrojs/react": "4.4.2",
-		"@astrojs/svelte": "7.2.3",
+		"@astrojs/svelte": "7.2.4",
 		"@fontsource-variable/plus-jakarta-sans": "5.2.8",
 		"@nanostores/persistent": "1.2.0",
 		"@nanostores/react": "1.0.0",
-		"astro": "5.16.5",
+		"astro": "5.16.6",
 		"astro-icon": "1.1.5",
 		"astro-maintenance": "2.0.0",
 		"nanostores": "1.1.0",
@@ -60,18 +60,18 @@
 		"@tailwindcss/typography": "0.5.19",
 		"@tailwindcss/vite": "4.1.18",
 		"@testing-library/jest-dom": "6.9.1",
-		"@testing-library/react": "16.3.0",
+		"@testing-library/react": "16.3.1",
 		"@types/react": "19.2.7",
 		"@types/react-dom": "19.2.3",
-		"@vitest/coverage-v8": "4.0.15",
-		"daisyui": "5.5.13",
+		"@vitest/coverage-v8": "4.0.16",
+		"daisyui": "5.5.14",
 		"husky": "9.1.7",
 		"jsdom": "27.3.0",
 		"lint-staged": "16.2.7",
-		"oxlint": "1.32.0",
+		"oxlint": "1.34.0",
 		"tailwindcss": "4.1.18",
 		"typescript": "5.9.3",
-		"vitest": "4.0.15"
+		"vitest": "4.0.16"
 	},
 	"lint-staged": {
 		"*.{astro,js,jsx,ts,tsx}": [
