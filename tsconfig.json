@@ -3,13 +3,13 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     "jsxImportSource": "react",
-    "baseUrl": ".",
     "paths": {
-      "@components/*": ["src/components/*"],
-      "@types": ["src/types/types.d.ts"],
-			"@sections/*": ["src/sections/*"],
-			"@stores/*": ["src/stores/*"],
-			"@layouts/*": ["src/layouts/*"]
+      "*": ["./*"],
+      "@components/*": ["./src/components/*"],
+      "@types": ["./src/types/types.d.ts"],
+      "@sections/*": ["./src/sections/*"],
+      "@stores/*": ["./src/stores/*"],
+      "@layouts/*": ["./src/layouts/*"]
     }
   },
   "exclude": ["node_modules", "dist", "coverage"]
