@@ -4,6 +4,24 @@ import UnderConstruction from '@components/UnderConstruction.astro';
 const title = 'Tournaments';
 ---
 
-<Layout title={title} description="View and join upcoming Yu-Gi-Oh! tournaments on Evolution Server. Compete for prizes and glory!">
+<Layout 
+	title={title} 
+	description="View and join upcoming Yu-Gi-Oh! tournaments on Evolution Server. Compete for prizes and glory!"
+	keywords={[
+		'Yu-Gi-Oh tournaments',
+		'YGO tournaments',
+		'online card game tournaments',
+		'competitive Yu-Gi-Oh',
+		'Evolution YGO tournaments',
+		'free Yu-Gi-Oh tournaments'
+	]}
+	jsonLd={{
+		'@context': 'https://schema.org',
+		'@type': 'ItemList',
+		name: 'Evolution YGO Tournaments',
+		description: 'List of Yu-Gi-Oh! tournaments on Evolution Server',
+		itemListOrder: 'https://schema.org/ItemListOrderDescending'
+	}}
+>
 	<UnderConstruction title={title} />
 </Layout>

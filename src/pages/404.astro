@@ -1,11 +1,17 @@
 ---
 import Layout from '@layouts/Layout.astro';
-const title = 'NOT FOUND';
+const title = 'Page Not Found';
 const image = '/img/404.webp';
 const description = 'The page you are looking for does not exist. Please check the URL and try again.';
 ---
 
-<Layout title={title} description={description} image={image}>
+<Layout 
+	title={title} 
+	description={description} 
+	image={image}
+	noindex={true}
+	nofollow={true}
+>
 	<main class='w-full text-[white] text-xl leading-[1.6] mx-auto'>
 		<div class='flex flex-col items-center gap-4 py-8'>
 			<img

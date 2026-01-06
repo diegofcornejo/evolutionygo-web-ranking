@@ -1,0 +1,54 @@
+{
+  "name": "Evolution YGO",
+  "short_name": "Evolution YGO",
+  "description": "A versatile platform for creating Yu-Gi-Oh! matches, fully compatible with EDOPro, Koishi, and YGO Mobile!",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#13151a",
+  "theme_color": "#13151a",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["games", "entertainment"],
+  "icons": [
+    {
+      "src": "/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon.ico",
+      "sizes": "32x32",
+      "type": "image/x-icon"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/banners/banner1.webp",
+      "sizes": "1200x630",
+      "type": "image/webp",
+      "form_factor": "wide",
+      "label": "Evolution YGO Homepage"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Tournaments",
+      "short_name": "Tournaments",
+      "description": "View and join Yu-Gi-Oh! tournaments",
+      "url": "/tournaments",
+      "icons": [{ "src": "/logo.svg", "sizes": "any" }]
+    },
+    {
+      "name": "Developers",
+      "short_name": "Devs",
+      "description": "Developer resources and API documentation",
+      "url": "/developers",
+      "icons": [{ "src": "/logo.svg", "sizes": "any" }]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
+}
+

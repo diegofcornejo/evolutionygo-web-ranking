@@ -9,11 +9,37 @@ import Faqs from '@sections/Faqs.astro';
 import Crew from '@sections/Crew.astro';
 import { RoomsWebSocketListener } from '@components/RoomsWebSocketListener';
 import DuelistOfTheWeek from '@components/Cards/DuelistOfTheWeek.astro';
-// import { Eyes, LightsOut } from 'react-halloween';
-const title = `Evolution YGO Season ${import.meta.env.PUBLIC_DEFAULT_SEASON}`;
+
+const currentSeason = import.meta.env.PUBLIC_DEFAULT_SEASON;
+const title = `Evolution YGO Season ${currentSeason}`;
+const description = `Play Yu-Gi-Oh! online for free on Evolution YGO Season ${currentSeason}. Compatible with EDOPro, Koishi, and YGO Mobile. Join competitive rankings, participate in tournaments, and duel players worldwide!`;
+
+const keywords = [
+	'Yu-Gi-Oh online',
+	'YGOPro',
+	'EDOPro',
+	'Koishi',
+	'YGO Mobile',
+	'free Yu-Gi-Oh',
+	'online dueling',
+	'card game',
+	'competitive Yu-Gi-Oh',
+	'Yu-Gi-Oh ranking',
+	'Yu-Gi-Oh tournaments',
+	`Season ${currentSeason}`,
+	'Evolution YGO',
+	'Evolution Server',
+	'duel links alternative',
+	'master duel alternative'
+];
 ---
 
-<Layout title={title}>
+<Layout 
+	title={title} 
+	description={description}
+	keywords={keywords}
+	image="/banners/banner1.webp"
+>
 	<!-- <LightsOut client:only='react' /> -->
 	<main class='w-full text-[white] text-xl leading-[1.6] mx-auto'>
 		<h1

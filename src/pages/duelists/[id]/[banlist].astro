@@ -92,8 +92,41 @@ const localDateString = (date: string) => {
 
 <Layout 
 	title={`Duelist ${duelist.username} Stats`}
-	description={`Check out ${duelist.username}'s stats, match history, and achievements in Evolution YGO Season ${season}. Wins: ${duelist.wins}, Losses: ${duelist.losses}.`}
+	description={`Check out ${duelist.username}'s stats, match history, and achievements in Evolution YGO Season ${season}. Wins: ${duelist.wins}, Losses: ${duelist.losses}, Win Rate: ${duelist.winRate}%.`}
 	image={`https://ui-avatars.com/api/?name=${encodeURIComponent(duelist.username)}&background=random&size=512`}
+	type="profile"
+	keywords={[
+		duelist.username,
+		'Yu-Gi-Oh player',
+		'duelist stats',
+		'YGO ranking',
+		`Season ${season}`,
+		banlistName || 'Global',
+		'match history',
+		'player profile'
+	]}
+	jsonLd={{
+		'@context': 'https://schema.org',
+		'@type': 'ProfilePage',
+		mainEntity: {
+			'@type': 'Person',
+			name: duelist.username,
+			identifier: id,
+			description: `Yu-Gi-Oh! duelist on Evolution YGO with ${duelist.wins} wins and ${duelist.losses} losses.`,
+			interactionStatistic: [
+				{
+					'@type': 'InteractionCounter',
+					interactionType: 'https://schema.org/WinAction',
+					userInteractionCount: duelist.wins
+				},
+				{
+					'@type': 'InteractionCounter',
+					interactionType: 'https://schema.org/LoseAction',
+					userInteractionCount: duelist.losses
+				}
+			]
+		}
+	}}
 >
 	<main class='w-full max-w-[calc(100%_-_2rem)] text-[white] text-lg leading-[1.6] mx-auto my-4'>
 		<div class='flex flex-row gap-2 justify-center items-center my-8'>

@@ -1,0 +1,251 @@
+---
+/**
+ * SEO Component for Evolution YGO
+ * Provides comprehensive meta tags, Open Graph, Twitter Cards, and JSON-LD structured data
+ */
+
+interface Props {
+	title: string;
+	description?: string;
+	image?: string;
+	type?: 'website' | 'article' | 'profile';
+	canonicalURL?: string | URL;
+	noindex?: boolean;
+	nofollow?: boolean;
+	keywords?: string[];
+	author?: string;
+	publishedTime?: string;
+	modifiedTime?: string;
+	// JSON-LD specific
+	jsonLd?: Record<string, unknown>;
+}
+
+const SITE_NAME = 'Evolution YGO';
+const DEFAULT_DESCRIPTION = 'Welcome to Evolution Server, a versatile platform for creating Yu-Gi-Oh! matches, fully compatible with EDOPro, Koishi, and YGO Mobile! Join the community, compete in rankings, and participate in tournaments.';
+const DEFAULT_IMAGE = '/banners/banner1.webp';
+const DEFAULT_KEYWORDS = [
+	'Yu-Gi-Oh',
+	'YGO',
+	'YGOPro',
+	'EDOPro',
+	'Koishi',
+	'YGO Mobile',
+	'dueling',
+	'card game',
+	'online dueling',
+	'ranking',
+	'tournaments',
+	'Evolution YGO',
+	'Evolution Server',
+	'free Yu-Gi-Oh',
+	'competitive Yu-Gi-Oh'
+];
+
+const {
+	title,
+	description = DEFAULT_DESCRIPTION,
+	image = DEFAULT_IMAGE,
+	type = 'website',
+	canonicalURL = new URL(Astro.url.pathname, Astro.site),
+	noindex = false,
+	nofollow = false,
+	keywords = DEFAULT_KEYWORDS,
+	author = 'Evolution YGO Team',
+	publishedTime,
+	modifiedTime,
+	jsonLd,
+} = Astro.props;
+
+const resolvedImage = new URL(image, Astro.site).toString();
+const resolvedCanonical = canonicalURL instanceof URL ? canonicalURL.toString() : canonicalURL;
+const fullTitle = title.includes(SITE_NAME) ? title : `${title} | ${SITE_NAME}`;
+
+// Build robots directive
+const robotsContent = [
+	noindex ? 'noindex' : 'index',
+	nofollow ? 'nofollow' : 'follow',
+	'max-image-preview:large',
+	'max-snippet:-1',
+	'max-video-preview:-1'
+].join(', ');
+
+// Default Organization JSON-LD
+const organizationJsonLd = {
+	'@context': 'https://schema.org',
+	'@type': 'Organization',
+	name: SITE_NAME,
+	url: Astro.site?.toString(),
+	logo: new URL('/logo.svg', Astro.site).toString(),
+	description: DEFAULT_DESCRIPTION,
+	sameAs: [
+		'https://discord.com/invite/bgjddgWkWk',
+		'https://github.com/evolutionygo'
+	],
+	contactPoint: {
+		'@type': 'ContactPoint',
+		contactType: 'customer support',
+		url: 'https://discord.com/invite/bgjddgWkWk'
+	}
+};
+
+// Default WebSite JSON-LD with search action
+const websiteJsonLd = {
+	'@context': 'https://schema.org',
+	'@type': 'WebSite',
+	name: SITE_NAME,
+	url: Astro.site?.toString(),
+	description: DEFAULT_DESCRIPTION,
+	potentialAction: {
+		'@type': 'SearchAction',
+		target: {
+			'@type': 'EntryPoint',
+			urlTemplate: `${Astro.site}duelists/{search_term_string}/Global`
+		},
+		'query-input': 'required name=search_term_string'
+	}
+};
+
+// WebPage JSON-LD
+const webPageJsonLd = {
+	'@context': 'https://schema.org',
+	'@type': 'WebPage',
+	name: title,
+	description: description,
+	url: resolvedCanonical,
+	isPartOf: {
+		'@type': 'WebSite',
+		name: SITE_NAME,
+		url: Astro.site?.toString()
+	},
+	...(publishedTime && { datePublished: publishedTime }),
+	...(modifiedTime && { dateModified: modifiedTime }),
+	inLanguage: 'en-US'
+};
+
+// Breadcrumb JSON-LD
+const pathSegments = Astro.url.pathname.split('/').filter(Boolean);
+const breadcrumbItems = [
+	{
+		'@type': 'ListItem',
+		position: 1,
+		name: 'Home',
+		item: Astro.site?.toString()
+	},
+	...pathSegments.map((segment, index) => ({
+		'@type': 'ListItem',
+		position: index + 2,
+		name: segment.charAt(0).toUpperCase() + segment.slice(1).replace(/-/g, ' '),
+		item: new URL(pathSegments.slice(0, index + 1).join('/'), Astro.site).toString()
+	}))
+];
+
+const breadcrumbJsonLd = pathSegments.length > 0 ? {
+	'@context': 'https://schema.org',
+	'@type': 'BreadcrumbList',
+	itemListElement: breadcrumbItems
+} : null;
+
+// VideoGame JSON-LD for gaming context
+const videoGameJsonLd = {
+	'@context': 'https://schema.org',
+	'@type': 'VideoGame',
+	name: 'Evolution YGO',
+	description: 'A free online Yu-Gi-Oh! dueling platform compatible with EDOPro, Koishi, and YGO Mobile.',
+	genre: ['Card Game', 'Strategy', 'Collectible Card Game'],
+	gamePlatform: ['Web Browser', 'Windows', 'macOS', 'Linux', 'Android'],
+	applicationCategory: 'Game',
+	operatingSystem: 'Windows, macOS, Linux, Android',
+	offers: {
+		'@type': 'Offer',
+		price: '0',
+		priceCurrency: 'USD'
+	},
+	author: {
+		'@type': 'Organization',
+		name: SITE_NAME
+	}
+};
+
+// Combine all JSON-LD
+const allJsonLd = [
+	organizationJsonLd,
+	websiteJsonLd,
+	webPageJsonLd,
+	videoGameJsonLd,
+	...(breadcrumbJsonLd ? [breadcrumbJsonLd] : []),
+	...(jsonLd ? [jsonLd] : [])
+];
+---
+
+<!-- Primary Meta Tags -->
+<title>{fullTitle}</title>
+<meta name="title" content={fullTitle} />
+<meta name="description" content={description} />
+<meta name="keywords" content={keywords.join(', ')} />
+<meta name="author" content={author} />
+<meta name="robots" content={robotsContent} />
+<meta name="googlebot" content={robotsContent} />
+
+<!-- Canonical URL -->
+<link rel="canonical" href={resolvedCanonical} />
+
+<!-- Sitemap -->
+<link rel="sitemap" href="/sitemap-index.xml" />
+
+<!-- Favicon and Icons -->
+<link rel="icon" href="/favicon.ico" sizes="32x32" />
+<link rel="icon" href="/logo.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="/logo.svg" />
+<link rel="manifest" href="/manifest.json" />
+
+<!-- Theme and App Meta -->
+<meta name="theme-color" content="#13151a" />
+<meta name="color-scheme" content="dark light" />
+<meta name="application-name" content={SITE_NAME} />
+<meta name="apple-mobile-web-app-title" content={SITE_NAME} />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="format-detection" content="telephone=no" />
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content={type} />
+<meta property="og:url" content={resolvedCanonical} />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={resolvedImage} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content={title} />
+<meta property="og:site_name" content={SITE_NAME} />
+<meta property="og:locale" content="en_US" />
+{publishedTime && <meta property="article:published_time" content={publishedTime} />}
+{modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:url" content={resolvedCanonical} />
+<meta name="twitter:title" content={fullTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={resolvedImage} />
+<meta name="twitter:image:alt" content={title} />
+<meta name="twitter:creator" content="@evolutionygo" />
+<meta name="twitter:site" content="@evolutionygo" />
+
+<!-- Preconnect to important origins -->
+<link rel="preconnect" href="https://api.evolutionygo.com" />
+<link rel="preconnect" href="https://ui-avatars.com" />
+<link rel="dns-prefetch" href="https://api.evolutionygo.com" />
+<link rel="dns-prefetch" href="https://ui-avatars.com" />
+<link rel="dns-prefetch" href="https://www.datadoghq-browser-agent.com" />
+
+<!-- Security Headers -->
+<meta http-equiv="X-Content-Type-Options" content="nosniff" />
+<meta http-equiv="X-Frame-Options" content="SAMEORIGIN" />
+<meta name="referrer" content="strict-origin-when-cross-origin" />
+
+<!-- JSON-LD Structured Data -->
+{allJsonLd.map((ld) => (
+	<script is:inline type="application/ld+json" set:html={JSON.stringify(ld)} />
+))}
+
