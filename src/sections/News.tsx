@@ -12,19 +12,19 @@ export default () => {
 		{
 			id: 1,
 			image: '/banners/banner1.webp',
-			title: 'Season 5 is here!',
-			description: 'Evolution version 2.7.0 is now available!'
+			title: 'Season 6 is here!',
+			description: 'Evolution version 2.11.0 is now available!'
 		},
 		{
 			id: 2,
 			image: '/banners/banner2.webp',
-			title: 'TCG Champions 2024',
+			title: 'TCG Champions',
 			description: 'TEAM HABANA is the new champion!'
 		},
 		{
 			id: 3,
 			image: '/banners/banner3.webp',
-			title: 'Edison Champions 2024',
+			title: 'Edison Champions',
 			description: 'TEAM AyD Heaven is the new champion!'
 		}
 	];
