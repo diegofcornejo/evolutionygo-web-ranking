@@ -102,7 +102,10 @@ import menuItems from './menuItems';
 						<li>
 							<a href={item.href} target={item?.target} data-umami-event={item.trackEvent}>
 								{item.icon && <Icon name={item.icon} class='fill-current text-2xl'/>}
-								{item.name}
+								<span class="relative">
+									{item.name}
+									{item.newTab && <span class="absolute -top-2 left-1/2 -translate-x-1/2 text-[8px] font-bold text-primary">NEW</span>}
+								</span>
 							</a>
 						</li>
 					),
