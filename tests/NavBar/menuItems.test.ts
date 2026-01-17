@@ -14,9 +14,11 @@ describe('NavBar Menu Items', () => {
     expect(menuNames).toContain('Ranking');
     expect(menuNames).toContain('Features');
     expect(menuNames).toContain('Downloads');
+    expect(menuNames).toContain('Commands');
     expect(menuNames).toContain('Tournaments');
-    expect(menuNames).toContain('Developers');
-    // expect(menuNames).toContain('Status');
+    // expect(menuNames).toContain('Developers');
+    expect(menuNames).toContain('Stats');
+    expect(menuNames).toContain('Status');
     expect(menuNames).toContain('Social');
   });
 
@@ -29,14 +31,31 @@ describe('NavBar Menu Items', () => {
     expect(homeItem?.submenu).toBeUndefined();
   });
 
-  /* it('has correct structure for external links', () => {
+  it('has correct structure for external links', () => {
     const statusItem = menuItems.find(item => item.name === 'Status');
     
     expect(statusItem).toBeDefined();
     expect(statusItem?.href).toBe('https://status.evolutionygo.com');
     expect(statusItem?.target).toBe('_blank');
     expect(statusItem?.trackEvent).toBe('menu-click-status');
-  }); */
+  });
+
+  it('has correct structure for Commands item', () => {
+    const commandsItem = menuItems.find(item => item.name === 'Commands');
+    
+    expect(commandsItem).toBeDefined();
+    expect(commandsItem?.href).toBe('/#special-commands');
+    expect(commandsItem?.trackEvent).toBe('menu-click-commands');
+  });
+
+  it('has correct structure for Stats item', () => {
+    const statsItem = menuItems.find(item => item.name === 'Stats');
+    
+    expect(statsItem).toBeDefined();
+    expect(statsItem?.href).toBe('/stats');
+    expect(statsItem?.newTab).toBe(true);
+    expect(statsItem?.trackEvent).toBe('menu-click-stats');
+  });
 
   it('has correct structure for disabled items', () => {
     const tournamentsItem = menuItems.find(item => item.name === 'Tournaments');
