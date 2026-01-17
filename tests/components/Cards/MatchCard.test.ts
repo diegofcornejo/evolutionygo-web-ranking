@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { mount, unmount } from 'svelte';
 import MatchCard from '@components/Cards/MatchCard.svelte';
-import type { Room } from '@types/Room';
+import type { Room } from '@types';
 
 // Mock the roomsStore
 vi.mock('@stores/rooms/roomsStore', () => {
