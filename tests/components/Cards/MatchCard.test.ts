@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { mount, unmount } from 'svelte';
-import MatchCard from '../../src/components/Cards/MatchCard.svelte';
-import type { Room } from '../../src/types/Room';
+import MatchCard from '@components/Cards/MatchCard.svelte';
+import type { Room } from '@types';
 
 // Mock the roomsStore
-vi.mock('../src/stores/rooms/roomsStore', () => {
+vi.mock('@stores/rooms/roomsStore', () => {
   return {
     roomsStore: {
       subscribe: (run: any) => {

@@ -7,17 +7,17 @@ import {
   update, 
   updateUser, 
   setTheme 
-} from '../../src/components/NavBar/helper';
-import { getSession, updateSession } from '../../src/stores/sessionStore';
-import { theme } from '../../src/stores/themeStore';
+} from '@components/NavBar/helper';
+import { getSession, updateSession } from '@stores/sessionStore';
+import { theme } from '@stores/themeStore';
 
 // Mock dependencies
-vi.mock('../../src/stores/sessionStore', () => ({
+vi.mock('@stores/sessionStore', () => ({
   getSession: vi.fn(),
   updateSession: vi.fn(),
 }));
 
-vi.mock('../../src/stores/themeStore', () => ({
+vi.mock('@stores/themeStore', () => ({
   theme: {
     get: vi.fn(),
     set: vi.fn(),

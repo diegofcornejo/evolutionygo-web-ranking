@@ -11,7 +11,7 @@ Object.defineProperty(import.meta, 'env', {
 });
 
 // Mock the session store
-vi.mock('../../src/stores/sessionStore', () => ({
+vi.mock('@stores/sessionStore', () => ({
   session: {
     subscribe: vi.fn((callback) => {
       // Call the callback immediately with a mock session
@@ -24,7 +24,7 @@ vi.mock('../../src/stores/sessionStore', () => ({
 }));
 
 // Mock the theme store
-vi.mock('../../src/stores/themeStore', () => ({
+vi.mock('@stores/themeStore', () => ({
   theme: {
     get: vi.fn(() => 'night'),
     set: vi.fn()
@@ -32,7 +32,7 @@ vi.mock('../../src/stores/themeStore', () => ({
 }));
 
 // Mock the helper functions
-vi.mock('../../src/components/NavBar/helper', () => ({
+vi.mock('@components/NavBar/helper', () => ({
   update: vi.fn(),
   updateUser: vi.fn(),
   setTheme: vi.fn(),
@@ -158,7 +158,7 @@ vi.mock('astro/container', () => ({
   },
 }));
 
-import Navbar from '../../src/components/NavBar/Navbar.astro';
+import Navbar from '@components/NavBar/Navbar.astro';
 
 describe('Navbar component', () => {
   beforeEach(() => {

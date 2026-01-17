@@ -11,7 +11,7 @@ vi.mock('astro/container', () => ({
   },
 }));
 
-import AchievementCard from '../../src/components/Cards/AchievementCard.astro';
+import AchievementCard from '@components/Cards/AchievementCard.astro';
 
 const mockProps = {
   id: 'achv1',

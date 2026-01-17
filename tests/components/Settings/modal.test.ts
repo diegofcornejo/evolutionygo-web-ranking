@@ -27,7 +27,7 @@ vi.mock('astro/container', () => ({
   },
 }));
 
-import Modal from '../../src/components/Settings/Modal.astro';
+import Modal from '@components/Settings/Modal.astro';
 
 describe('Settings Modal component', () => {
   it('renders modal with correct structure', async () => {

@@ -8,7 +8,7 @@ vi.mock('react-svg', () => ({ ReactSVG: () => <span data-testid="svg" /> }));
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, fireEvent, screen, waitFor } from '@testing-library/react';
-import { SignUpForm } from '../../src/components/Auth/SignUpForm';
+import { SignUpForm } from '@components/Auth/SignUpForm';
 
 function mockResponse({ ok = true, statusText = '', json = async () => ({}) }) {
   return {
