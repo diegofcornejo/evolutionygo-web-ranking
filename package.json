@@ -73,10 +73,5 @@
 		"tailwindcss": "4.1.18",
 		"typescript": "5.9.3",
 		"vitest": "4.0.17"
-	},
-	"lint-staged": {
-		"*.{astro,js,jsx,ts,tsx}": [
-			"oxlint"
-		]
 	}
 }

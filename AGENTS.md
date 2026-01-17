@@ -156,3 +156,11 @@ const session = useStore($session);
 3. **Tailwind 4:** Updated Tailwind CSS v4 syntax
 4. **SSR:** App runs in server mode, not static
 5. **Icons:** Use `astro-icon` with `@iconify-json/ic` and `@iconify-json/mdi` collections
+
+
+## Commit & Pull Request Guidelines
+
+Follow conventional-commit style: `<type>[scope]: <description>`
+
+**Types:** `feat`, `fix`, `docs`, `chore`, `perf`, `refactor`, `style`, `test`
+**Description:** Clear and medium length description of the change.
