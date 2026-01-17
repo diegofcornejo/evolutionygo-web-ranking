@@ -7,9 +7,11 @@
       "*": ["./*"],
       "@components/*": ["./src/components/*"],
       "@types": ["./src/types/types.d.ts"],
+      "@types/*": ["./src/types/*"],
       "@sections/*": ["./src/sections/*"],
       "@stores/*": ["./src/stores/*"],
-      "@layouts/*": ["./src/layouts/*"]
+      "@layouts/*": ["./src/layouts/*"],
+      "@pages/*": ["./src/pages/*"]
     }
   },
   "exclude": ["node_modules", "dist", "coverage"]

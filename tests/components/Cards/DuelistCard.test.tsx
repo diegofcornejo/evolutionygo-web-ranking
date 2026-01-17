@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react';
-import DuelistCard from '../../src/components/Cards/DuelistCard';
+import DuelistCard from '@components/Cards/DuelistCard';
 import { describe, it, expect } from 'vitest';
 
 const mockProps = {

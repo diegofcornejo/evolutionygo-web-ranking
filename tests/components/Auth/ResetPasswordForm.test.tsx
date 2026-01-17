@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, fireEvent, screen, waitFor } from '@testing-library/react';
-import { ResetPasswordForm } from '../../src/components/Auth/ResetPasswordForm';
+import { ResetPasswordForm } from '@components/Auth/ResetPasswordForm';
 import { toast } from 'sonner';
 
 vi.mock('react-svg', () => ({ ReactSVG: () => <span data-testid="svg" /> }));

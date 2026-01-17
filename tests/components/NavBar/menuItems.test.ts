@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import menuItems from '../../src/components/NavBar/menuItems';
+import menuItems from '@components/NavBar/menuItems';
 
 describe('NavBar Menu Items', () => {
   it('exports an array of menu items', () => {

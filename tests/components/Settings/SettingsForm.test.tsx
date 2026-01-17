@@ -1,15 +1,15 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, fireEvent, screen, waitFor } from '@testing-library/react';
-import SettingsForm from '../../src/components/Settings/SettingsForm';
+import SettingsForm from '@components/Settings/SettingsForm';
 import { toast } from 'sonner';
-import { logout } from '../../src/components/NavBar/helper';
-import { getSession } from '../../src/stores/sessionStore';
+import { logout } from '@components/NavBar/helper';
+import { getSession } from '@stores/sessionStore';
 
 // Mock dependencies
 vi.mock('react-svg', () => ({ ReactSVG: () => <span data-testid="svg" /> }));
 vi.mock('sonner', () => ({ toast: { success: vi.fn() } }));
-vi.mock('../../src/components/NavBar/helper', () => ({ logout: vi.fn() }));
-vi.mock('../../src/stores/sessionStore', () => ({ 
+vi.mock('@components/NavBar/helper', () => ({ logout: vi.fn() }));
+vi.mock('@stores/sessionStore', () => ({ 
   getSession: vi.fn(() => ({ token: 'mock-token' })) 
 }));
 

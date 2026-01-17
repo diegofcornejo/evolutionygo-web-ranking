@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, fireEvent, screen, waitFor } from '@testing-library/react';
-import { SignInForm } from '../../src/components/Auth/SignInForm';
+import { SignInForm } from '@components/Auth/SignInForm';
 import { toast } from 'sonner';
-import { updateSession } from '../../src/stores/sessionStore';
+import { updateSession } from '@stores/sessionStore';
 
 vi.mock('react-svg', () => ({ ReactSVG: () => <span data-testid="svg" /> }));
 vi.mock('sonner', () => ({ toast: { success: vi.fn() } }));
-vi.mock('../../src/stores/sessionStore', () => ({ updateSession: vi.fn() }));
+vi.mock('@stores/sessionStore', () => ({ updateSession: vi.fn() }));
 
 function mockResponse({ ok = true, statusText = '', json = async () => ({}) }) {
   return {

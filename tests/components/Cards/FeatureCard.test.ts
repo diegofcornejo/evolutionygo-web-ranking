@@ -11,7 +11,7 @@ vi.mock('astro/container', () => ({
   },
 }));
 
-import FeatureCard from '../../src/components/Cards/FeatureCard.astro';
+import FeatureCard from '@components/Cards/FeatureCard.astro';
 
 describe('FeatureCard.astro', () => {
   it('renders feature info', async () => {

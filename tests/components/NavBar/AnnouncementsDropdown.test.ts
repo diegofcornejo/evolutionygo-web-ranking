@@ -93,7 +93,7 @@ const mockAnnouncementsResponse = () => ({
   })
 });
 
-import AnnouncementsDropdown from '../../src/components/NavBar/AnnouncementsDropdown.astro';
+import AnnouncementsDropdown from '@components/NavBar/AnnouncementsDropdown.astro';
 
 describe('AnnouncementsDropdown component', () => {
   beforeEach(() => {
