@@ -38,11 +38,13 @@ describe('MatchHistory', () => {
 			<MatchHistory matches={matches} currentUsername="AceDuelist" />
 		);
 
-		expect(getByText('vs RivalOne')).toBeTruthy();
-		expect(getByText('vs RivalTwo')).toBeTruthy();
+		// Check both matches are visible (search by opponent name)
+		expect(getByText(/RivalOne/)).toBeTruthy();
+		expect(getByText(/RivalTwo/)).toBeTruthy();
 
+		// Filter by wins
 		fireEvent.click(getByText('Wins'));
-		expect(getByText('vs RivalOne')).toBeTruthy();
-		expect(queryByText('vs RivalTwo')).toBeNull();
+		expect(getByText(/RivalOne/)).toBeTruthy();
+		expect(queryByText(/RivalTwo/)).toBeNull();
 	});
 });

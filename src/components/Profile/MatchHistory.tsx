@@ -6,10 +6,12 @@ interface MatchHistoryProps {
 	currentUsername: string;
 }
 
-type FilterType = 'all' | 'wins' | 'losses';
+type ResultFilterType = 'all' | 'wins' | 'losses';
+type MatchTypeFilter = 'all' | 'pvp' | 'tag';
 
 export default function MatchHistory({ matches, currentUsername }: Readonly<MatchHistoryProps>) {
-	const [filter, setFilter] = useState<FilterType>('all');
+	const [resultFilter, setResultFilter] = useState<ResultFilterType>('all');
+	const [matchTypeFilter, setMatchTypeFilter] = useState<MatchTypeFilter>('all');
 	const [searchTerm, setSearchTerm] = useState('');
 
 	const getIsPvP = (match: Match) =>
@@ -38,22 +40,34 @@ export default function MatchHistory({ matches, currentUsername }: Readonly<Matc
 
 	const filteredMatches = useMemo(() => {
 		return matches.filter((match) => {
-			const matchesFilter =
-				filter === 'all' ||
-				(filter === 'wins' && match.winner) ||
-				(filter === 'losses' && !match.winner);
+			const matchesResultFilter =
+				resultFilter === 'all' ||
+				(resultFilter === 'wins' && match.winner) ||
+				(resultFilter === 'losses' && !match.winner);
+
+			const isPvP = getIsPvP(match);
+			const matchesTypeFilter =
+				matchTypeFilter === 'all' ||
+				(matchTypeFilter === 'pvp' && isPvP) ||
+				(matchTypeFilter === 'tag' && !isPvP);
 
 			const opponentName = match.opponentNames.join(', ').toLowerCase();
 			const matchesSearch = searchTerm === '' || opponentName.includes(searchTerm.toLowerCase());
 
-			return matchesFilter && matchesSearch;
+			return matchesResultFilter && matchesTypeFilter && matchesSearch;
 		});
-	}, [matches, filter, searchTerm]);
+	}, [matches, resultFilter, matchTypeFilter, searchTerm]);
 
-	const filterCounts = useMemo(() => ({
+	const resultFilterCounts = useMemo(() => ({
 		all: matches.length,
 		wins: matches.filter((m) => m.winner).length,
 		losses: matches.filter((m) => !m.winner).length,
+	}), [matches]);
+
+	const matchTypeFilterCounts = useMemo(() => ({
+		all: matches.length,
+		pvp: matches.filter((m) => getIsPvP(m)).length,
+		tag: matches.filter((m) => !getIsPvP(m)).length,
 	}), [matches]);
 
 	if (matches.length === 0) {
@@ -74,14 +88,15 @@ export default function MatchHistory({ matches, currentUsername }: Readonly<Matc
 		<div className="space-y-4">
 			{/* Filters */}
 			<div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-				<div className="flex gap-2">
+				<div className="flex flex-wrap gap-2 items-center">
+					{/* Result Filter */}
 					{(['all', 'wins', 'losses'] as const).map((filterType) => (
 						<button
 							key={filterType}
 							type="button"
-							onClick={() => setFilter(filterType)}
+							onClick={() => setResultFilter(filterType)}
 							className={`btn btn-sm ${
-								filter === filterType
+								resultFilter === filterType
 									? filterType === 'wins'
 										? 'btn-success'
 										: filterType === 'losses'
@@ -92,7 +107,27 @@ export default function MatchHistory({ matches, currentUsername }: Readonly<Matc
 						>
 							{filterType.charAt(0).toUpperCase() + filterType.slice(1)}
 							<span className="badge badge-sm badge-ghost ml-1">
-								{filterCounts[filterType]}
+								{resultFilterCounts[filterType]}
+							</span>
+						</button>
+					))}
+
+					{/* Separator */}
+					<div className="w-px h-6 bg-base-300 mx-1 hidden sm:block" />
+
+					{/* Match Type Filter */}
+					{(['all', 'pvp', 'tag'] as const).map((filterType) => (
+						<button
+							key={`type-${filterType}`}
+							type="button"
+							onClick={() => setMatchTypeFilter(filterType)}
+							className={`btn btn-sm ${
+								matchTypeFilter === filterType ? 'btn-neutral' : 'btn-ghost'
+							}`}
+						>
+							{filterType === 'pvp' ? 'PvP' : filterType === 'tag' ? 'TAG' : 'All Types'}
+							<span className="badge badge-sm badge-ghost ml-1">
+								{matchTypeFilterCounts[filterType]}
 							</span>
 						</button>
 					))}
@@ -164,7 +199,7 @@ export default function MatchHistory({ matches, currentUsername }: Readonly<Matc
 										<div>
 											<div className="flex items-center gap-2 flex-wrap">
 												<span className="font-semibold">
-													vs {match.opponentNames.join(', ')}
+													{match.playerNames.join(', ')} <span className="text-warning"> vs </span> {match.opponentNames.join(', ')}
 												</span>
 												{!getIsPvP(match) && (
 													<span className="badge badge-xs badge-ghost">TAG</span>

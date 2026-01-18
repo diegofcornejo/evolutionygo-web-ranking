@@ -104,25 +104,28 @@ const seasonOptions = Array.from(
 ---
 
 <!-- TODO: This could be refactored to a react component, at this time it's to learn how to do this in astro -->
-<script>
-	const seasonSelect = document.getElementById('season-select');
-	const banlistSelect = document.getElementById('banlist-select');
-	const id = document.querySelector('[data-id]')?.getAttribute('data-id') || null;
-	const username = document.querySelector('[data-username]')?.getAttribute('data-username') || null;
+<script is:inline>
+	document.addEventListener('DOMContentLoaded', () => {
+		const seasonSelect = document.getElementById('season-select');
+		const banlistSelect = document.getElementById('banlist-select');
+		const dataElement = document.querySelector('[data-id]');
+		const id = dataElement?.getAttribute('data-id') || null;
+		const username = dataElement?.getAttribute('data-username') || null;
 
-	const reloadDuelistPage = () => {
-		const season = (seasonSelect as HTMLSelectElement)?.value || null;
-		const banlist = (banlistSelect as HTMLSelectElement)?.value || null;
+		const reloadDuelistPage = () => {
+			const season = seasonSelect?.value || null;
+			const banlist = banlistSelect?.value || null;
 
-		const newUrl = new URL(`${window.location.origin}/duelists/${id}/${banlist}`);
-		newUrl.searchParams.set('username', username || '');
-		newUrl.searchParams.set('season', season || '');
+			const newUrl = new URL(`${window.location.origin}/duelists/${id}/${banlist}`);
+			newUrl.searchParams.set('username', username || '');
+			newUrl.searchParams.set('season', season || '');
 
-		window.location.href = newUrl.toString();
-	};
+			window.location.href = newUrl.toString();
+		};
 
-	seasonSelect?.addEventListener('change', reloadDuelistPage);
-	banlistSelect?.addEventListener('change', reloadDuelistPage);
+		seasonSelect?.addEventListener('change', reloadDuelistPage);
+		banlistSelect?.addEventListener('change', reloadDuelistPage);
+	});
 </script>
 
 <Layout 

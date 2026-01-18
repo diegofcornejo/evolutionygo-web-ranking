@@ -164,14 +164,8 @@ function AchievementCard({ achievement }: { achievement: Achievement }) {
 			<div className="relative p-5">
 				{/* Icon and title */}
 				<div className="flex items-start gap-4 mb-4">
-					<div
-						className="w-14 h-14 rounded-xl flex items-center justify-center text-3xl shrink-0"
-						style={{ backgroundColor: `${achievement.color}20` }}
-					>
-						<span className="text-sm font-semibold" style={{ color: achievement.color }}>ACH</span>
-					</div>
 					<div className="flex-1 min-w-0">
-						<h3 className="font-bold text-lg leading-tight break-words">
+						<h3 className="font-bold text-base leading-tight wrap-break-words">
 							{achievement.name}
 						</h3>
 						<p className="text-sm text-base-content/60 line-clamp-2">
