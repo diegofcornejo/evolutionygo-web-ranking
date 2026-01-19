@@ -1,0 +1,62 @@
+---
+interface Props {
+	seasonOptions: string[];
+	banListOptions: string[];
+	currentSeason: string;
+	currentBanlist: string;
+	userId: string;
+	username: string;
+}
+
+const {
+	seasonOptions,
+	banListOptions,
+	currentSeason,
+	currentBanlist,
+	userId,
+	username,
+} = Astro.props;
+---
+
+<div class="bg-base-200/70 backdrop-blur-sm rounded-2xl p-4 border border-base-300">
+	<div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+		<div>
+			<h2 class="text-lg font-semibold mb-1">Filters</h2>
+			<p class="text-sm text-base-content/60">Select season and banlist</p>
+		</div>
+		
+		<div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+			<select
+				class="select select-bordered select-sm min-w-[140px]"
+				name="season"
+				id="season-select"
+				aria-label="Select season"
+			>
+				{seasonOptions.map((season) => (
+					<option value={season} selected={season === currentSeason}>
+						Season {season}
+					</option>
+				))}
+			</select>
+
+			<select
+				class="select select-bordered select-sm min-w-[140px]"
+				name="banlist"
+				id="banlist-select"
+				aria-label="Select banlist"
+			>
+				{banListOptions.map((banlist) => (
+					<option value={banlist} selected={banlist === currentBanlist}>
+						{banlist}
+					</option>
+				))}
+			</select>
+		</div>
+	</div>
+	
+	<div class="mt-3 flex items-center gap-2 text-xs text-base-content/50">
+		<span data-id={userId} data-username={username}>
+			Showing stats for Season {currentSeason}
+		</span>
+	</div>
+</div>

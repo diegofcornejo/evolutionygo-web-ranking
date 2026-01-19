@@ -7,13 +7,21 @@
       "dependencies": {
         "@astrojs/partytown": "2.1.4",
         "@astrojs/react": "4.4.2",
+        "@astrojs/sitemap": "3.7.0",
         "@astrojs/svelte": "7.2.5",
+        "@astrojs/vercel": "9.0.4",
         "@fontsource-variable/plus-jakarta-sans": "5.2.8",
+        "@iconify-json/ic": "1.2.4",
+        "@iconify-json/mdi": "1.2.3",
         "@nanostores/persistent": "1.2.0",
         "@nanostores/react": "1.0.0",
+        "@tailwindcss/typography": "0.5.19",
+        "@tailwindcss/vite": "4.1.18",
         "astro": "5.16.11",
         "astro-icon": "1.1.5",
         "astro-maintenance": "2.0.0",
+        "chart.js": "4.5.1",
+        "daisyui": "5.5.14",
         "nanostores": "1.1.0",
         "react": "19.2.3",
         "react-dom": "19.2.3",
@@ -22,29 +30,22 @@
         "svelte": "5.46.4",
         "svelte-fast-marquee": "1.0.2",
         "swiper": "12.0.3",
+        "tailwindcss": "4.1.18",
       },
       "devDependencies": {
         "@astrojs/check": "0.9.6",
-        "@astrojs/sitemap": "3.7.0",
-        "@astrojs/vercel": "9.0.4",
         "@commitlint/cli": "20.3.1",
         "@commitlint/config-conventional": "20.3.1",
-        "@iconify-json/ic": "1.2.4",
-        "@iconify-json/mdi": "1.2.3",
         "@playform/compress": "0.2.1",
-        "@tailwindcss/typography": "0.5.19",
-        "@tailwindcss/vite": "4.1.18",
         "@testing-library/jest-dom": "6.9.1",
         "@testing-library/react": "16.3.1",
         "@types/react": "19.2.8",
         "@types/react-dom": "19.2.3",
         "@vitest/coverage-v8": "4.0.17",
-        "daisyui": "5.5.14",
         "husky": "9.1.7",
         "jsdom": "27.4.0",
         "lint-staged": "16.2.7",
         "oxlint": "1.39.0",
-        "tailwindcss": "4.1.18",
         "typescript": "5.9.3",
         "vitest": "4.0.17",
       },
@@ -332,6 +333,8 @@
     "@jridgewell/sourcemap-codec": ["@jridgewell/sourcemap-codec@1.5.5", "", {}, "sha512-cYQ9310grqxueWbl+WuIUIaiUaDcj7WOq5fVhEljNVgRfOUhY9fy2zTvfoqWsnebh8Sl70VScFbICvJnLKB0Og=="],
 
     "@jridgewell/trace-mapping": ["@jridgewell/trace-mapping@0.3.31", "", { "dependencies": { "@jridgewell/resolve-uri": "^3.1.0", "@jridgewell/sourcemap-codec": "^1.4.14" } }, "sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw=="],
+
+    "@kurkle/color": ["@kurkle/color@0.3.4", "", {}, "sha512-M5UknZPHRu3DEDWoipU6sE8PdkZ6Z/S+v4dD+Ke8IaNlpdSQah50lz1KtcFBa2vsdOnwbbnxJwVM4wty6udA5w=="],
 
     "@mapbox/node-pre-gyp": ["@mapbox/node-pre-gyp@2.0.0", "", { "dependencies": { "consola": "^3.2.3", "detect-libc": "^2.0.0", "https-proxy-agent": "^7.0.5", "node-fetch": "^2.6.7", "nopt": "^8.0.0", "semver": "^7.5.3", "tar": "^7.4.0" }, "bin": { "node-pre-gyp": "bin/node-pre-gyp" } }, "sha512-llMXd39jtP0HpQLVI37Bf1m2ADlEb35GYSh1SDSLsBhR+5iCxiNGlT31yqbNtVHygHAtMy6dWFERpU2JgufhPg=="],
 
@@ -670,6 +673,8 @@
     "character-entities-html4": ["character-entities-html4@2.1.0", "", {}, "sha512-1v7fgQRj6hnSwFpq1Eu0ynr/CDEw0rXo2B61qXrLNdHZmPKgb7fqS1a2JwF0rISo9q77jDI8VMEHoApn8qDoZA=="],
 
     "character-entities-legacy": ["character-entities-legacy@3.0.0", "", {}, "sha512-RpPp0asT/6ufRm//AJVwpViZbGM/MkjQFxJccQRHmISF/22NBtsHqAWmL+/pmkPWoIUJdWyeVleTl1wydHATVQ=="],
+
+    "chart.js": ["chart.js@4.5.1", "", { "dependencies": { "@kurkle/color": "^0.3.0" } }, "sha512-GIjfiT9dbmHRiYi6Nl2yFCq7kkwdkp1W/lp2J99rX0yo9tgJGn3lKQATztIjb5tVtevcBtIdICNWqlq5+E8/Pw=="],
 
     "cheerio": ["cheerio@1.0.0", "", { "dependencies": { "cheerio-select": "^2.1.0", "dom-serializer": "^2.0.0", "domhandler": "^5.0.3", "domutils": "^3.1.0", "encoding-sniffer": "^0.2.0", "htmlparser2": "^9.1.0", "parse5": "^7.1.2", "parse5-htmlparser2-tree-adapter": "^7.0.0", "parse5-parser-stream": "^7.1.2", "undici": "^6.19.5", "whatwg-mimetype": "^4.0.0" } }, "sha512-quS9HgjQpdaXOvsZz82Oz7uxtXiy6UIsIQcpBj7HRw2M63Skasm9qlDocAM7jNuaxdhpPU7c4kJN+gA5MCu4ww=="],
 

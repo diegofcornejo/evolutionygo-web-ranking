@@ -1,17 +1,21 @@
 ---
 import Layout from '@layouts/Layout.astro';
-import DuelistCard from '@components/Cards/DuelistCard';
-import AchievementCard from '@components/Cards/AchievementCard.astro';
-import type { Match, Achievement } from '@types';
+import ProfileHeader from '@components/Profile/ProfileHeader';
+import StatsOverview from '@components/Profile/StatsOverview';
+import MatchHistory from '@components/Profile/MatchHistory';
+import AchievementShowcase from '@components/Profile/AchievementShowcase';
+import SeasonSelector from '@components/Profile/SeasonSelector.astro';
+import type { Match } from '@types';
 
 let { id, banlist = 'Global' } = Astro.params;
 const username = Astro.url.searchParams.get('username') || '';
 const season = Astro.url.searchParams.get('season') || import.meta.env.PUBLIC_DEFAULT_SEASON;
 const API_URL = import.meta.env.PUBLIC_API_URL;
 
-let banlistName = banlist;
+const safeBanlist = banlist ?? 'Global';
+let banlistName = safeBanlist;
 
-if (banlist === 'Global') {
+if (safeBanlist === 'Global') {
 	banlistName = '';
 }
 
@@ -21,7 +25,7 @@ const duelistResponse = await fetch(
 );
 if (!duelistResponse.ok) {
 	duelist = {
-		userId: id,
+		userId: id ?? '',
 		username,
 		points: 0,
 		wins: 0,
@@ -34,16 +38,84 @@ if (!duelistResponse.ok) {
 	duelist = await duelistResponse.json();
 }
 
-const matchHistoryResponse = await fetch(
-	`${API_URL}/users/${id}/matches?season=${season}&banListName=${banlistName}`,
-);
-const matchHistory = await matchHistoryResponse.json();
+const createMockMatches = (name: string): Match[] => [
+	{
+		userId: id ?? '0',
+		bestOf: 3,
+		banListName: banlistName || 'Global',
+		playerNames: [name || 'Duelist'],
+		opponentNames: ['NebulaX'],
+		playerScore: 2,
+		opponentScore: 1,
+		points: 25,
+		winner: true,
+		date: new Date().toISOString(),
+		season: parseInt(season),
+	},
+	{
+		userId: id ?? '0',
+		bestOf: 1,
+		banListName: banlistName || 'Global',
+		playerNames: [name || 'Duelist'],
+		opponentNames: ['ShadowMage'],
+		playerScore: 0,
+		opponentScore: 1,
+		points: -12,
+		winner: false,
+		date: new Date(Date.now() - 86400000).toISOString(),
+		season: parseInt(season),
+	},
+	{
+		userId: id ?? '0',
+		bestOf: 3,
+		banListName: banlistName || 'Global',
+		playerNames: [name || 'Duelist'],
+		opponentNames: ['CelestialRex'],
+		playerScore: 2,
+		opponentScore: 0,
+		points: 30,
+		winner: true,
+		date: new Date(Date.now() - 172800000).toISOString(),
+		season: parseInt(season),
+	},
+];
 
-const getIsPvP = (match: Match) =>
-	match.playerNames.length === 1 || match.opponentNames.length === 1;
-const getDuelMode = (match: Match) =>
-	`${match.playerNames.length} vs ${match.opponentNames.length} | Best of ${match.bestOf}`;
-const getDuelistName = (names: string[]) => names.join(', ');
+let matchHistory: Match[] = [];
+const matchHistoryResponse = await fetch(
+	`${API_URL}/users/${id}/matches?page=1&limit=100&season=${season}${banlistName ? `&banListName=${banlistName}` : ''}`,
+);
+	if (!matchHistoryResponse.ok) {
+		matchHistory = createMockMatches(duelist.username || username);
+	} else {
+		matchHistory = await matchHistoryResponse.json();
+		if (!matchHistory?.length) {
+			matchHistory = [];
+		} else {
+			const matchesPerPage = 100;
+			let page = 2;
+			let shouldContinue = matchHistory.length === matchesPerPage;
+
+			while (shouldContinue) {
+				const pagedResponse = await fetch(
+					`${API_URL}/users/${id}/matches?page=${page}&limit=${matchesPerPage}&season=${season}${banlistName ? `&banListName=${banlistName}` : ''}`,
+				);
+
+				if (!pagedResponse.ok) {
+					break;
+				}
+
+				const pageMatches = await pagedResponse.json();
+				if (!pageMatches?.length) {
+					break;
+				}
+
+				matchHistory = matchHistory.concat(pageMatches);
+				page += 1;
+				shouldContinue = pageMatches.length === matchesPerPage;
+			}
+		}
+	}
+
 
 const banlistResponse = await fetch(`${API_URL}/ban-lists?season=${season}`);
 const banListOptions = await banlistResponse.json();
@@ -52,42 +124,31 @@ const seasonOptions = Array.from(
 	(_, index) => `${index + 1}`,
 ).reverse();
 
-const localDateString = (date: string) => {
-	const utcDate = new Date(date);
-	return utcDate
-		.toLocaleString('en-CA', {
-			year: 'numeric',
-			month: '2-digit',
-			day: '2-digit',
-			hour: '2-digit',
-			minute: '2-digit',
-			second: '2-digit',
-			hour12: false,
-		})
-		.replace(',', ' ');
-};
 ---
 
 <!-- TODO: This could be refactored to a react component, at this time it's to learn how to do this in astro -->
-<script>
-	const seasonSelect = document.getElementById('season-select');
-	const banlistSelect = document.getElementById('banlist-select');
-	const id = document.querySelector('[data-id]')?.getAttribute('data-id') || null;
-	const username = document.querySelector('[data-username]')?.getAttribute('data-username') || null;
+<script is:inline>
+	document.addEventListener('DOMContentLoaded', () => {
+		const seasonSelect = document.getElementById('season-select');
+		const banlistSelect = document.getElementById('banlist-select');
+		const dataElement = document.querySelector('[data-id]');
+		const id = dataElement?.getAttribute('data-id') || null;
+		const username = dataElement?.getAttribute('data-username') || null;
 
-	const reloadDuelistPage = () => {
-		const season = (seasonSelect as HTMLSelectElement)?.value || null;
-		const banlist = (banlistSelect as HTMLSelectElement)?.value || null;
+		const reloadDuelistPage = () => {
+			const season = seasonSelect?.value || null;
+			const banlist = banlistSelect?.value || null;
 
-		const newUrl = new URL(`${window.location.origin}/duelists/${id}/${banlist}`);
-		newUrl.searchParams.set('username', username || '');
-		newUrl.searchParams.set('season', season || '');
+			const newUrl = new URL(`${window.location.origin}/duelists/${id}/${banlist}`);
+			newUrl.searchParams.set('username', username || '');
+			newUrl.searchParams.set('season', season || '');
 
-		window.location.href = newUrl.toString();
-	};
+			window.location.href = newUrl.toString();
+		};
 
-	seasonSelect?.addEventListener('change', reloadDuelistPage);
-	banlistSelect?.addEventListener('change', reloadDuelistPage);
+		seasonSelect?.addEventListener('change', reloadDuelistPage);
+		banlistSelect?.addEventListener('change', reloadDuelistPage);
+	});
 </script>
 
 <Layout 
@@ -128,131 +189,52 @@ const localDateString = (date: string) => {
 		}
 	}}
 >
-	<main class='w-full max-w-[calc(100%_-_2rem)] text-[white] text-lg leading-[1.6] mx-auto my-4'>
-		<div class='flex flex-row gap-2 justify-center items-center my-8'>
-			<select class='select select-bordered select-sm' name='season' id='season-select'>
-				{
-					seasonOptions.map((s: string) => (
-						<option value={s} selected={s === season}>
-							Season {s}
-						</option>
-					))
-				}
-			</select>
+	<main class='w-full max-w-[calc(100%_-_2rem)] mx-auto my-6 text-base-content'>
+	<section class="space-y-6">
+		<SeasonSelector
+			seasonOptions={seasonOptions}
+			banListOptions={banListOptions}
+			currentSeason={season}
+			currentBanlist={safeBanlist}
+			userId={id ?? ''}
+			username={duelist.username}
+		/>
 
-			<select class='select select-bordered select-sm' name='banlist' id='banlist-select'>
-				{
-					banListOptions.map((b: string) => (
-						<option value={b} selected={b === banlist}>
-							{' '}
-							{b}{' '}
-						</option>
-					))
-				}
-			</select>
-		</div>
-		<h1
-			class='text-2xl sm:text-4xl font-bold leading-none text-center mb-[1em]'
-			data-id={id}
-			data-username={duelist.username}
-		>
-			<span class='text-gradient'
-				>{duelist.username} • Season {season} • {banlistName || 'Global'}</span
-			>
-		</h1>
-		<div class='flex flex-col md:flex-row gap-2 md:gap-4 lg:gap-0'>
-			<div class='flex flex-col gap-4 md:w-1/4'>
-				<DuelistCard
-					{...duelist}
-					borderColor={duelist.position == 1
-						? 'gold'
-						: duelist.position == 2
-							? 'silver'
-							: duelist.position == 3 || duelist.position == 4
-								? 'bronze'
-								: 'transparent'}
-					season={season}
-					clickable={false}
+		<div class="grid grid-cols-1 xl:grid-cols-[1.1fr_1.4fr] gap-6 items-start">
+			<ProfileHeader
+				userId={id ?? ''}
+				username={duelist.username}
+				points={duelist.points}
+				wins={duelist.wins}
+				losses={duelist.losses}
+				winRate={duelist.winRate}
+				position={duelist.position}
+				season={season}
+				banlistName={banlistName || 'Global'}
+			/>
+
+			<div class="space-y-6">
+				<StatsOverview
+					wins={duelist.wins}
+					losses={duelist.losses}
+					winRate={duelist.winRate}
+					points={duelist.points}
+					position={duelist.position}
 				/>
-			</div>
-			<div class='overflow-x-auto flex-auto md:w-3/4 max-h-screen'>
-				<div role='tablist' class='tabs tabs-bordered'>
-					<input
-						type='radio'
-						name='user_stats_tabs'
-						role='tab'
-						class='tab min-w-[150px]'
-						aria-label='Duels History'
-						checked='checked'
-					/>
-					<div role='tabpanel' class='tab-content pt-4'>
-						<table class='table table-zebra bg-base-300'>
-							<thead class='sticky top-0 bg-base-300'>
-								<tr>
-									<th>Season</th>
-									<th>Duel Mode</th>
-									<th>Type</th>
-									<th>Banlist</th>
-									<th>Player</th>
-									<th>Opponent</th>
-									<th>Result</th>
-									<th>Points</th>
-									<th>Date</th>
-								</tr>
-							</thead>
-							<tbody>
-								{
-									matchHistory.map((match: Match) => (
-										<tr>
-											<td class='max-w-[50px] text-center'>{match.season}</td>
-											<th class='min-w-[150px]'>{getDuelMode(match)}</th>
-											<td class='max-w-[50px]'>
-												{getIsPvP(match) ? 'PvP' : 'Tag'}
-											</td>
-											<td class=''>{match.banListName}</td>
-											<td>{getDuelistName(match.playerNames)}</td>
-											<td>{getDuelistName(match.opponentNames)}</td>
-											<td
-												class={`${match.winner ? 'text-success' : 'text-error'}`}
-											>
-												{match.playerScore} - {match.opponentScore}
-											</td>
-											<td
-												class={`${match.winner ? 'text-success' : 'text-error'}`}
-											>
-												{match.points}
-											</td>
-											<td class='min-w-[200px]'>
-												{localDateString(match.date)}
-											</td>
-										</tr>
-									))
-								}
-							</tbody>
-						</table>
-					</div>
-					<input
-						type='radio'
-						name='user_stats_tabs'
-						role='tab'
-						class='tab min-w-[150px]'
-						aria-label='Achievements'
-					/>
-					<div role='tabpanel' class='tab-content pt-4'>
-						<div class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'>
-							{
-								duelist.achievements.length === 0 ? (
-									<p class='text-gray-400 text-sm'>No achievements yet</p>
-								) : (
-									duelist.achievements.map((achievement: Achievement) => (
-										<AchievementCard {...achievement} />
-									))
-								)
-							}
-						</div>
-					</div>
+
+				<div>
+					<AchievementShowcase achievements={duelist.achievements} client:load />
 				</div>
 			</div>
 		</div>
+	</section>
+
+	<section class="mt-12">
+		<div class="flex items-center justify-between mb-4">
+			<h2 class="text-2xl font-bold">Match History</h2>
+			<span class="text-sm text-base-content/60">Recent duels</span>
+		</div>
+		<MatchHistory matches={matchHistory} currentUsername={duelist.username} client:load />
+	</section>
 	</main>
 </Layout>

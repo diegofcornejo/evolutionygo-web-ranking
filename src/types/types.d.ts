@@ -10,3 +10,4 @@ export type { Feature } from './Feature';
 export type { User } from './User';
 export type { Achievement } from './Achievement';
 export type { Command } from './Command';
+export type { Room } from './Room';

@@ -34,10 +34,17 @@ const menuItems: MenuItem[] = [
 		trackEvent: 'menu-click-tournaments',
 	},
 	{
-		name: 'Developers',
-		href: '/developers',
-		trackEvent: 'menu-click-developers',
+		name: 'Stats',
+		href: '/stats',
+		newTab: true,
+		// icon: 'mdi:chart-bar',
+		trackEvent: 'menu-click-stats',
 	},
+	// {
+	// 	name: 'Developers',
+	// 	href: '/developers',
+	// 	trackEvent: 'menu-click-developers',
+	// },
 	{
 		name: 'Status',
 		href: 'https://status.evolutionygo.com',

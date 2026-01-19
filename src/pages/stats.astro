@@ -1,0 +1,32 @@
+---
+import Layout from '@layouts/Layout.astro';
+import StatsSection from '@sections/Stats.svelte';
+
+const currentSeason = import.meta.env.PUBLIC_DEFAULT_SEASON;
+const title = `Stats - Season ${currentSeason}`;
+const description = `Explore detailed statistics, charts, and analytics about Evolution YGO duels in Season ${currentSeason}. View duel counts per banlist, historical trends, win rate distributions, and more.`;
+
+const keywords = [
+	'Evolution YGO statistics',
+	'YGO duel stats',
+	'Yu-Gi-Oh analytics',
+	'banlist statistics',
+	'duel charts',
+	'season statistics',
+	`Season ${currentSeason}`,
+	'Evolution YGO stats',
+	'win rate distribution',
+	'YGOPro stats'
+];
+---
+
+<Layout 
+	title={title} 
+	description={description}
+	keywords={keywords}
+	image="/banners/banner1.webp"
+>
+	<main class="w-full text-[white] text-xl leading-[1.6] mx-auto pt-8">
+		<StatsSection client:load />
+	</main>
+</Layout>
