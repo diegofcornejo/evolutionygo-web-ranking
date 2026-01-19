@@ -1,12 +1,11 @@
 import { TextEncoder, TextDecoder } from 'util';
 
-// Override the global TextEncoder/TextDecoder to ensure esbuild invariant passes
-if (typeof globalThis.TextEncoder === 'undefined' || !(new globalThis.TextEncoder().encode('') instanceof Uint8Array)) {
-  globalThis.TextEncoder = TextEncoder;
-}
-if (typeof globalThis.TextDecoder === 'undefined') {
-  globalThis.TextDecoder = TextDecoder;
-}
+// Override the global TextEncoder/TextDecoder to ensure esbuild invariant passes.
+// Align Uint8Array with the encoder's realm in jsdom/Bun.
+globalThis.TextEncoder = TextEncoder;
+globalThis.TextDecoder = TextDecoder;
 
-if (!globalThis.TextEncoder) globalThis.TextEncoder = TextEncoder;
-if (!globalThis.TextDecoder) globalThis.TextDecoder = TextDecoder; 
+const encoded = new globalThis.TextEncoder().encode('');
+if (!(encoded instanceof globalThis.Uint8Array)) {
+  globalThis.Uint8Array = encoded.constructor;
+}

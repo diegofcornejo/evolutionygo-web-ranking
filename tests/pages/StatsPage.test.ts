@@ -23,11 +23,11 @@ Object.defineProperty(window, 'matchMedia', {
 });
 
 vi.mock('@layouts/Layout.astro', () => ({
-  default: () => '',
+  default: (_result: any, _props: any, slots: any) => slots?.default?.() ?? '',
 }));
 
 vi.mock('@sections/Stats.svelte', () => ({
-  default: () => '',
+  default: () => '<StatsSection>StatsSection</StatsSection>',
 }));
 
 vi.mock('astro/container', () => ({

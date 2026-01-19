@@ -1,20 +1,12 @@
 /// <reference types="vitest" />
-import { describe, it, expect, vi } from 'vitest';
-
-vi.mock('astro/container', () => ({
-	experimental_AstroContainer: {
-		create: async () => ({
-			renderToString: () => '<div>Season 5 Global</div>',
-		}),
-	},
-}));
-
+// @vitest-environment node
+import { describe, it, expect } from 'vitest';
+import { experimental_AstroContainer } from 'astro/container';
 // @ts-ignore Astro component import
 import SeasonSelector from '@components/Profile/SeasonSelector.astro';
 
 describe('SeasonSelector.astro', () => {
 	it('renders season and banlist options', async () => {
-		const { experimental_AstroContainer } = await import('astro/container');
 		const container = await experimental_AstroContainer.create();
 		const result = await container.renderToString(SeasonSelector, {
 			props: {

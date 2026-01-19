@@ -35,4 +35,4 @@ describe('AchievementCard.astro', () => {
     expect(result).toContain('Gold');
     expect(result).toContain('2024');
   });
-}); 
+});

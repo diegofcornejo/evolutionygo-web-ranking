@@ -10,43 +10,43 @@ Object.defineProperty(import.meta, 'env', {
 });
 
 vi.mock('@layouts/Layout.astro', () => ({
-  default: () => '',
+  default: (_result: any, _props: any, slots: any) => slots?.default?.() ?? '',
 }));
 
 vi.mock('@sections/News', () => ({
-  default: () => '',
+  default: () => '<News>News</News>',
 }));
 
 vi.mock('@sections/Live.svelte', () => ({
-  default: () => '',
+  default: () => '<Live>Live</Live>',
 }));
 
 vi.mock('@sections/Ranking', () => ({
-  default: () => '',
+  default: () => '<Ranking>Ranking</Ranking>',
 }));
 
 vi.mock('@sections/Features.astro', () => ({
-  default: () => '',
+  default: () => '<Features>Features</Features>',
 }));
 
 vi.mock('@sections/Download.astro', () => ({
-  default: () => '',
+  default: () => '<Download>Download</Download>',
 }));
 
 vi.mock('@sections/Faqs.astro', () => ({
-  default: () => '',
+  default: () => '<Faqs>Faqs</Faqs>',
 }));
 
 vi.mock('@sections/Crew.astro', () => ({
-  default: () => '',
+  default: () => '<Crew>Crew</Crew>',
 }));
 
 vi.mock('@components/RoomsWebSocketListener', () => ({
-  RoomsWebSocketListener: () => '',
+  RoomsWebSocketListener: () => '<RoomsWebSocketListener>Rooms</RoomsWebSocketListener>',
 }));
 
 vi.mock('@components/Cards/DuelistOfTheWeek.astro', () => ({
-  default: () => '',
+  default: () => '<DuelistOfTheWeek>Duelist</DuelistOfTheWeek>',
 }));
 
 vi.mock('astro/container', () => ({

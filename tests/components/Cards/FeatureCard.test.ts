@@ -27,4 +27,4 @@ describe('FeatureCard.astro', () => {
     expect(result).toContain('This is a cool feature.');
     expect(result).toContain('mdi:star');
   });
-}); 
+});

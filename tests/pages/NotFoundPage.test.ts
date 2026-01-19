@@ -6,6 +6,7 @@ vi.mock('@layouts/Layout.astro', () => ({
   default: () => '',
 }));
 
+// Mock astro/container to avoid esbuild/TextEncoder issues in Bun
 vi.mock('astro/container', () => ({
   experimental_AstroContainer: {
     create: async () => ({
@@ -24,9 +25,9 @@ describe('404.astro page', () => {
   it('renders the 404 message', async () => {
     const NotFoundPage = (await import('../../src/pages/404.astro')).default;
 
-    const result = await (await import('astro/container'))
-      .experimental_AstroContainer.create()
-      .then(c => c.renderToString(NotFoundPage));
+    const { experimental_AstroContainer } = await import('astro/container');
+    const container = await experimental_AstroContainer.create();
+    const result = await container.renderToString(NotFoundPage);
 
     expect(result).toContain('Page Not Found');
     expect(result).toContain('/img/404.webp');
