@@ -82,16 +82,39 @@ const createMockMatches = (name: string): Match[] => [
 
 let matchHistory: Match[] = [];
 const matchHistoryResponse = await fetch(
-	`${API_URL}/users/${id}/matches?season=${season}&banListName=${banlistName}`,
+	`${API_URL}/users/${id}/matches?page=1&limit=100&season=${season}${banlistName ? `&banListName=${banlistName}` : ''}`,
 );
-if (!matchHistoryResponse.ok) {
-	matchHistory = createMockMatches(duelist.username || username);
-} else {
-	matchHistory = await matchHistoryResponse.json();
-	if (!matchHistory?.length) {
-		matchHistory = [];
+	if (!matchHistoryResponse.ok) {
+		matchHistory = createMockMatches(duelist.username || username);
+	} else {
+		matchHistory = await matchHistoryResponse.json();
+		if (!matchHistory?.length) {
+			matchHistory = [];
+		} else {
+			const matchesPerPage = 100;
+			let page = 2;
+			let shouldContinue = matchHistory.length === matchesPerPage;
+
+			while (shouldContinue) {
+				const pagedResponse = await fetch(
+					`${API_URL}/users/${id}/matches?page=${page}&limit=${matchesPerPage}&season=${season}${banlistName ? `&banListName=${banlistName}` : ''}`,
+				);
+
+				if (!pagedResponse.ok) {
+					break;
+				}
+
+				const pageMatches = await pagedResponse.json();
+				if (!pageMatches?.length) {
+					break;
+				}
+
+				matchHistory = matchHistory.concat(pageMatches);
+				page += 1;
+				shouldContinue = pageMatches.length === matchesPerPage;
+			}
+		}
 	}
-}
 
 
 const banlistResponse = await fetch(`${API_URL}/ban-lists?season=${season}`);
