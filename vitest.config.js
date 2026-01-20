@@ -11,6 +11,9 @@ export default getViteConfig({
       reporter: ['text', 'lcov', 'html'],
       reportsDirectory: './coverage',
     },
+    env: {
+      PUBLIC_API_URL: 'https://api.evolutionygo.com/api/v1',
+    },
   },
   resolve: {
     conditions: ['browser', 'style'],
