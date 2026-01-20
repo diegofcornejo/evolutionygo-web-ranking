@@ -6,6 +6,46 @@ interface StatsOverviewProps {
 	position: number;
 }
 
+interface RankingStyle {
+	description: string;
+	color: string;
+	bgColor: string;
+	progressColor: string;
+}
+
+const getRankingStyle = (position: number): RankingStyle => {
+	if (position <= 3) {
+		return {
+			description: 'Top 3 Player',
+			color: 'text-warning',
+			bgColor: 'bg-warning/10',
+			progressColor: 'bg-warning',
+		};
+	}
+	if (position <= 10) {
+		return {
+			description: 'Top 10 Player',
+			color: 'text-primary',
+			bgColor: 'bg-primary/10',
+			progressColor: 'bg-primary',
+		};
+	}
+	if (position <= 20) {
+		return {
+			description: 'Top 20 Player',
+			color: 'text-info',
+			bgColor: 'bg-info/10',
+			progressColor: 'bg-info',
+		};
+	}
+	return {
+		description: 'Ranked Player',
+		color: 'text-info',
+		bgColor: 'bg-info/10',
+		progressColor: 'bg-info',
+	};
+};
+
 export default function StatsOverview({
 	wins,
 	losses,
@@ -17,19 +57,20 @@ export default function StatsOverview({
 	const winPercentage = totalGames > 0 ? (wins / totalGames) * 100 : 0;
 	const normalizedPosition = Number(position) || 0;
 
-	// Calculate streak and other derived stats
 	const averagePointsPerGame = totalGames > 0 ? (points / totalGames) : 0;
 	const averagePointsLabel = totalGames > 0 ? `${averagePointsPerGame.toFixed(1)} per game` : '— per game';
+
+	const rankingStyle = getRankingStyle(normalizedPosition);
 
 	const stats = [
 		{
 			label: 'Ranking',
 			value: normalizedPosition > 0 ? `#${normalizedPosition}` : '-',
-			description: normalizedPosition <= 10 ? 'Top 10 Player' : normalizedPosition <= 20 ? 'Top 20 Player' : 'Ranked Player',
-			color: normalizedPosition <= 3 ? 'text-warning' : normalizedPosition <= 10 ? 'text-primary' : 'text-info',
-			bgColor: normalizedPosition <= 3 ? 'bg-warning/10' : normalizedPosition <= 10 ? 'bg-primary/10' : 'bg-info/10',
+			description: rankingStyle.description,
+			color: rankingStyle.color,
+			bgColor: rankingStyle.bgColor,
 			progress: Math.max(100 - (normalizedPosition / 100) * 100, 10),
-			progressColor: normalizedPosition <= 3 ? 'bg-warning' : normalizedPosition <= 10 ? 'bg-primary' : 'bg-info',
+			progressColor: rankingStyle.progressColor,
 		},
 		{
 			label: 'Win Rate',

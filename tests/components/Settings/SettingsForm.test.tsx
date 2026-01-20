@@ -3,7 +3,6 @@ import { render, fireEvent, screen, waitFor } from '@testing-library/react';
 import SettingsForm from '@components/Settings/SettingsForm';
 import { toast } from 'sonner';
 import { logout } from '@components/NavBar/helper';
-import { getSession } from '@stores/sessionStore';
 
 // Mock dependencies
 vi.mock('react-svg', () => ({ ReactSVG: () => <span data-testid="svg" /> }));
@@ -12,12 +11,6 @@ vi.mock('@components/NavBar/helper', () => ({ logout: vi.fn() }));
 vi.mock('@stores/sessionStore', () => ({ 
   getSession: vi.fn(() => ({ token: 'mock-token' })) 
 }));
-
-// Mock environment variable
-Object.defineProperty(import.meta, 'env', {
-  value: { PUBLIC_API_URL: 'https://api.evolutionygo.com/api/v1' },
-  writable: true,
-});
 
 function mockResponse({ ok = true, statusText = '', json = async () => ({}) }) {
   return {

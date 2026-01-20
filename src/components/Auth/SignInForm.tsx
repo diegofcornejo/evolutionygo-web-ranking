@@ -104,7 +104,7 @@ export function SignInForm({ dialog }: Readonly<{ dialog: string }>) {
 			</p>
 
 			<p className='text-xs'>
-				<a className='cursor-pointer' onClick={switchForm} id='forgot-password-link'>{forgotPassword ? 'Back to Login' : 'Forgot password?'}</a>
+				<button type="button" className='cursor-pointer link link-hover' onClick={switchForm} id='forgot-password-link'>{forgotPassword ? 'Back to Login' : 'Forgot password?'}</button>
 			</p>
 
 			<div className='flex justify-end gap-2'>
