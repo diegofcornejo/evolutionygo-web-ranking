@@ -24,13 +24,13 @@ import { loadEnv } from "vite";
 const { MAINTENANCE_ENABLED } = loadEnv(process.env.NODE_ENV || "", process.cwd(), "");
 
 // Pages to exclude from sitemap (private/auth pages)
-const EXCLUDED_PAGES = [
+const EXCLUDED_PAGES = new Set([
 	'https://evolutionygo.com/login/',
 	'https://evolutionygo.com/register/',
 	'https://evolutionygo.com/forgot-password/',
 	'https://evolutionygo.com/reset-password/',
 	'https://evolutionygo.com/404/',
-];
+]);
 
 // https://astro.build/config
 export default defineConfig({
@@ -40,7 +40,7 @@ export default defineConfig({
 		playformCompress(),
 		sitemap({
 			// Filter out auth/private pages from sitemap
-			filter: (page) => !EXCLUDED_PAGES.includes(page),
+			filter: (page) => !EXCLUDED_PAGES.has(page),
 			// Set global defaults
 			changefreq: 'weekly',
 			priority: 0.7,

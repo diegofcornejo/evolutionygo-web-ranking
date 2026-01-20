@@ -3,13 +3,31 @@ import type { Match } from '@types';
 
 interface MatchHistoryProps {
 	matches: Match[];
-	currentUsername: string;
 }
 
 type ResultFilterType = 'all' | 'wins' | 'losses';
 type MatchTypeFilter = 'all' | 'pvp' | 'tag';
 
-export default function MatchHistory({ matches, currentUsername }: Readonly<MatchHistoryProps>) {
+const getResultFilterButtonClass = (filterType: ResultFilterType, isActive: boolean): string => {
+	if (!isActive) return 'btn-ghost';
+	const classMap: Record<ResultFilterType, string> = {
+		wins: 'btn-success',
+		losses: 'btn-error',
+		all: 'btn-primary',
+	};
+	return classMap[filterType];
+};
+
+const getMatchTypeLabel = (filterType: MatchTypeFilter): string => {
+	const labelMap: Record<MatchTypeFilter, string> = {
+		pvp: 'PvP',
+		tag: 'TAG',
+		all: 'All Types',
+	};
+	return labelMap[filterType];
+};
+
+export default function MatchHistory({ matches }: Readonly<MatchHistoryProps>) {
 	const [resultFilter, setResultFilter] = useState<ResultFilterType>('all');
 	const [matchTypeFilter, setMatchTypeFilter] = useState<MatchTypeFilter>('all');
 	const [searchTerm, setSearchTerm] = useState('');
@@ -95,15 +113,7 @@ export default function MatchHistory({ matches, currentUsername }: Readonly<Matc
 							key={filterType}
 							type="button"
 							onClick={() => setResultFilter(filterType)}
-							className={`btn btn-sm ${
-								resultFilter === filterType
-									? filterType === 'wins'
-										? 'btn-success'
-										: filterType === 'losses'
-											? 'btn-error'
-											: 'btn-primary'
-									: 'btn-ghost'
-							}`}
+							className={`btn btn-sm ${getResultFilterButtonClass(filterType, resultFilter === filterType)}`}
 						>
 							{filterType.charAt(0).toUpperCase() + filterType.slice(1)}
 							<span className="badge badge-sm badge-ghost ml-1">
@@ -125,7 +135,7 @@ export default function MatchHistory({ matches, currentUsername }: Readonly<Matc
 								matchTypeFilter === filterType ? 'btn-neutral' : 'btn-ghost'
 							}`}
 						>
-							{filterType === 'pvp' ? 'PvP' : filterType === 'tag' ? 'TAG' : 'All Types'}
+							{getMatchTypeLabel(filterType)}
 							<span className="badge badge-sm badge-ghost ml-1">
 								{matchTypeFilterCounts[filterType]}
 							</span>

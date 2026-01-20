@@ -35,7 +35,7 @@ const matches: Match[] = [
 describe('MatchHistory', () => {
 	it('filters matches by wins', () => {
 		const { getByText, queryByText } = render(
-			<MatchHistory matches={matches} currentUsername="AceDuelist" />
+			<MatchHistory matches={matches} />
 		);
 
 		// Check both matches are visible (search by opponent name)
