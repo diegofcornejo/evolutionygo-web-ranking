@@ -5,6 +5,22 @@ import type { Duelist } from '@types';
 import { banlists } from '@stores/banlistsStore';
 import { getSession } from '@stores/sessionStore';
 
+type BorderColor = 'gold' | 'silver' | 'bronze';
+
+const getBorderColor = (index: number): BorderColor => {
+  if (index === 0) return 'gold';
+  if (index === 1) return 'silver';
+  return 'bronze';
+};
+
+const buildUserStatsUrl = (apiUrl: string, userId: string, season: string, banList: string): string => {
+  const baseUrl = `${apiUrl}/users/${userId}/stats?season=${season}`;
+  if (banList === 'Global') {
+    return baseUrl;
+  }
+  return `${baseUrl}&banListName=${banList}`;
+};
+
 export default function Ranking() {
   const [duelists, setDuelists] = useState<Duelist[]>([]);
   const [topDuelists, setTopDuelists] = useState<Duelist[]>([]);
@@ -28,10 +44,8 @@ export default function Ranking() {
 		if (!currentUser) return;
 		
 		try {
-			const banlistName = banList === 'Global' ? '' : banList;
-			const response = await fetch(
-				`${API_URL}/users/${currentUser.id}/stats?season=${season}${banlistName ? `&banListName=${banlistName}` : ''}`
-			);
+			const url = buildUserStatsUrl(API_URL, currentUser.id, season, banList);
+			const response = await fetch(url);
 			
 			if (response.ok) {
 				const userStats = await response.json();
@@ -121,7 +135,7 @@ export default function Ranking() {
       </div>
       <div className="flex flex-row justify-center gap-4 pt-4">
         <select className="select select-secondary w-full max-w-xs" value={season} onChange={handleSeasonChange} aria-label="Filter by season">
-				{Array.from({ length: parseInt(import.meta.env.PUBLIC_DEFAULT_SEASON) }, (_, index) => (
+				{Array.from({ length: Number.parseInt(import.meta.env.PUBLIC_DEFAULT_SEASON) }, (_, index) => (
 					<option key={index} value={index + 1}>
 						{`Season ${index + 1}`}
 					</option>
@@ -141,7 +155,7 @@ export default function Ranking() {
             key={duelist.userId} 
             {...duelist} 
             username={getDisplayName(duelist)}
-            borderColor={index === 0 ? 'gold' : index === 1 ? 'silver' : 'bronze'} 
+            borderColor={getBorderColor(index)} 
             banListName={banList} 
             season={season} 
           />

@@ -8,8 +8,8 @@ const getCurrentBanlist = (banlists: string[], banlist: string) => {
 		.map((entry) => {
 			const match = entry.match(regex);
 			if (!match) return null;
-			const year = parseInt(match[1], 10);
-			const month = parseInt(match[2], 10);
+			const year = Number.parseInt(match[1], 10);
+			const month = Number.parseInt(match[2], 10);
 			return { year, month, original: entry };
 		})
 		.filter(Boolean)

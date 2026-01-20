@@ -29,6 +29,13 @@ const formatDate = (dateString: string) => {
 	});
 };
 
+const getClanButtonClass = (isSelected: boolean): string => {
+	if (isSelected) {
+		return 'bg-primary text-primary-content';
+	}
+	return 'bg-base-200 hover:bg-base-100';
+};
+
 export default function ClanList({ clans }: ClanListProps) {
 	const [selectedClanId, setSelectedClanId] = useState<string | null>(
 		clans.length > 0 ? clans[0].id : null
@@ -50,13 +57,10 @@ export default function ClanList({ clans }: ClanListProps) {
 								<p className='text-gray-400 text-center py-8'>No clans registered yet</p>
 							) : (
 								clans.map((clan) => (
-									<div
+									<button
+										type='button'
 										key={clan.id}
-										className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition-colors ${
-											selectedClanId === clan.id
-												? 'bg-primary text-primary-content'
-												: 'bg-base-200 hover:bg-base-100'
-										}`}
+										className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition-colors w-full text-left ${getClanButtonClass(selectedClanId === clan.id)}`}
 										onClick={() => setSelectedClanId(clan.id)}
 									>
 										<div className='flex items-center gap-3'>
@@ -78,7 +82,7 @@ export default function ClanList({ clans }: ClanListProps) {
 											</div>
 										</div>
 										<div className='badge badge-outline'>{clan.members.length} members</div>
-									</div>
+									</button>
 								))
 							)}
 						</div>
@@ -126,4 +130,3 @@ export default function ClanList({ clans }: ClanListProps) {
 		</div>
 	);
 }
-
