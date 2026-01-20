@@ -119,10 +119,33 @@ const matchHistoryResponse = await fetch(
 
 const banlistResponse = await fetch(`${API_URL}/ban-lists?season=${season}`);
 const banListOptions = await banlistResponse.json();
-const seasonOptions = Array.from(
-	{ length: parseInt(import.meta.env.PUBLIC_DEFAULT_SEASON) },
-	(_, index) => `${index + 1}`,
-).reverse();
+const seasonCount = parseInt(import.meta.env.PUBLIC_DEFAULT_SEASON);
+const seasonNumbers = Array.from({ length: seasonCount }, (_, index) => index + 1);
+const seasonOptions = seasonNumbers.map((seasonNumber) => `${seasonNumber}`).reverse();
+const seasonStats = await Promise.all(
+	seasonNumbers.map(async (seasonNumber) => {
+		const statsResponse = await fetch(
+			`${API_URL}/users/${id}/stats?season=${seasonNumber}${banlistName ? `&banListName=${banlistName}` : ''}`,
+		);
+
+		if (!statsResponse.ok) {
+			return {
+				season: seasonNumber,
+				points: 0,
+				wins: 0,
+				losses: 0,
+			};
+		}
+
+		const seasonDuelist = await statsResponse.json();
+		return {
+			season: seasonNumber,
+			points: seasonDuelist.points ?? 0,
+			wins: seasonDuelist.wins ?? 0,
+			losses: seasonDuelist.losses ?? 0,
+		};
+	}),
+);
 
 ---
 
@@ -201,17 +224,18 @@ const seasonOptions = Array.from(
 		/>
 
 		<div class="grid grid-cols-1 xl:grid-cols-[1.1fr_1.4fr] gap-6 items-start">
-			<ProfileHeader
-				userId={id ?? ''}
-				username={duelist.username}
-				points={duelist.points}
-				wins={duelist.wins}
-				losses={duelist.losses}
-				winRate={duelist.winRate}
-				position={duelist.position}
-				season={season}
-				banlistName={banlistName || 'Global'}
-			/>
+		<ProfileHeader
+			userId={id ?? ''}
+			username={duelist.username}
+			points={duelist.points}
+			wins={duelist.wins}
+			losses={duelist.losses}
+			winRate={duelist.winRate}
+			position={duelist.position}
+			season={season}
+			banlistName={banlistName || 'Global'}
+			seasonStats={seasonStats}
+		/>
 
 			<div class="space-y-6">
 				<StatsOverview

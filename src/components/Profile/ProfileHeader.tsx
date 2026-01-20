@@ -10,6 +10,14 @@ interface ProfileHeaderProps {
 	position: number;
 	season: string;
 	banlistName: string;
+	seasonStats?: SeasonStat[];
+}
+
+interface SeasonStat {
+	season: number;
+	points: number;
+	wins: number;
+	losses: number;
 }
 
 export default function ProfileHeader({
@@ -21,11 +29,92 @@ export default function ProfileHeader({
 	position,
 	season,
 	banlistName,
+	seasonStats,
 }: Readonly<ProfileHeaderProps>) {
 	const image = `https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&background=random&size=256`;
 	const rating = 1 + (winRate / 100) * 4;
 	const totalGames = wins + losses;
 	const normalizedPosition = Number(position) || 0;
+	const chartWidth = 240;
+	const chartHeight = 28;
+	const orderedSeasons = [...(seasonStats ?? [])].sort((a, b) => b.season - a.season);
+	const hasChartData = orderedSeasons.length > 1;
+	const series = {
+		points: orderedSeasons.map((stat) => stat.points),
+		wins: orderedSeasons.map((stat) => stat.wins),
+		losses: orderedSeasons.map((stat) => stat.losses),
+		totalGames: orderedSeasons.map((stat) => stat.wins + stat.losses),
+	};
+
+	const getLinePath = (values: number[]) => {
+		if (!values.length) return '';
+		const safeMax = Math.max(...values, 1);
+		const step = values.length > 1 ? chartWidth / (values.length - 1) : 0;
+
+		return values
+			.map((value, index) => {
+				const x = values.length > 1 ? index * step : chartWidth / 2;
+				const y = chartHeight - (value / safeMax) * chartHeight;
+				return `${index === 0 ? 'M' : 'L'} ${x} ${y}`;
+			})
+			.join(' ');
+	};
+
+	const getPoints = (values: number[]) => {
+		if (!values.length) return [];
+		const safeMax = Math.max(...values, 1);
+		const step = values.length > 1 ? chartWidth / (values.length - 1) : 0;
+
+		return values.map((value, index) => ({
+			x: values.length > 1 ? index * step : chartWidth / 2,
+			y: chartHeight - (value / safeMax) * chartHeight,
+			season: orderedSeasons[index]?.season ?? 0,
+			value,
+		}));
+	};
+
+	const renderSparkline = (values: number[], className: string) => {
+		if (!hasChartData) return null;
+		return (
+			<svg
+				viewBox={`0 0 ${chartWidth} ${chartHeight}`}
+				className={`block w-full h-7 overflow-visible ${className}`}
+				preserveAspectRatio="none"
+				aria-hidden="true"
+			>
+				<path
+					d={getLinePath(values)}
+					fill="none"
+					stroke="currentColor"
+					strokeWidth="2"
+					strokeLinejoin="round"
+					strokeLinecap="round"
+				/>
+				{getPoints(values).map((point, index) => (
+					<g key={index} className="group pointer-events-auto">
+						<circle
+							cx={point.x}
+							cy={point.y}
+							r={3.5}
+							fill="currentColor"
+							className="cursor-pointer"
+						>
+							<title>{`Season ${point.season}: ${point.value}`}</title>
+						</circle>
+						<text
+							x={point.x + 4}
+							y={point.y - 4}
+							className="text-[10px] fill-current opacity-0 transition-opacity duration-150 group-hover:opacity-100"
+							textAnchor="start"
+							pointerEvents="none"
+						>
+							{`S${point.season}: ${point.value}`}
+						</text>
+					</g>
+				))}
+			</svg>
+		);
+	};
 
 	const getRankBadge = () => {
 		if (normalizedPosition === 1) return { label: 'Champion', color: 'badge-warning', icon: 'ic:round-emoji-events' };
@@ -99,24 +188,36 @@ export default function ProfileHeader({
 
 						{/* Quick Stats */}
 						<div className="flex flex-wrap justify-center lg:justify-start gap-4 mt-4">
-							<div className="stat bg-base-300/50 rounded-xl p-4 min-w-[120px]">
-								<div className="stat-title text-xs">Points</div>
-								<div className="stat-value text-2xl text-warning">{points.toLocaleString()}</div>
+						<div className="stat bg-base-300/50 rounded-xl p-4 min-w-[120px]">
+							<div className="stat-title text-xs">Points</div>
+							<div className="flex items-center gap-3">
+								<div className="stat-value text-2xl text-warning w-16 shrink-0">{points.toLocaleString()}</div>
+								<div className="flex-1">{renderSparkline(series.points, 'text-warning')}</div>
 							</div>
-							<div className="stat bg-base-300/50 rounded-xl p-4 min-w-[120px]">
-								<div className="stat-title text-xs">Wins</div>
-								<div className="stat-value text-2xl text-success">{wins}</div>
+						</div>
+						<div className="stat bg-base-300/50 rounded-xl p-4 min-w-[120px]">
+							<div className="stat-title text-xs">Wins</div>
+							<div className="flex items-center gap-3">
+								<div className="stat-value text-2xl text-success w-16 shrink-0">{wins}</div>
+								<div className="flex-1">{renderSparkline(series.wins, 'text-success')}</div>
 							</div>
-							<div className="stat bg-base-300/50 rounded-xl p-4 min-w-[120px]">
-								<div className="stat-title text-xs">Losses</div>
-								<div className="stat-value text-2xl text-error">{losses}</div>
+						</div>
+						<div className="stat bg-base-300/50 rounded-xl p-4 min-w-[120px]">
+							<div className="stat-title text-xs">Losses</div>
+							<div className="flex items-center gap-3">
+								<div className="stat-value text-2xl text-error w-16 shrink-0">{losses}</div>
+								<div className="flex-1">{renderSparkline(series.losses, 'text-error')}</div>
 							</div>
-							<div className="stat bg-base-300/50 rounded-xl p-4 min-w-[120px]">
-								<div className="stat-title text-xs">Total Games</div>
-								<div className="stat-value text-2xl text-info">{totalGames}</div>
+						</div>
+						<div className="stat bg-base-300/50 rounded-xl p-4 min-w-[120px]">
+							<div className="stat-title text-xs">Total Games</div>
+							<div className="flex items-center gap-3">
+								<div className="stat-value text-2xl text-info w-16 shrink-0">{totalGames}</div>
+								<div className="flex-1">{renderSparkline(series.totalGames, 'text-info')}</div>
 							</div>
 						</div>
 					</div>
+				</div>
 				</div>
 			</div>
 		</div>
