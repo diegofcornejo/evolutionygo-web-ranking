@@ -1,15 +1,72 @@
 ---
 import { Icon } from "astro-icon/components";
+import type { MenuItem } from '@types';
 import Modal from '@components/Modal.astro';
 import { SignInForm, SignUpForm } from '@components/Auth';
 import SettingsDialog from '@components/Settings/Modal.astro';
 import AnnouncementsDropdown from './AnnouncementsDropdown.astro';
 import menuItems from './menuItems';
+
+type MenuItemWithBadge = MenuItem & {
+	badgeLabel?: string;
+	badgeClass?: string;
+};
+
+const menuItemsWithBadges = menuItems as MenuItemWithBadge[];
+
+const getBadgeClass = (item: MenuItemWithBadge) => item.badgeClass ?? 'text-primary';
 ---
 
 <script>
-	import { session } from '@stores/sessionStore';
+	import { session, currentNavPath, setNavPath } from '@stores/sessionStore';
 	import { update, updateUser, setTheme, handleLogout, handleOpenSettings } from './helper';
+
+	const normalizePath = (href: string | null): { path: string; hash: string } | null => {
+		if (!href || href.startsWith('http')) return null;
+		const url = new URL(href, window.location.origin);
+		return {
+			path: url.pathname,
+			hash: url.hash,
+		};
+	};
+
+	const applyActiveNav = (path: string) => {
+		const nav = document.querySelector('nav.navbar');
+		if (!nav) return;
+		const currentHash = window.location.hash;
+
+		nav.querySelectorAll('[data-nav-link]').forEach((link) => {
+			const href = link.getAttribute('href');
+			const linkData = normalizePath(href);
+			const isHashLink = !!linkData?.hash;
+			const isHomePath = path === '/';
+			const matchesHash = isHomePath && isHashLink && (currentHash === linkData.hash || (!currentHash && linkData.hash === '#section-home'));
+			const matchesPath = !!linkData?.path && !isHashLink && (linkData.path === path || path.startsWith(`${linkData.path}/`));
+			const isActive = matchesHash || matchesPath;
+			link.classList.toggle('text-primary', isActive);
+			link.classList.toggle('bg-base-200', isActive);
+			link.classList.toggle('font-semibold', isActive);
+			if (isActive) {
+				link.setAttribute('aria-current', 'page');
+			} else {
+				link.removeAttribute('aria-current');
+			}
+		});
+
+		nav.querySelectorAll('[data-nav-group]').forEach((group) => {
+			const parent = group.querySelector('[data-nav-parent]');
+			if (!parent) return;
+			const hasActiveChild = !!group.querySelector('[data-nav-link].text-primary');
+			parent.classList.toggle('text-primary', hasActiveChild);
+			parent.classList.toggle('bg-base-200', hasActiveChild);
+			parent.classList.toggle('font-semibold', hasActiveChild);
+		});
+	};
+
+	currentNavPath.subscribe((path: string) => {
+		if (!path) return;
+		applyActiveNav(path);
+	});
 
 	session.subscribe(() => {
 		update();
@@ -22,6 +79,11 @@ import menuItems from './menuItems';
 		setTheme();
 		handleLogout();
 		handleOpenSettings();
+		setNavPath(window.location.pathname);
+	});
+
+	window.addEventListener('popstate', () => {
+		setNavPath(window.location.pathname);
 	});
 </script>
 
@@ -48,14 +110,21 @@ import menuItems from './menuItems';
 				class='menu menu-sm dropdown-content bg-base-300 rounded-box z-[1] mt-1 w-52 p-2 shadow'
 			>
 				{
-					menuItems.map((item) =>
+					menuItemsWithBadges.map((item) =>
 						item.submenu ? (
-							<li>
-								<a data-umami-event={item.trackEvent}>{item.name}</a>
+							<li data-nav-group>
+								<a data-nav-parent data-umami-event={item.trackEvent}>
+									{item.name}
+								</a>
 								<ul class='p-2'>
 									{item.submenu.map((subitem) => (
 										<li>
-											<a data-umami-event={subitem.trackEvent} href={subitem.href} target={subitem?.target}>
+											<a
+												data-nav-link
+												data-umami-event={subitem.trackEvent}
+												href={subitem.href}
+												target={subitem?.target}
+											>
 												{subitem.name}
 											</a>
 										</li>
@@ -64,8 +133,20 @@ import menuItems from './menuItems';
 							</li>
 						) : (
 							<li>
-								<a data-umami-event={item.trackEvent} href={item.href} target={item?.target}>
-									{item.name}
+								<a
+									data-nav-link
+									data-umami-event={item.trackEvent}
+									href={item.href}
+									target={item?.target}
+								>
+									<span class="inline-flex items-center gap-1">
+										<span>{item.name}</span>
+										{item.badgeLabel && (
+											<span class={`text-[8px] font-bold ${getBadgeClass(item)}`}>
+												{item.badgeLabel}
+											</span>
+										)}
+									</span>
 								</a>
 							</li>
 						),
@@ -78,18 +159,23 @@ import menuItems from './menuItems';
 	<div class='navbar-center hidden lg:flex'>
 		<ul class='menu menu-horizontal px-1'>
 			{
-				menuItems.map((item) =>
+				menuItemsWithBadges.map((item) =>
 					item.submenu ? (
 						<li>
-							<details>
-								<summary>
+							<details data-nav-group>
+								<summary data-nav-parent>
 									{item.icon && <Icon name={item.icon} class='fill-current text-2xl'/>}
 									{item.name}
 								</summary>
 								<ul class='p-2 w-48'>
 									{item.submenu.map((subitem) => (
 										<li>
-											<a href={subitem.href} target={subitem?.target} data-umami-event={subitem.trackEvent}>
+											<a
+												data-nav-link
+												href={subitem.href}
+												target={subitem?.target}
+												data-umami-event={subitem.trackEvent}
+											>
 												{subitem.icon && <Icon name={subitem.icon} class='fill-current text-2xl'/>}
 												{subitem.name}
 											</a>
@@ -100,11 +186,22 @@ import menuItems from './menuItems';
 						</li>
 					) : (
 						<li>
-							<a href={item.href} target={item?.target} data-umami-event={item.trackEvent}>
+							<a
+								data-nav-link
+								href={item.href}
+								target={item?.target}
+								data-umami-event={item.trackEvent}
+							>
 								{item.icon && <Icon name={item.icon} class='fill-current text-2xl'/>}
 								<span class="relative">
 									{item.name}
-									{item.newTab && <span class="absolute -top-2 left-1/2 -translate-x-1/2 text-[8px] font-bold text-primary">NEW</span>}
+									{item.badgeLabel && (
+										<span
+											class={`absolute -top-2 left-1/2 -translate-x-1/2 text-[8px] font-bold ${getBadgeClass(item)}`}
+										>
+											{item.badgeLabel}
+										</span>
+									)}
 								</span>
 							</a>
 						</li>

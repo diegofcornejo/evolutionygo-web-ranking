@@ -53,7 +53,8 @@ describe('NavBar Menu Items', () => {
     
     expect(statsItem).toBeDefined();
     expect(statsItem?.href).toBe('/stats');
-    expect(statsItem?.newTab).toBe(true);
+    expect(statsItem?.badgeLabel).toBe('ALPHA');
+    expect(statsItem?.badgeClass).toBe('text-warning');
     expect(statsItem?.trackEvent).toBe('menu-click-stats');
   });
 

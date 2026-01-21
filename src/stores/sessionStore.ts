@@ -1,3 +1,4 @@
+import { atom } from 'nanostores';
 import { persistentAtom } from '@nanostores/persistent';
 import type { Session } from '@types';
 
@@ -20,4 +21,10 @@ const updateSessionProperty = <K extends keyof Session>(property: K, value: Sess
 	updateSession(sessionData);
 };
 
-export { session, getSession, updateSession, updateSessionProperty };
+const currentNavPath = atom<string>('');
+
+const setNavPath = (path: string) => {
+	currentNavPath.set(path);
+};
+
+export { session, getSession, updateSession, updateSessionProperty, currentNavPath, setNavPath };

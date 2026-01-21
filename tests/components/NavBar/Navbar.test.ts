@@ -20,7 +20,14 @@ vi.mock('@stores/sessionStore', () => ({
       return () => {};
     })
   },
-  getSession: vi.fn(() => ({ isLoggedIn: false, token: '', user: { id: '', username: '' } }))
+  getSession: vi.fn(() => ({ isLoggedIn: false, token: '', user: { id: '', username: '' } })),
+  currentNavPath: {
+    subscribe: vi.fn((callback) => {
+      callback('');
+      return () => {};
+    })
+  },
+  setNavPath: vi.fn()
 }));
 
 // Mock the theme store

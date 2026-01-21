@@ -7,5 +7,6 @@ export type MenuItem = {
 	comingSoon?: boolean;
 	icon?: string;
 	trackEvent?: string;
-	newTab?: boolean;
+	badgeLabel?: string;
+	badgeClass?: string;
 };
