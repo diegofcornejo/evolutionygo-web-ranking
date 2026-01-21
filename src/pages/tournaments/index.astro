@@ -1,7 +1,290 @@
 ---
 import Layout from '@layouts/Layout.astro';
-import UnderConstruction from '@components/UnderConstruction.astro';
 const title = 'Tournaments';
+const CURRENT_SEASON = import.meta.env.PUBLIC_DEFAULT_SEASON;
+const currentSeason = CURRENT_SEASON ?? '1';
+const defaultSeasonFilter = '';
+const seasonOptions = Array.from({ length: Number.parseInt(currentSeason) }, (_, index) => `${index + 1}`).reverse();
+const API_URL = import.meta.env.PUBLIC_API_URL;
+
+let banlistOptions: string[] = [];
+
+try {
+	const response = await fetch(`${API_URL}/ban-lists?season=${currentSeason}`);
+	if (response.ok) {
+		const data = await response.json();
+		banlistOptions = data.filter((option: string) => option !== 'N/A' && option !== 'Global');
+	}
+} catch (error) {
+	banlistOptions = [];
+}
+
+const tournaments = [
+	{
+		id: 'spring-championship-2026',
+		name: 'Spring Championship 2026',
+		description: 'The premier spring tournament featuring top duelists from around the world.',
+		status: 'open',
+		privacy: 'public',
+		season: '6',
+		createdAt: '2026-03-10',
+		createdBy: 'Evolution Staff',
+		banlist: '2025.10 TCG',
+		image: '/banners/banner1.webp'
+	},
+	{
+		id: 'weekly-duel-league',
+		name: 'Weekly Duel League',
+		description: 'Weekly competitive matches to climb the seasonal leaderboard.',
+		status: 'in progress',
+		privacy: 'public',
+		season: '6',
+		createdAt: '2026-02-28',
+		createdBy: 'Ranked Ops',
+		banlist: '2026.01 OCG',
+		image: '/banners/banner2.webp'
+	},
+	{
+		id: 'community-cup',
+		name: 'Community Cup',
+		description: 'A community-focused tournament for players of all skill levels.',
+		status: 'open',
+		privacy: 'public',
+		season: '6',
+		createdAt: '2026-02-15',
+		createdBy: 'Community Team',
+		banlist: '2025.10 TCG',
+		image: '/banners/banner3.webp'
+	},
+	{
+		id: 'invitational-elite',
+		name: 'Elite Invitational',
+		description: 'Exclusive tournament for top-ranked players only.',
+		status: 'closed',
+		privacy: 'private',
+		season: '5',
+		createdAt: '2026-01-22',
+		createdBy: 'Tournament Council',
+		banlist: '2014.04 HAT',
+		image: null
+	},
+	{
+		id: 'summer-showdown',
+		name: 'Summer Showdown',
+		description: 'Summer battle royale with exciting prizes.',
+		status: 'canceled',
+		privacy: 'public',
+		season: '5',
+		createdAt: '2025-12-14',
+		createdBy: 'Seasonal Events',
+		banlist: '2011.09 Tengu',
+		image: null
+	},
+	{
+		id: 'pro-qualifier',
+		name: 'Pro Qualifier',
+		description: 'Qualify for professional circuit events.',
+		status: 'finished',
+		privacy: 'public',
+		season: '5',
+		createdAt: '2025-11-30',
+		createdBy: 'Competitive Team',
+		banlist: '2025.10 OCG',
+		image: '/banners/banner1.webp'
+	},
+	{
+		id: 'rookie-tournament',
+		name: 'Rookie Tournament',
+		description: 'New player friendly tournament for beginners.',
+		status: 'open',
+		privacy: 'public',
+		season: '6',
+		createdAt: '2026-01-12',
+		createdBy: 'Onboarding Crew',
+		banlist: '2026.01.01 Rush Prereleases',
+		image: '/banners/banner2.webp'
+	},
+	{
+		id: 'champions-league',
+		name: 'Champions League',
+		description: 'The most prestigious tournament of the year.',
+		status: 'open',
+		privacy: 'private',
+		season: '6',
+		createdAt: '2026-03-18',
+		createdBy: 'Premier League',
+		banlist: '2025.10 Traditional',
+		image: '/banners/banner3.webp'
+	},
+	{
+		id: 'iron-duel-series',
+		name: 'Iron Duel Series',
+		description: 'Hardcore bracket for veterans seeking longer match sets.',
+		status: 'in progress',
+		privacy: 'public',
+		season: '6',
+		createdAt: '2026-03-05',
+		createdBy: 'Arena Ops',
+		banlist: '2010.03 Edison',
+		image: '/banners/banner2.webp'
+	},
+	{
+		id: 'midnight-gauntlet',
+		name: 'Midnight Gauntlet',
+		description: 'Late-night bracket with double elimination and faster rounds.',
+		status: 'open',
+		privacy: 'public',
+		season: '6',
+		createdAt: '2026-02-20',
+		createdBy: 'Night Ops',
+		banlist: '2005.04 GOAT',
+		image: null
+	},
+	{
+		id: 'legendary-invitational',
+		name: 'Legendary Invitational',
+		description: 'Invite-only event for previous season finalists.',
+		status: 'closed',
+		privacy: 'private',
+		season: '5',
+		createdAt: '2026-02-01',
+		createdBy: 'Legacy Council',
+		banlist: 'Genesys',
+		image: '/banners/banner1.webp'
+	},
+	{
+		id: 'arcana-sprint',
+		name: 'Arcana Sprint',
+		description: 'Short-form tournament focused on fast paced matches.',
+		status: 'finished',
+		privacy: 'public',
+		season: '5',
+		createdAt: '2025-12-28',
+		createdBy: 'Arcana League',
+		banlist: '2025.10 TCG',
+		image: '/banners/banner3.webp'
+	},
+	{
+		id: 'winter-royale',
+		name: 'Winter Royale',
+		description: 'Snow season showcase with weekly streamed finals.',
+		status: 'finished',
+		privacy: 'public',
+		season: '4',
+		createdAt: '2025-11-05',
+		createdBy: 'Seasonal Events',
+		banlist: '2025.10.01 Rush Duel',
+		image: '/banners/banner2.webp'
+	},
+	{
+		id: 'faction-clash',
+		name: 'Faction Clash',
+		description: 'Team-focused tournament for guilds and crews.',
+		status: 'canceled',
+		privacy: 'private',
+		season: '4',
+		createdAt: '2025-10-14',
+		createdBy: 'Guild Office',
+		banlist: '2025.10.01 Rush Prereleases',
+		image: null
+	},
+	{
+		id: 'duelist-open-circuit',
+		name: 'Duelist Open Circuit',
+		description: 'Open circuit with stage qualifiers leading to finals.',
+		status: 'open',
+		privacy: 'public',
+		season: '6',
+		createdAt: '2026-03-01',
+		createdBy: 'Circuit Team',
+		banlist: '2025.10 OCG',
+		image: '/banners/banner1.webp'
+	},
+	{
+		id: 'legacy-cup',
+		name: 'Legacy Cup',
+		description: 'Classic format showcase with limited card pool.',
+		status: 'finished',
+		privacy: 'public',
+		season: '3',
+		createdAt: '2025-09-02',
+		createdBy: 'Legacy Division',
+		banlist: '2005.4 GOAT',
+		image: '/banners/banner3.webp'
+	}
+];
+
+const getStatusBadgeClass = (status: string) => {
+	const statusMap: Record<string, string> = {
+		open: 'badge-success',
+		closed: 'badge-neutral',
+		'in progress': 'badge-warning',
+		canceled: 'badge-error',
+		finished: 'badge-accent'
+	};
+	return statusMap[status] || 'badge-neutral';
+};
+
+const getPrivacyBadgeClass = (privacy: string) => {
+	return privacy === 'private' ? 'badge-secondary' : 'badge-primary';
+};
+
+const sortedTournaments = [...tournaments].sort(
+	(a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+);
+
+if (banlistOptions.length === 0) {
+	banlistOptions = Array.from(new Set(tournaments.map((tournament) => tournament.banlist))).sort(
+		(a, b) => a.localeCompare(b)
+	);
+}
+
+const statusFilters = ['all', 'open', 'in progress', 'closed', 'canceled', 'finished'];
+const privacyFilters = ['all', 'public', 'private'];
+
+const statusCounts = tournaments.reduce<Record<string, number>>((counts, tournament) => {
+	const status = tournament.status;
+	counts[status] = (counts[status] ?? 0) + 1;
+	counts.all = (counts.all ?? 0) + 1;
+	return counts;
+}, { all: 0 });
+
+const privacyCounts = tournaments.reduce<Record<string, number>>((counts, tournament) => {
+	const privacy = tournament.privacy;
+	counts[privacy] = (counts[privacy] ?? 0) + 1;
+	counts.all = (counts.all ?? 0) + 1;
+	return counts;
+}, { all: 0 });
+
+const statusFilterLabelMap: Record<string, string> = {
+	all: 'All Statuses',
+	open: 'Open',
+	'in progress': 'In Progress',
+	closed: 'Closed',
+	canceled: 'Canceled',
+	finished: 'Finished',
+};
+
+const privacyFilterLabelMap: Record<string, string> = {
+	all: 'All Privacy',
+	public: 'Public',
+	private: 'Private',
+};
+
+const statusFilterClassMap: Record<string, string> = {
+	all: 'btn-primary',
+	open: 'btn-success',
+	'in progress': 'btn-warning',
+	closed: 'btn-neutral',
+	canceled: 'btn-error',
+	finished: 'btn-ghost',
+};
+
+const privacyFilterClassMap: Record<string, string> = {
+	all: 'btn-primary',
+	public: 'btn-info',
+	private: 'btn-secondary',
+};
 ---
 
 <Layout 
@@ -23,5 +306,290 @@ const title = 'Tournaments';
 		itemListOrder: 'https://schema.org/ItemListOrderDescending'
 	}}
 >
-	<UnderConstruction title={title} />
+	<main class="min-h-screen px-4 py-8 md:px-8 lg:px-12">
+		<div class="max-w-7xl mx-auto">
+			<div class="flex flex-col gap-6 text-center place-items-center mb-10">
+				<h1 class="text-3xl md:text-5xl md:leading-[3.5rem] font-bold pt-6 bg-gradient-to-r from-emerald-300 via-sky-400 to-amber-300 bg-clip-text text-transparent">
+					Tournaments
+				</h1>
+				<p class="text-lg text-gray-400 leading-8 max-w-4xl">
+					Explore active and upcoming tournaments, jump into competition, and track the status live.
+				</p>
+			</div>
+			
+			<div class="bg-base-200/70 backdrop-blur-sm rounded-2xl p-4 border border-base-300 mb-10">
+				<div class="flex flex-col gap-4">
+					<div>
+						<h2 class="text-lg font-semibold mb-1">Filters</h2>
+						<p class="text-sm text-base-content/60">Refine tournaments by season, banlist, status, privacy, and search.</p>
+					</div>
+					<div class="flex flex-wrap gap-3 items-center justify-start">
+						<select
+							class="select select-bordered select-sm min-w-[160px]"
+							name="season"
+							id="season-select"
+							aria-label="Select season"
+						>
+							<option value="" selected={defaultSeasonFilter === ''}>All seasons</option>
+							{seasonOptions.map((season) => (
+								<option value={season} selected={season === defaultSeasonFilter}>
+									Season {season}
+								</option>
+							))}
+						</select>
+						<select
+							class="select select-bordered select-sm min-w-[160px]"
+							name="banlist"
+							id="banlist-select"
+							aria-label="Select banlist"
+						>
+							<option value="">All banlists</option>
+							{banlistOptions.map((banlist) => (
+								<option value={banlist}>{banlist}</option>
+							))}
+						</select>
+						<div class="relative w-full sm:w-64">
+							<input
+								class="input input-bordered input-sm w-full pr-10"
+								type="search"
+								name="tournament-search"
+								id="tournament-search"
+								placeholder="Search tournaments"
+								aria-label="Search tournaments"
+							/>
+							<svg
+								class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-base-content/40"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+									d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+								/>
+							</svg>
+						</div>
+					</div>
+					<div class="flex flex-wrap gap-2 items-center justify-start">
+						{statusFilters.map((filter) => (
+							<button
+								type="button"
+								class={`btn btn-sm ${filter === 'all' ? statusFilterClassMap[filter] : 'btn-ghost'}`}
+								data-status-filter={filter}
+							>
+								{statusFilterLabelMap[filter]}
+								<span class="badge badge-sm badge-ghost ml-1">
+									{statusCounts[filter] ?? 0}
+								</span>
+							</button>
+						))}
+						<div class="w-px h-6 bg-base-300 mx-1 hidden sm:block" />
+						{privacyFilters.map((filter) => (
+							<button
+								type="button"
+								class={`btn btn-sm ${filter === 'all' ? privacyFilterClassMap[filter] : 'btn-ghost'}`}
+								data-privacy-filter={filter}
+							>
+								{privacyFilterLabelMap[filter]}
+								<span class="badge badge-sm badge-ghost ml-1">
+									{privacyCounts[filter] ?? 0}
+								</span>
+							</button>
+						))}
+					</div>
+				</div>
+			</div>
+			
+		<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+				{sortedTournaments.map((tournament) => (
+					<a
+						href={`/tournaments/${tournament.id}`}
+							class="group flex flex-col rounded-2xl overflow-hidden bg-base-200 border border-base-300 shadow-xl transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary"
+							data-tournament-card
+							data-name={tournament.name}
+							data-description={tournament.description}
+							data-season={tournament.season}
+							data-banlist={tournament.banlist}
+							data-status={tournament.status}
+							data-privacy={tournament.privacy}
+						>
+						<div class="relative">
+							<div class="h-28 overflow-hidden">
+								{tournament.image ? (
+									<img
+										src={tournament.image}
+										alt={tournament.name}
+										class="h-full w-full object-cover"
+									/>
+								) : (
+									<div class="flex h-full w-full items-center justify-center bg-neutral">
+										<img
+											src="/logo.svg"
+											alt="Evolution YGO logo"
+											class="w-1/2 h-auto opacity-80"
+										/>
+									</div>
+								)}
+							</div>
+							<div class="absolute inset-x-4 -bottom-4">
+								<div class="flex items-center justify-start gap-2 rounded-xl bg-base-100/90 px-3 py-2 text-[10px] backdrop-blur">
+									<span class={`badge badge-xs ${getStatusBadgeClass(tournament.status)} capitalize`}>
+										{tournament.status}
+									</span>
+									<span class="badge badge-xs badge-outline max-w-[120px] truncate whitespace-nowrap">
+										{tournament.banlist}
+									</span>
+									<span class={`badge badge-xs ${getPrivacyBadgeClass(tournament.privacy)} capitalize`}>
+										{tournament.privacy}
+									</span>
+								</div>
+							</div>
+						</div>
+						
+						<div class="flex flex-1 flex-col px-5 pb-5 pt-8">
+							<h2 class="text-lg font-semibold text-white mb-2 line-clamp-1">
+								{tournament.name}
+							</h2>
+							<p class="text-sm text-base-content/70 flex-1 line-clamp-3">
+								{tournament.description}
+							</p>
+							<p class="text-xs text-base-content/60 mt-3">
+								Admin: {tournament.createdBy}
+							</p>
+							<button class="btn btn-primary btn-sm mt-4 w-full">
+								Enter tournament
+							</button>
+					</div>
+					</a>
+				))}
+			</div>
+		</div>
+	</main>
+
+	<script>
+		// @ts-nocheck
+		const initTournamentFilters = () => {
+			const seasonSelect = document.getElementById('season-select');
+			const banlistSelect = document.getElementById('banlist-select');
+			const searchInput = document.getElementById('tournament-search');
+			const statusButtons = Array.from(document.querySelectorAll('[data-status-filter]'));
+			const privacyButtons = Array.from(document.querySelectorAll('[data-privacy-filter]'));
+			const cards = Array.from(document.querySelectorAll('[data-tournament-card]'));
+			let activeStatus = 'all';
+			let activePrivacy = 'all';
+
+			const updateStatusButtons = () => {
+				statusButtons.forEach((button) => {
+					if (!(button instanceof HTMLButtonElement)) return;
+					const value = button.dataset.statusFilter ?? 'all';
+					const isActive = value === activeStatus;
+					const activeClass =
+						{
+							all: 'btn-primary',
+							open: 'btn-success',
+							'in progress': 'btn-warning',
+							closed: 'btn-neutral',
+							canceled: 'btn-error',
+							finished: 'btn-ghost',
+						}[value] ?? 'btn-neutral';
+					button.classList.remove(
+						'btn-ghost',
+						'btn-primary',
+						'btn-success',
+						'btn-warning',
+						'btn-neutral',
+						'btn-error',
+						'btn-info',
+						'btn-secondary'
+					);
+					button.classList.add(isActive ? activeClass : 'btn-ghost');
+				});
+			};
+
+			const updatePrivacyButtons = () => {
+				privacyButtons.forEach((button) => {
+					if (!(button instanceof HTMLButtonElement)) return;
+					const value = button.dataset.privacyFilter ?? 'all';
+					const isActive = value === activePrivacy;
+					const activeClass =
+						{
+							all: 'btn-primary',
+							public: 'btn-info',
+							private: 'btn-secondary',
+						}[value] ?? 'btn-neutral';
+					button.classList.remove(
+						'btn-ghost',
+						'btn-primary',
+						'btn-success',
+						'btn-warning',
+						'btn-neutral',
+						'btn-error',
+						'btn-info',
+						'btn-secondary'
+					);
+					button.classList.add(isActive ? activeClass : 'btn-ghost');
+				});
+			};
+
+			const filterCards = () => {
+				const season = seasonSelect instanceof HTMLSelectElement ? seasonSelect.value : '';
+				const banlist = banlistSelect instanceof HTMLSelectElement ? banlistSelect.value : '';
+				const query =
+					searchInput instanceof HTMLInputElement
+						? searchInput.value.trim().toLowerCase()
+						: '';
+
+				cards.forEach((card) => {
+					const cardSeason = card.getAttribute('data-season');
+					const cardBanlist = card.getAttribute('data-banlist');
+					const cardStatus = card.getAttribute('data-status');
+					const cardPrivacy = card.getAttribute('data-privacy');
+					const name = card.getAttribute('data-name')?.toLowerCase() ?? '';
+					const description = card.getAttribute('data-description')?.toLowerCase() ?? '';
+					const matchesSeason = !season || cardSeason === season;
+					const matchesBanlist = !banlist || cardBanlist === banlist;
+					const matchesStatus = activeStatus === 'all' || cardStatus === activeStatus;
+					const matchesPrivacy = activePrivacy === 'all' || cardPrivacy === activePrivacy;
+					const matchesQuery = !query || `${name} ${description}`.includes(query);
+					card.classList.toggle(
+						'hidden',
+						!(matchesSeason && matchesBanlist && matchesStatus && matchesPrivacy && matchesQuery)
+					);
+				});
+			};
+
+			statusButtons.forEach((button) => {
+				if (!(button instanceof HTMLButtonElement)) return;
+				button.addEventListener('click', () => {
+					activeStatus = button.dataset.statusFilter ?? 'all';
+					updateStatusButtons();
+					filterCards();
+				});
+			});
+
+			privacyButtons.forEach((button) => {
+				if (!(button instanceof HTMLButtonElement)) return;
+				button.addEventListener('click', () => {
+					activePrivacy = button.dataset.privacyFilter ?? 'all';
+					updatePrivacyButtons();
+					filterCards();
+				});
+			});
+
+			seasonSelect?.addEventListener('change', filterCards);
+			banlistSelect?.addEventListener('change', filterCards);
+			searchInput?.addEventListener('input', filterCards);
+			updateStatusButtons();
+			updatePrivacyButtons();
+			filterCards();
+		};
+
+		if (document.readyState === 'loading') {
+			document.addEventListener('DOMContentLoaded', initTournamentFilters);
+		} else {
+			initTournamentFilters();
+		}
+	</script>
 </Layout>
