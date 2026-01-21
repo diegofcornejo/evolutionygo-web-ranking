@@ -20,7 +20,7 @@ export default function DuelistCard({
 	banListName,
 	season,
 	clickable = true,
-}: Props) {
+}: Readonly<Props>) {
 	const image = `https://ui-avatars.com/api/?name=${username}&background=random&size=128`;
 	const rating = 1 + (winRate / 100) * 4;
 	return (

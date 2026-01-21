@@ -3,6 +3,7 @@ import { ReactSVG } from 'react-svg';
 import { toast } from 'sonner';
 import type { Session } from '@types';
 import { updateSession } from '@stores/sessionStore';
+import { AuthEmailField, AuthErrorMessage } from './FormFields';
 
 export function SignInForm({ dialog }: Readonly<{ dialog: string }>) {
 	const [email, setEmail] = useState('');
@@ -10,7 +11,6 @@ export function SignInForm({ dialog }: Readonly<{ dialog: string }>) {
 	const [error, setError] = useState<string | null>(null);
 	const [forgotPassword, setForgotPassword] = useState(false);
 	const isLoginMode = !forgotPassword;
-	const hasError = Boolean(error);
 
 	const cleanForm = () => {
 		setEmail('');
@@ -72,19 +72,7 @@ export function SignInForm({ dialog }: Readonly<{ dialog: string }>) {
 
 	return (
 		<form className='space-y-4' onSubmit={handleSubmit}>
-			<label className="input input-bordered flex items-center gap-2 w-full">
-				<ReactSVG src='/icons/email.svg' className='w-4 h-4 opacity-70' />
-				<input
-					type="text"
-					className="grow"
-					name="email"
-					placeholder="Email"
-					value={email}
-					onChange={(e) => setEmail(e.target.value)}
-					required
-					aria-label="Email"
-				/>
-			</label>
+			<AuthEmailField value={email} onChange={setEmail} />
 
 			{isLoginMode && (
 				<label className="input input-bordered flex items-center gap-2 w-full">
@@ -102,9 +90,7 @@ export function SignInForm({ dialog }: Readonly<{ dialog: string }>) {
 				</label>
 			)}
 
-			<p className={`text-error text-xs h-4 transition-opacity duration-300 ${hasError ? 'opacity-100' : 'opacity-0'}`}>
-				{error || ' '}
-			</p>
+			<AuthErrorMessage message={error} />
 
 			<p className='text-xs'>
 				<button type="button" className='cursor-pointer link link-hover' onClick={switchForm} id='forgot-password-link'>{isLoginMode ? 'Forgot password?' : 'Back to Login'}</button>

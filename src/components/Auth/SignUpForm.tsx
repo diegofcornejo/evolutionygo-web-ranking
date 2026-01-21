@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { ReactSVG } from 'react-svg'
+import { AuthEmailField, AuthErrorMessage } from './FormFields';
 
 export function SignUpForm({ dialog }: Readonly<{ dialog: string }>) {
 	const [email, setEmail] = useState('');
 	const [username, setUsername] = useState('');
 	const [error, setError] = useState<string | null>(null);
-	const hasError = Boolean(error);
 
 
 	const cleanForm = () => {
@@ -53,19 +53,7 @@ export function SignUpForm({ dialog }: Readonly<{ dialog: string }>) {
 
 	return (
 		<form className='space-y-4' onSubmit={handleSubmit}>
-			<label className="input input-bordered flex items-center gap-2 w-full">
-				<ReactSVG src='/icons/email.svg' className='w-4 h-4 opacity-70'/>
-				<input
-					type="text"
-					className="grow"
-					name="email"
-					placeholder="Email"
-					value={email}
-					onChange={(e) => setEmail(e.target.value)}
-					required
-					aria-label="Email"
-				/>
-			</label>
+			<AuthEmailField value={email} onChange={setEmail} />
 			<label className="input input-bordered flex items-center gap-2 w-full">
 				<ReactSVG src='/icons/username.svg' className='w-4 h-4 opacity-70'/>
 				<input
@@ -79,9 +67,7 @@ export function SignUpForm({ dialog }: Readonly<{ dialog: string }>) {
 					aria-label="Username"
 				/>
 			</label>
-			<p className={`text-error text-xs h-4 transition-opacity duration-300 ${hasError ? 'opacity-100' : 'opacity-0'}`}>
-				{error || ' '}
-			</p>
+			<AuthErrorMessage message={error} />
 			<div className='flex justify-end gap-2'>
 				<button className="btn btn-primary" type="submit" data-umami-event='signup-submit'>Register</button>
 				<button className="btn btn-outline" type="button" onClick={closeModal} data-umami-event='signup-close'>Close</button>
