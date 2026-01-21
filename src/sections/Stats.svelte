@@ -279,7 +279,10 @@
             borderWidth: 1,
             padding: 12,
             callbacks: {
-              label: (context) => `${context.dataset.label}: ${context.parsed.y.toLocaleString()} duels`,
+              label: (context) => {
+                const value = context.parsed.y ?? 0;
+                return `${context.dataset.label}: ${value.toLocaleString()} duels`;
+              },
               footer: (tooltipItems) => {
                 const total = tooltipItems.reduce((sum, item) => sum + (item.parsed.y || 0), 0);
                 return `Total: ${total.toLocaleString()} duels`;
@@ -317,7 +320,7 @@
   });
 </script>
 
-<div class="mx-4 pb-16">
+<div class="w-full pb-16">
   <!-- Header -->
   <div class="flex flex-col gap-6 text-center place-items-center mb-12">
     <h1 class="text-3xl md:text-5xl md:leading-[3.5rem] font-bold pt-6 bg-gradient-to-r from-violet-400 via-pink-400 to-amber-400 bg-clip-text text-transparent">
