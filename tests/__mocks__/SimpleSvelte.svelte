@@ -1,0 +1,1 @@
+<div>MockSvelteSection</div>

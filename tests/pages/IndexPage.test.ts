@@ -1,6 +1,9 @@
 /// <reference types="vitest" />
 /// <reference types="astro/client" />
 import { describe, it, expect, vi } from 'vitest';
+import reactRenderer from '@astrojs/react/server.js';
+import svelteRenderer from '@astrojs/svelte/server.js';
+import { experimental_AstroContainer } from 'astro/container';
 
 Object.defineProperty(import.meta, 'env', {
   value: {
@@ -9,80 +12,61 @@ Object.defineProperty(import.meta, 'env', {
   writable: true,
 });
 
-vi.mock('@layouts/Layout.astro', () => ({
-  default: (_result: any, _props: any, slots: any) => slots?.default?.() ?? '',
+vi.mock('@layouts/Layout.astro', async () => ({
+  default: (await import('../__mocks__/Layout.astro')).default,
 }));
 
-vi.mock('@sections/News', () => ({
-  default: () => '<News>News</News>',
+vi.mock('@sections/News', async () => ({
+  default: (await import('../__mocks__/SimpleReact')).default,
 }));
 
-vi.mock('@sections/Live.svelte', () => ({
-  default: () => '<Live>Live</Live>',
+vi.mock('@sections/Live.svelte', async () => ({
+  default: (await import('../__mocks__/SimpleSvelte.svelte')).default,
 }));
 
-vi.mock('@sections/Ranking', () => ({
-  default: () => '<Ranking>Ranking</Ranking>',
+vi.mock('@sections/Ranking', async () => ({
+  default: (await import('../__mocks__/SimpleReact')).default,
 }));
 
-vi.mock('@sections/Features.astro', () => ({
-  default: () => '<Features>Features</Features>',
+vi.mock('@sections/Features.astro', async () => ({
+  default: (await import('../__mocks__/SimpleSection.astro')).default,
 }));
 
-vi.mock('@sections/Download.astro', () => ({
-  default: () => '<Download>Download</Download>',
+vi.mock('@sections/Download.astro', async () => ({
+  default: (await import('../__mocks__/SimpleSection.astro')).default,
 }));
 
-vi.mock('@sections/Faqs.astro', () => ({
-  default: () => '<Faqs>Faqs</Faqs>',
+vi.mock('@sections/Faqs.astro', async () => ({
+  default: (await import('../__mocks__/SimpleSection.astro')).default,
 }));
 
-vi.mock('@sections/Crew.astro', () => ({
-  default: () => '<Crew>Crew</Crew>',
+vi.mock('@sections/Crew.astro', async () => ({
+  default: (await import('../__mocks__/SimpleSection.astro')).default,
 }));
 
-vi.mock('@components/RoomsWebSocketListener', () => ({
-  RoomsWebSocketListener: () => '<RoomsWebSocketListener>Rooms</RoomsWebSocketListener>',
+vi.mock('@components/RoomsWebSocketListener', async () => ({
+  RoomsWebSocketListener: (await import('../__mocks__/SimpleReact')).default,
 }));
 
-vi.mock('@components/Cards/DuelistOfTheWeek.astro', () => ({
-  default: () => '<DuelistOfTheWeek>Duelist</DuelistOfTheWeek>',
-}));
-
-vi.mock('astro/container', () => ({
-  experimental_AstroContainer: {
-    create: async () => ({
-      renderToString: async () => `
-        <main>
-          <h1>Evolution YGO Season 2024</h1>
-          <News></News>
-          <RoomsWebSocketListener></RoomsWebSocketListener>
-          <Live></Live>
-          <DuelistOfTheWeek></DuelistOfTheWeek>
-          <Ranking></Ranking>
-          <Features></Features>
-          <Download></Download>
-          <Faqs></Faqs>
-          <Crew></Crew>
-        </main>
-      `,
-    }),
-  },
+vi.mock('@components/Cards/DuelistOfTheWeek.astro', async () => ({
+  default: (await import('../__mocks__/SimpleSection.astro')).default,
 }));
 
 describe('index.astro page', () => {
   it('renders the home sections', async () => {
     const IndexPage = (await import('../../src/pages/index.astro')).default;
 
-    const result = await (await import('astro/container'))
-      .experimental_AstroContainer.create()
-      .then(c => c.renderToString(IndexPage));
+    const container = await experimental_AstroContainer.create();
+    container.addServerRenderer({ name: '@astrojs/react', renderer: reactRenderer });
+    container.addServerRenderer({ name: '@astrojs/svelte', renderer: svelteRenderer });
+    container.addClientRenderer({ name: '@astrojs/react', entrypoint: '@astrojs/react/client.js' });
+    container.addClientRenderer({ name: '@astrojs/svelte', entrypoint: '@astrojs/svelte/client.js' });
 
-    expect(result).toContain('Evolution YGO Season 2024');
-    expect(result).toContain('News');
-    expect(result).toContain('RoomsWebSocketListener');
-    expect(result).toContain('Live');
-    expect(result).toContain('DuelistOfTheWeek');
-    expect(result).toContain('Ranking');
+    const result = await container.renderToString(IndexPage);
+
+    expect(result).toContain('Evolution YGO Season');
+    expect(result).toContain('component-url="@sections/Live.svelte"');
+    expect(result).toContain('MockReactSection');
+    expect(result).toContain('MockSection');
   });
 });

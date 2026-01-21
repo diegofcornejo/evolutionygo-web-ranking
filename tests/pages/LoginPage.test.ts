@@ -1,28 +1,18 @@
 /// <reference types="vitest" />
 /// <reference types="astro/client" />
 import { describe, it, expect, vi } from 'vitest';
+import { experimental_AstroContainer } from 'astro/container';
 
-vi.mock('@layouts/Layout.astro', () => ({
-  default: () => '',
-}));
-
-vi.mock('astro/container', () => ({
-  experimental_AstroContainer: {
-    create: async () => ({
-      renderToString: async () => `
-        <h1 class='text-gradient text-center'>Login</h1>
-      `,
-    }),
-  },
+vi.mock('@layouts/Layout.astro', async () => ({
+  default: (await import('../__mocks__/Layout.astro')).default,
 }));
 
 describe('login.astro page', () => {
   it('renders the login title', async () => {
     const LoginPage = (await import('../../src/pages/login.astro')).default;
 
-    const result = await (await import('astro/container'))
-      .experimental_AstroContainer.create()
-      .then(c => c.renderToString(LoginPage));
+    const container = await experimental_AstroContainer.create();
+    const result = await container.renderToString(LoginPage);
 
     expect(result).toContain('Login');
     expect(result).toContain('text-gradient');

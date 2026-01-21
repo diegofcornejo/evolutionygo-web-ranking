@@ -1,5 +1,7 @@
 /// <reference types="vitest" />
 import { describe, it, expect, vi } from 'vitest';
+import reactRenderer from '@astrojs/react/server.js';
+import { experimental_AstroContainer } from 'astro/container';
 
 Object.defineProperty(import.meta, 'env', {
   value: {
@@ -22,35 +24,24 @@ Object.defineProperty(window, 'matchMedia', {
   })),
 });
 
-vi.mock('@layouts/Layout.astro', () => ({
-  default: (_result: any, _props: any, slots: any) => slots?.default?.() ?? '',
+vi.mock('@layouts/Layout.astro', async () => ({
+  default: (await import('../__mocks__/Layout.astro')).default,
 }));
 
-vi.mock('@sections/Stats.svelte', () => ({
-  default: () => '<StatsSection>StatsSection</StatsSection>',
-}));
-
-vi.mock('astro/container', () => ({
-  experimental_AstroContainer: {
-    create: async () => ({
-      renderToString: async () => `
-        <main class="w-full text-[white] text-xl leading-[1.6] mx-auto pt-8">
-          <StatsSection client:load></StatsSection>
-        </main>
-      `,
-    }),
-  },
+vi.mock('@sections/Stats.svelte', async () => ({
+  default: (await import('../__mocks__/SimpleReact')).default,
 }));
 
 describe('stats.astro page', () => {
   it('renders the StatsSection within the page', async () => {
     const StatsPage = (await import('@pages/stats.astro')).default;
 
-    const result = await (await import('astro/container'))
-      .experimental_AstroContainer.create()
-      .then(c => c.renderToString(StatsPage));
+    const container = await experimental_AstroContainer.create();
+    container.addServerRenderer({ name: '@astrojs/react', renderer: reactRenderer });
+    container.addClientRenderer({ name: '@astrojs/react', entrypoint: '@astrojs/react/client.js' });
 
-    expect(result).toContain('StatsSection');
-    expect(result).toContain('client:load');
+    const result = await container.renderToString(StatsPage);
+
+    expect(result).toContain('MockReactSection');
   });
 });
