@@ -2,7 +2,11 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import { ReactSVG } from 'react-svg';
 
-export function ResetPasswordForm({ token }: { token: string }) {
+interface ResetPasswordFormProps {
+	token: string;
+}
+
+export function ResetPasswordForm({ token }: Readonly<ResetPasswordFormProps>) {
 	const [password, setPassword] = useState('');
 	const [repeatPassword, setRepeatPassword] = useState('');
 	const [error, setError] = useState('');
@@ -12,9 +16,8 @@ export function ResetPasswordForm({ token }: { token: string }) {
 		if (password !== repeatPassword) {
 			setError('Passwords do not match');
 			return;
-		} else {
-			setError('');
 		}
+		setError('');
 		try {
 			const response = await fetch(`${import.meta.env.PUBLIC_API_URL}/users/reset-password`, {
 				method: 'POST',
@@ -27,12 +30,13 @@ export function ResetPasswordForm({ token }: { token: string }) {
 			if (response.ok) {
 				toast.success('Password reset successful');
 				setTimeout(() => {
-					window.location.href = '/login';
+					globalThis.location.href = '/login';
 				}, 5000);
 			} else {
 				setError(response.statusText);
 			}
 		} catch (error) {
+			console.error('Error resetting password:', error);
 			setError('No connection to server');
 		}
 	}

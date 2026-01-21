@@ -9,6 +9,8 @@ export function SignInForm({ dialog }: Readonly<{ dialog: string }>) {
 	const [password, setPassword] = useState('');
 	const [error, setError] = useState<string | null>(null);
 	const [forgotPassword, setForgotPassword] = useState(false);
+	const isLoginMode = !forgotPassword;
+	const hasError = Boolean(error);
 
 	const cleanForm = () => {
 		setEmail('');
@@ -25,7 +27,7 @@ export function SignInForm({ dialog }: Readonly<{ dialog: string }>) {
 	}
 
 	const switchForm = () => {
-		setForgotPassword(!forgotPassword);
+		setForgotPassword((value) => !value);
 		cleanForm();
 	}
 
@@ -33,22 +35,22 @@ export function SignInForm({ dialog }: Readonly<{ dialog: string }>) {
 		event.preventDefault();
 
 		try {
-			const endpoint = forgotPassword
-				? `users/forgot-password`
-				: `users/login`;
+			const endpoint = isLoginMode
+				? `users/login`
+				: `users/forgot-password`;
 
 			const response = await fetch(`${import.meta.env.PUBLIC_API_URL}/${endpoint}`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
 				},
-				body: JSON.stringify({ email, ...(forgotPassword ? {} : { password }) })
+				body: JSON.stringify(isLoginMode ? { email, password } : { email })
 			});
 
 			const data = await response.json();
 
 			if (response.ok) {
-				if (!forgotPassword) {
+				if (isLoginMode) {
 					const sessionData: Session = {
 						isLoggedIn: true,
 						token: data.token,
@@ -63,6 +65,7 @@ export function SignInForm({ dialog }: Readonly<{ dialog: string }>) {
 				setError(data.message || 'Error in request');
 			}
 		} catch (error) {
+			console.error('Error in sign in:', error);
 			setError('No connection to server');
 		}
 	};
@@ -83,7 +86,7 @@ export function SignInForm({ dialog }: Readonly<{ dialog: string }>) {
 				/>
 			</label>
 
-			{!forgotPassword && (
+			{isLoginMode && (
 				<label className="input input-bordered flex items-center gap-2 w-full">
 					<ReactSVG src='/icons/password.svg' className='w-4 h-4 opacity-70' />
 				<input
@@ -99,21 +102,21 @@ export function SignInForm({ dialog }: Readonly<{ dialog: string }>) {
 				</label>
 			)}
 
-			<p className={`text-error text-xs h-4 transition-opacity duration-300 ${!error ? 'opacity-0' : 'opacity-100'}`}>
+			<p className={`text-error text-xs h-4 transition-opacity duration-300 ${hasError ? 'opacity-100' : 'opacity-0'}`}>
 				{error || ' '}
 			</p>
 
 			<p className='text-xs'>
-				<button type="button" className='cursor-pointer link link-hover' onClick={switchForm} id='forgot-password-link'>{forgotPassword ? 'Back to Login' : 'Forgot password?'}</button>
+				<button type="button" className='cursor-pointer link link-hover' onClick={switchForm} id='forgot-password-link'>{isLoginMode ? 'Forgot password?' : 'Back to Login'}</button>
 			</p>
 
 			<div className='flex justify-end gap-2'>
-				{!forgotPassword && (
+				{isLoginMode && (
 					<button className="btn btn-primary" type="submit" data-umami-event='signin-submit'>
 						Login
 					</button>
 				)}
-				{forgotPassword && (
+				{!isLoginMode && (
 					<button className="btn btn-primary" type="submit" data-umami-event='forgot-password-submit'>
 						Reset Password
 					</button>

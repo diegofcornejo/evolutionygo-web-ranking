@@ -141,7 +141,7 @@ export default function AchievementShowcase({ achievements }: Readonly<Achieveme
 	);
 }
 
-function AchievementCard({ achievement }: { achievement: Achievement }) {
+function AchievementCard({ achievement }: Readonly<{ achievement: Achievement }>) {
 		const unlockedDate = new Date(achievement.unlockedAt).toLocaleDateString('en-US', {
 			month: 'short',
 			day: 'numeric',

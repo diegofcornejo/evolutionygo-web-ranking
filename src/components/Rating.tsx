@@ -6,9 +6,9 @@ interface Props {
 export default function Rating({ rating, size = 'md' }: Readonly<Props>) {
 	return (
 		<div className={`rating rating-${size}`}>
-			{Array.from({ length: rating }).map((_, index) => (
+			{Array.from({ length: rating }, (_, value) => value + 1).map((value) => (
 				<input 
-					key={index}
+					key={value}
 					type="radio" 
 					// name={`rating-${rating}-${index}`} 
 					className="mask mask-star-2 bg-orange-300 pointer-events-none"

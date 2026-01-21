@@ -90,8 +90,8 @@ export default function ProfileHeader({
 					strokeLinejoin="round"
 					strokeLinecap="round"
 				/>
-				{getPoints(values).map((point, index) => (
-					<g key={index} className="group pointer-events-auto">
+				{getPoints(values).map((point) => (
+					<g key={point.season} className="group pointer-events-auto">
 						<circle
 							cx={point.x}
 							cy={point.y}

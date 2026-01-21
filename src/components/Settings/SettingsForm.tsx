@@ -10,6 +10,8 @@ export default function SettingsForm({ dialog }: Readonly<{ dialog: string }>) {
 	const [newPassword, setNewPassword] = useState('');
 	const [usernameError, setUsernameError] = useState<string | null>(null);
 	const [passwordError, setPasswordError] = useState<string | null>(null);
+	const hasUsernameError = Boolean(usernameError);
+	const hasPasswordError = Boolean(passwordError);
 
 	const cleanForm = () => {
 		setUsername('');
@@ -53,6 +55,7 @@ export default function SettingsForm({ dialog }: Readonly<{ dialog: string }>) {
 				setError(data.message || 'Error updating');
 			}
 		} catch (error) {
+			console.error('Error updating settings:', error);
 			setError('No connection to server');
 		}
 	};
@@ -86,11 +89,10 @@ export default function SettingsForm({ dialog }: Readonly<{ dialog: string }>) {
 						/>
 					</label>
 					<p
-						className={`text-error text-xs h-4 transition-opacity duration-300 ${!usernameError ? 'opacity-0' : 'opacity-100'
-							}`}
-					>
-						{usernameError || ' '}
-					</p>
+					className={`text-error text-xs h-4 transition-opacity duration-300 ${hasUsernameError ? 'opacity-100' : 'opacity-0'}`}
+				>
+					{usernameError || ' '}
+				</p>
 					<button
 						className="btn btn-primary btn-sm"
 						type="submit"
@@ -126,11 +128,10 @@ export default function SettingsForm({ dialog }: Readonly<{ dialog: string }>) {
 						/>
 					</label>
 					<p
-						className={`text-error text-xs h-4 transition-opacity duration-300 ${!passwordError ? 'opacity-0' : 'opacity-100'
-							}`}
-					>
-						{passwordError || ' '}
-					</p>
+					className={`text-error text-xs h-4 transition-opacity duration-300 ${hasPasswordError ? 'opacity-100' : 'opacity-0'}`}
+				>
+					{passwordError || ' '}
+				</p>
 					<button
 						className="btn btn-primary btn-sm"
 						type="submit"

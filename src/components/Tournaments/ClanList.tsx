@@ -36,12 +36,41 @@ const getClanButtonClass = (isSelected: boolean): string => {
 	return 'bg-base-200 hover:bg-base-100';
 };
 
-export default function ClanList({ clans }: ClanListProps) {
+export default function ClanList({ clans }: Readonly<ClanListProps>) {
 	const [selectedClanId, setSelectedClanId] = useState<string | null>(
 		clans.length > 0 ? clans[0].id : null
 	);
 
 	const selectedClan = clans.find((clan) => clan.id === selectedClanId);
+	const renderMembers = () => {
+		if (selectedClan) {
+			if (selectedClan.members.length === 0) {
+				return <p className='text-gray-400 text-center py-8'>No members in this clan</p>;
+			}
+
+			return selectedClan.members.map((member) => (
+				<div key={member.id} className='flex items-center justify-between p-3 bg-base-200 rounded-lg'>
+					<div className='flex items-center gap-3'>
+						<div className='avatar'>
+							<div className='w-10 rounded-full'>
+								<img
+									src={getAvatarUrl(member.username)}
+									alt={member.username}
+									loading='lazy'
+									decoding='async'
+								/>
+							</div>
+						</div>
+						<div className='flex flex-col'>
+							<span className='font-semibold'>{member.username}</span>
+						</div>
+					</div>
+				</div>
+			));
+		}
+
+		return <p className='text-gray-400 text-center py-8'>Select a clan to view members</p>;
+	};
 
 	return (
 		<div className='flex flex-col lg:flex-row gap-4 h-full'>
@@ -97,33 +126,9 @@ export default function ClanList({ clans }: ClanListProps) {
 						<h2 className='card-title text-2xl mb-4'>
 							{selectedClan ? `${selectedClan.name} Members` : 'Select a Clan'}
 						</h2>
-						<div className='flex flex-col gap-2 max-h-[600px] overflow-y-auto'>
-							{!selectedClan ? (
-								<p className='text-gray-400 text-center py-8'>Select a clan to view members</p>
-							) : selectedClan.members.length === 0 ? (
-								<p className='text-gray-400 text-center py-8'>No members in this clan</p>
-							) : (
-								selectedClan.members.map((member) => (
-									<div key={member.id} className='flex items-center justify-between p-3 bg-base-200 rounded-lg'>
-										<div className='flex items-center gap-3'>
-											<div className='avatar'>
-												<div className='w-10 rounded-full'>
-													<img
-														src={getAvatarUrl(member.username)}
-														alt={member.username}
-														loading='lazy'
-														decoding='async'
-													/>
-												</div>
-											</div>
-											<div className='flex flex-col'>
-												<span className='font-semibold'>{member.username}</span>
-											</div>
-										</div>
-									</div>
-								))
-							)}
-						</div>
+					<div className='flex flex-col gap-2 max-h-[600px] overflow-y-auto'>
+						{renderMembers()}
+					</div>
 					</div>
 				</div>
 			</div>

@@ -6,6 +6,7 @@ export function SignUpForm({ dialog }: Readonly<{ dialog: string }>) {
 	const [email, setEmail] = useState('');
 	const [username, setUsername] = useState('');
 	const [error, setError] = useState<string | null>(null);
+	const hasError = Boolean(error);
 
 
 	const cleanForm = () => {
@@ -78,7 +79,7 @@ export function SignUpForm({ dialog }: Readonly<{ dialog: string }>) {
 					aria-label="Username"
 				/>
 			</label>
-			<p className={`text-error text-xs h-4 transition-opacity duration-300 ${!error ? 'opacity-0' : 'opacity-100'}`}>
+			<p className={`text-error text-xs h-4 transition-opacity duration-300 ${hasError ? 'opacity-100' : 'opacity-0'}`}>
 				{error || ' '}
 			</p>
 			<div className='flex justify-end gap-2'>

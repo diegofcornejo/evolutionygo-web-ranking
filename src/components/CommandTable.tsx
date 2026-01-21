@@ -3,10 +3,10 @@ import { banlists } from '@stores/banlistsStore';
 import type { Command } from '@types';
 
 const getCurrentBanlist = (banlists: string[], banlist: string) => {
-	const regex = new RegExp(`^(\\d{4})\\.(\\d{1,2}) ${banlist}$`);
+	const regex = new RegExp(String.raw`^(\d{4})\.(\d{1,2}) ${banlist}$`);
 	const matches = banlists
 		.map((entry) => {
-			const match = entry.match(regex);
+			const match = regex.exec(entry);
 			if (!match) return null;
 			const year = Number.parseInt(match[1], 10);
 			const month = Number.parseInt(match[2], 10);

@@ -1,7 +1,7 @@
 import type { News as Props} from '@types';
 import { ReactSVG } from 'react-svg'
 
-export default ({ image, title, description, buttonText, buttonLink }: Props) => {
+export default function Banner({ image, title, description, buttonText, buttonLink }: Props) {
 	return (
 		<div
 			className="card bg-base-100 from-base-200 not-prose outline-base-content/5 relative overflow-hidden bg-gradient-to-b font-sans shadow-lg outline -outline-offset-1 md:flex-row-reverse">

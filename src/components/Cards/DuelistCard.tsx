@@ -8,7 +8,19 @@ interface Props extends Duelist {
 	clickable?: boolean;
 }
 
-export default ({ userId, username, points, wins, losses, winRate, position, borderColor = 'transparent', banListName, season, clickable = true }: Props) => {
+export default function DuelistCard({
+	userId,
+	username,
+	points,
+	wins,
+	losses,
+	winRate,
+	position,
+	borderColor = 'transparent',
+	banListName,
+	season,
+	clickable = true,
+}: Props) {
 	const image = `https://ui-avatars.com/api/?name=${username}&background=random&size=128`;
 	const rating = 1 + (winRate / 100) * 4;
 	return (
@@ -37,5 +49,6 @@ export default ({ userId, username, points, wins, losses, winRate, position, bor
 				<p className='text-sm text-error'>Losses: {losses}</p>
 				<p className='text-sm'>Win Rate: {winRate.toFixed(2)}%</p>
 			</div>
-		</a>)
+		</a>
+	);
 }
