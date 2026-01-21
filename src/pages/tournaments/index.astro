@@ -306,7 +306,7 @@ const privacyFilterClassMap: Record<string, string> = {
 		itemListOrder: 'https://schema.org/ItemListOrderDescending'
 	}}
 >
-	<main class="min-h-screen px-4 py-8 md:px-8 lg:px-12">
+	<main class="min-h-screen px-4 py-8 md:px-8 lg:px-12" data-tournaments-page>
 		<div class="max-w-7xl mx-auto">
 			<div class="flex flex-col gap-6 text-center place-items-center mb-10">
 				<h1 class="text-3xl md:text-5xl md:leading-[3.5rem] font-bold pt-6 bg-gradient-to-r from-emerald-300 via-sky-400 to-amber-300 bg-clip-text text-transparent">
@@ -471,6 +471,10 @@ const privacyFilterClassMap: Record<string, string> = {
 	<script>
 		// @ts-nocheck
 		const initTournamentFilters = () => {
+			const pageRoot = document.querySelector('[data-tournaments-page]');
+			if (!(pageRoot instanceof HTMLElement)) return;
+			if (pageRoot.dataset.filtersInitialized === 'true') return;
+			pageRoot.dataset.filtersInitialized = 'true';
 			const seasonSelect = document.getElementById('season-select');
 			const banlistSelect = document.getElementById('banlist-select');
 			const searchInput = document.getElementById('tournament-search');
@@ -586,10 +590,16 @@ const privacyFilterClassMap: Record<string, string> = {
 			filterCards();
 		};
 
-		if (document.readyState === 'loading') {
-			document.addEventListener('DOMContentLoaded', initTournamentFilters);
-		} else {
+		const handlePageLoad = () => {
 			initTournamentFilters();
+		};
+
+		if (document.readyState === 'loading') {
+			document.addEventListener('DOMContentLoaded', handlePageLoad);
+		} else {
+			handlePageLoad();
 		}
+
+		document.addEventListener('astro:page-load', handlePageLoad);
 	</script>
 </Layout>
