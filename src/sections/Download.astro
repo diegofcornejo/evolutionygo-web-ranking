@@ -9,7 +9,9 @@ const subtitle = 'Just download a client';
 const description =
 	'Evolution does not have its own client. We recommend downloading the official EDOPro client or any of the other clients listed below.';
 
-const clients: GameClient[] = [
+type GameClientStatus = GameClient & { comingSoon?: boolean };
+
+const clients = [
 	{
 		name: 'YGO Mobile',
 		link: 'https://ygom.top/',
@@ -24,6 +26,14 @@ const clients: GameClient[] = [
 		trackEvent: 'download-click-edopro',
 	},
 	{
+		name: 'EvoPro',
+		link: '#section-download',
+		icon: { name: 'mdi:rocket-launch', classes: 'text-primary text-xl' },
+		platforms: ['web', 'windows', 'apple', 'linux'],
+		trackEvent: 'download-click-evolution',
+		comingSoon: true,
+	},
+	{
 		name: 'MDPro3',
 		link: 'https://discord.com/channels/506499657724067852/1271523003997356032/1277723346473062441',
 		platforms: ['windows', 'apple', 'linux', 'android'],
@@ -35,7 +45,7 @@ const clients: GameClient[] = [
 		platforms: ['windows', 'apple'],
 		trackEvent: 'download-click-koishi',
 	},
-];
+] as GameClientStatus[];
 
 const title2 = 'Setup your client';
 const description2 =
@@ -227,19 +237,23 @@ const instructions = [
 
 	<div class='flex flex-col md:flex-row gap-8 justify-center py-8'>
 		{
-			clients.map((client) => (
-				<a
-					href={client.link}
-					target='_blank'
-					class='btn btn-neutral btn-lg text-white hover:bg-secondary min-w-[200px] h-auto py-2'
-					data-umami-event={client.trackEvent}
-				>
-					<div class='flex flex-col gap-2'>
-						<div class='flex flex-row gap-2 items-center'>
+			clients.map((client) => {
+				const isComingSoon = client.comingSoon === true;
+				const baseClasses =
+					'btn btn-neutral btn-lg text-white min-w-[200px] h-auto py-2 rounded-2xl';
+				const clientClasses = isComingSoon
+					? `${baseClasses} cursor-not-allowed pointer-events-none`
+					: `${baseClasses} hover:bg-secondary`;
+				const content = (
+					<div class='flex flex-col gap-2 text-center'>
+						<div class='flex flex-row gap-2 items-center justify-center'>
 							{client.icon && (
 								<Icon name={client.icon.name} class={client.icon.classes} />
 							)}
 							{client.name}
+							{isComingSoon && (
+								<span class='badge badge-warning badge-xs'>Coming soon</span>
+							)}
 						</div>
 						<div class='flex flex-row gap-2 justify-center'>
 							{client.platforms.map((platform) => (
@@ -247,10 +261,53 @@ const instructions = [
 							))}
 						</div>
 					</div>
-				</a>
-			))
+				);
+
+				return isComingSoon ? (
+					<div class='client-spotlight' aria-disabled='true'>
+						<div class={`${clientClasses} client-spotlight-inner`}>{content}</div>
+					</div>
+				) : (
+					<a
+						href={client.link}
+						target='_blank'
+						class={clientClasses}
+						data-umami-event={client.trackEvent}
+					>
+						{content}
+					</a>
+				);
+			})
 		}
 	</div>
+
+<style>
+	.client-spotlight {
+		position: relative;
+		padding: 2px;
+		border-radius: 1.25rem;
+		background: linear-gradient(120deg, #f59e0b, #fcd34d, #f59e0b);
+		background-size: 200% 200%;
+		animation: client-spotlight-glow 4s linear infinite;
+		box-shadow: 0 0 14px rgba(245, 158, 11, 0.35);
+	}
+
+	.client-spotlight-inner {
+		border-radius: 1.1rem;
+	}
+
+	@keyframes client-spotlight-glow {
+		0% {
+			background-position: 0% 50%;
+		}
+		50% {
+			background-position: 100% 50%;
+		}
+		100% {
+			background-position: 0% 50%;
+		}
+	}
+</style>
 	<div class='flex flex-col gap-0 text-center place-items-center' id='setup'>
 		<h2
 			class='text-2xl md:text-3xl md:leading-[3.5rem] font-bold pt-6 bg-gradient-to-r from-purple-500 via-blue-500 to-indigo-500 bg-clip-text text-transparent'

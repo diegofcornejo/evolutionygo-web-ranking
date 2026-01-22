@@ -7,4 +7,5 @@ export type GameClient = {
 	};
 	platforms: string[];
 	trackEvent?: string;
+	comingSoon?: boolean;
 }
