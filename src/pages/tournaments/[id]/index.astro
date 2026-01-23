@@ -1,94 +1,454 @@
 ---
 import Layout from '@layouts/Layout.astro';
-import ClanList from '@components/Tournaments/ClanList';
 
 let { id } = Astro.params;
-const API_URL = import.meta.env.PUBLIC_API_URL;
 
 // TODO: Replace with actual API call when endpoint is available
 // const tournamentResponse = await fetch(`${API_URL}/tournaments/${id}`);
 // const tournament = await tournamentResponse.json();
 
 // Mock data structure - replace with actual API response
+const gameClients = ['EDOPro', 'YGO Mobile', 'EvoPro', 'MDPro3', 'Koishi Pro'];
+
+const banners = ['/banners/banner1.webp', '/banners/banner2.webp', '/banners/banner3.webp'];
+const bannerMap: Record<string, string> = {
+	'spring-championship-2026': '/banners/banner1.webp',
+	'weekly-duel-league': '/banners/banner2.webp',
+	'community-cup': '/banners/banner3.webp',
+	'pro-qualifier': '/banners/banner1.webp',
+	'rookie-tournament': '/banners/banner2.webp',
+	'champions-league': '/banners/banner3.webp',
+	'iron-duel-series': '/banners/banner2.webp',
+	'duelist-open-circuit': '/banners/banner1.webp',
+	'arcana-sprint': '/banners/banner3.webp',
+};
+const bannerFromMap = id ? bannerMap[id] : undefined;
+const banner = bannerFromMap ?? banners[0];
+const shouldRandomizeBanner = !bannerFromMap;
+
 const tournament = {
 	id: id,
-	name: `Tournament ${id?.toUpperCase() || ''}`,
-	platform: 'EDOPro',
-	format: 'Single Elimination',
-	banlist: 'Global',
-	startDate: '2024-01-15T10:00:00Z',
-	endDate: '2024-01-20T18:00:00Z',
-	maxParticipants: 32,
-	status: 'open', // open, closed, in-progress, completed
+	name: `${(id ?? '').replace(/-/g, ' ').toUpperCase()}`,
+	description:
+		'A double-elimination clash featuring top duelists battling for seasonal ranking supremacy.',
+	banner,
+	status: 'closed',
+	privacy: 'private',
+	participants: { current: 16, max: 16 },
+	startDate: '2026-03-15T18:00:00Z',
+	endDate: '2026-03-20T22:00:00Z',
+	banlist: '2026.01 OCG',
+	type: 'tag',
+	organizer: 'Evolution Tournament Staff',
+	platform: gameClients[0],
+	champions: ['DragonMaster1', 'DragonMaster2'],
 };
 
-// TODO: Replace with actual API call when endpoint is available
-// const clansResponse = await fetch(`${API_URL}/tournaments/${id}/clans`);
-// const clans = await clansResponse.json();
+const joinLabel = tournament.privacy === 'private' ? 'Request Join' : 'Join';
 
-// Mock clans data with members
-const clans = [
-	{
-		id: '1',
-		name: 'Dragon Clan',
-		registeredAt: '2024-01-10T08:00:00Z',
-		members: [
-			{ id: '1', username: 'DragonMaster1' },
-			{ id: '2', username: 'DragonMaster2' },
-			{ id: '3', username: 'DragonMaster3' },
-			{ id: '4', username: 'DragonMaster4' },
-			{ id: '5', username: 'DragonMaster5' },
-			{ id: '6', username: 'DragonMaster6' },
-			{ id: '7', username: 'DragonMaster7' },
-			{ id: '8', username: 'DragonMaster8' },
-		],
-	},
-	{
-		id: '2',
-		name: 'Warrior Guild',
-		registeredAt: '2024-01-10T09:15:00Z',
-		members: [
-			{ id: '9', username: 'Warrior1' },
-			{ id: '10', username: 'Warrior2' },
-			{ id: '11', username: 'Warrior3' },
-			{ id: '12', username: 'Warrior4' },
-			{ id: '13', username: 'Warrior5' },
-			{ id: '14', username: 'Warrior6' },
-			{ id: '15', username: 'Warrior7' },
-			{ id: '16', username: 'Warrior8' },
-		],
-	},
-	{
-		id: '3',
-		name: 'Mage Alliance',
-		registeredAt: '2024-01-10T10:30:00Z',
-		members: [
-			{ id: '17', username: 'Mage1' },
-			{ id: '18', username: 'Mage2' },
-			{ id: '19', username: 'Mage3' },
-			{ id: '20', username: 'Mage4' },
-			{ id: '21', username: 'Mage5' },
-			{ id: '22', username: 'Mage6' },
-			{ id: '23', username: 'Mage7' },
-			{ id: '24', username: 'Mage8' },
-		],
-	},
-	{
-		id: '4',
-		name: 'Shadow Brotherhood',
-		registeredAt: '2024-01-11T11:45:00Z',
-		members: [
-			{ id: '25', username: 'Shadow1' },
-			{ id: '26', username: 'Shadow2' },
-			{ id: '27', username: 'Shadow3' },
-			{ id: '28', username: 'Shadow4' },
-			{ id: '29', username: 'Shadow5' },
-			{ id: '30', username: 'Shadow6' },
-			{ id: '31', username: 'Shadow7' },
-			{ id: '32', username: 'Shadow8' },
-		],
-	},
-];
+const bracketData = {
+	participant: [
+		{ id: 0, tournament_id: 0, name: 'DragonMaster1' },
+		{ id: 1, tournament_id: 0, name: 'DragonMaster2' },
+		{ id: 2, tournament_id: 0, name: 'WarriorBlade' },
+		{ id: 3, tournament_id: 0, name: 'MageRift' },
+		{ id: 4, tournament_id: 0, name: 'ShadowFox' },
+		{ id: 5, tournament_id: 0, name: 'CrimsonNova' },
+		{ id: 6, tournament_id: 0, name: 'AzureLotus' },
+		{ id: 7, tournament_id: 0, name: 'IronPeak' },
+		{ id: 8, tournament_id: 0, name: 'StormRider' },
+		{ id: 9, tournament_id: 0, name: 'Nightfall' },
+		{ id: 10, tournament_id: 0, name: 'Sunforge' },
+		{ id: 11, tournament_id: 0, name: 'OnyxVow' },
+		{ id: 12, tournament_id: 0, name: 'SilverPact' },
+		{ id: 13, tournament_id: 0, name: 'FrostEdge' },
+		{ id: 14, tournament_id: 0, name: 'ObsidianCrown' },
+		{ id: 15, tournament_id: 0, name: 'LunarWings' },
+	],
+	stage: [
+		{
+			id: 0,
+			tournament_id: 0,
+			name: tournament.name || 'Tournament',
+			type: 'double_elimination',
+			number: 1,
+			settings: {
+				size: 16,
+				seedOrdering: ['natural', 'natural', 'reverse_half_shift', 'reverse'],
+				grandFinal: 'double',
+				matchesChildCount: 0,
+			},
+		},
+	],
+	group: [
+		{ id: 0, stage_id: 0, number: 1 },
+		{ id: 1, stage_id: 0, number: 2 },
+		{ id: 2, stage_id: 0, number: 3 },
+	],
+	round: [
+		{ id: 0, number: 1, stage_id: 0, group_id: 0 },
+		{ id: 1, number: 2, stage_id: 0, group_id: 0 },
+		{ id: 2, number: 3, stage_id: 0, group_id: 0 },
+		{ id: 3, number: 4, stage_id: 0, group_id: 0 },
+		{ id: 4, number: 1, stage_id: 0, group_id: 1 },
+		{ id: 5, number: 2, stage_id: 0, group_id: 1 },
+		{ id: 6, number: 3, stage_id: 0, group_id: 1 },
+		{ id: 7, number: 4, stage_id: 0, group_id: 1 },
+		{ id: 8, number: 5, stage_id: 0, group_id: 1 },
+		{ id: 9, number: 6, stage_id: 0, group_id: 1 },
+		{ id: 10, number: 1, stage_id: 0, group_id: 2 },
+		{ id: 11, number: 2, stage_id: 0, group_id: 2 },
+	],
+	match: [
+		{
+			id: 0,
+			number: 1,
+			stage_id: 0,
+			group_id: 0,
+			round_id: 0,
+			child_count: 0,
+			status: 4,
+			opponent1: { id: 0, position: 1, score: 2, result: 'win' },
+			opponent2: { id: 1, position: 2, score: 1, result: 'loss' },
+		},
+		{
+			id: 1,
+			number: 2,
+			stage_id: 0,
+			group_id: 0,
+			round_id: 0,
+			child_count: 0,
+			status: 4,
+			opponent1: { id: 2, position: 3, score: 2, result: 'win' },
+			opponent2: { id: 3, position: 4, score: 0, result: 'loss' },
+		},
+		{
+			id: 2,
+			number: 3,
+			stage_id: 0,
+			group_id: 0,
+			round_id: 0,
+			child_count: 0,
+			status: 4,
+			opponent1: { id: 4, position: 6, score: 1, result: 'loss' },
+			opponent2: { id: 5, position: 5, score: 2, result: 'win' },
+		},
+		{
+			id: 3,
+			number: 4,
+			stage_id: 0,
+			group_id: 0,
+			round_id: 0,
+			child_count: 0,
+			status: 4,
+			opponent1: { id: 6, position: 7, score: 2, result: 'win' },
+			opponent2: { id: 7, position: 8, score: 1, result: 'loss' },
+		},
+		{
+			id: 4,
+			number: 5,
+			stage_id: 0,
+			group_id: 0,
+			round_id: 0,
+			child_count: 0,
+			status: 4,
+			opponent1: { id: 8, position: 9, score: 0, result: 'loss' },
+			opponent2: { id: 9, position: 10, score: 2, result: 'win' },
+		},
+		{
+			id: 5,
+			number: 6,
+			stage_id: 0,
+			group_id: 0,
+			round_id: 0,
+			child_count: 0,
+			status: 4,
+			opponent1: { id: 10, position: 11, score: 1, result: 'loss' },
+			opponent2: { id: 11, position: 12, score: 2, result: 'win' },
+		},
+		{
+			id: 6,
+			number: 7,
+			stage_id: 0,
+			group_id: 0,
+			round_id: 0,
+			child_count: 0,
+			status: 4,
+			opponent1: { id: 12, position: 13, score: 1, result: 'loss' },
+			opponent2: { id: 13, position: 14, score: 2, result: 'win' },
+		},
+		{
+			id: 7,
+			number: 8,
+			stage_id: 0,
+			group_id: 0,
+			round_id: 0,
+			child_count: 0,
+			status: 4,
+			opponent1: { id: 14, position: 15, score: 2, result: 'win' },
+			opponent2: { id: 15, position: 16, score: 0, result: 'loss' },
+		},
+		{
+			id: 8,
+			number: 1,
+			stage_id: 0,
+			group_id: 0,
+			round_id: 1,
+			child_count: 0,
+			status: 3,
+			opponent1: { id: 0, score: 2, result: 'win' },
+			opponent2: { id: 2, score: 0, result: 'loss' },
+		},
+		{
+			id: 9,
+			number: 2,
+			stage_id: 0,
+			group_id: 0,
+			round_id: 1,
+			child_count: 0,
+			status: 3,
+			opponent1: { id: 5, score: 2, result: 'win' },
+			opponent2: { id: 6, score: 1, result: 'loss' },
+		},
+		{
+			id: 10,
+			number: 3,
+			stage_id: 0,
+			group_id: 0,
+			round_id: 1,
+			child_count: 0,
+			status: 2,
+			opponent1: { id: 9 },
+			opponent2: { id: 11 },
+		},
+		{
+			id: 11,
+			number: 4,
+			stage_id: 0,
+			group_id: 0,
+			round_id: 1,
+			child_count: 0,
+			status: 2,
+			opponent1: { id: 13 },
+			opponent2: { id: 14 },
+		},
+		{
+			id: 12,
+			number: 1,
+			stage_id: 0,
+			group_id: 0,
+			round_id: 2,
+			child_count: 0,
+			status: 2,
+			opponent1: { id: 0 },
+			opponent2: { id: 5 },
+		},
+		{
+			id: 13,
+			number: 2,
+			stage_id: 0,
+			group_id: 0,
+			round_id: 2,
+			child_count: 0,
+			status: 2,
+			opponent1: { id: 9 },
+			opponent2: { id: 13 },
+		},
+		{
+			id: 14,
+			number: 1,
+			stage_id: 0,
+			group_id: 0,
+			round_id: 3,
+			child_count: 0,
+			status: 2,
+			opponent1: { id: 0 },
+			opponent2: { id: 9 },
+		},
+		{
+			id: 15,
+			number: 1,
+			stage_id: 0,
+			group_id: 1,
+			round_id: 4,
+			child_count: 0,
+			status: 4,
+			opponent1: { id: 1, position: 1, score: 2, result: 'win' },
+			opponent2: { id: 3, position: 2, score: 1, result: 'loss' },
+		},
+		{
+			id: 16,
+			number: 2,
+			stage_id: 0,
+			group_id: 1,
+			round_id: 4,
+			child_count: 0,
+			status: 4,
+			opponent1: { id: 4, position: 4, score: 2, result: 'win' },
+			opponent2: { id: 7, position: 3, score: 0, result: 'loss' },
+		},
+		{
+			id: 17,
+			number: 3,
+			stage_id: 0,
+			group_id: 1,
+			round_id: 4,
+			child_count: 0,
+			status: 4,
+			opponent1: { id: 8, position: 5, score: 2, result: 'win' },
+			opponent2: { id: 10, position: 6, score: 1, result: 'loss' },
+		},
+		{
+			id: 18,
+			number: 4,
+			stage_id: 0,
+			group_id: 1,
+			round_id: 4,
+			child_count: 0,
+			status: 4,
+			opponent1: { id: 12, position: 7, score: 2, result: 'win' },
+			opponent2: { id: 15, position: 8, score: 0, result: 'loss' },
+		},
+		{
+			id: 19,
+			number: 1,
+			stage_id: 0,
+			group_id: 1,
+			round_id: 5,
+			child_count: 0,
+			status: 3,
+			opponent1: { id: 1, score: 1, result: 'loss' },
+			opponent2: { id: 4, score: 2, result: 'win' },
+		},
+		{
+			id: 20,
+			number: 2,
+			stage_id: 0,
+			group_id: 1,
+			round_id: 5,
+			child_count: 0,
+			status: 3,
+			opponent1: { id: 8, score: 0, result: 'loss' },
+			opponent2: { id: 12, score: 2, result: 'win' },
+		},
+		{
+			id: 21,
+			number: 3,
+			stage_id: 0,
+			group_id: 1,
+			round_id: 5,
+			child_count: 0,
+			status: 2,
+			opponent1: { id: 3 },
+			opponent2: { id: 7 },
+		},
+		{
+			id: 22,
+			number: 4,
+			stage_id: 0,
+			group_id: 1,
+			round_id: 5,
+			child_count: 0,
+			status: 2,
+			opponent1: { id: 10 },
+			opponent2: { id: 15 },
+		},
+		{
+			id: 23,
+			number: 1,
+			stage_id: 0,
+			group_id: 1,
+			round_id: 6,
+			child_count: 0,
+			status: 2,
+			opponent1: { id: 4 },
+			opponent2: { id: 12 },
+		},
+		{
+			id: 24,
+			number: 2,
+			stage_id: 0,
+			group_id: 1,
+			round_id: 6,
+			child_count: 0,
+			status: 2,
+			opponent1: { id: 7 },
+			opponent2: { id: 10 },
+		},
+		{
+			id: 25,
+			number: 1,
+			stage_id: 0,
+			group_id: 1,
+			round_id: 7,
+			child_count: 0,
+			status: 2,
+			opponent1: { id: 4 },
+			opponent2: { id: 7 },
+		},
+		{
+			id: 26,
+			number: 2,
+			stage_id: 0,
+			group_id: 1,
+			round_id: 7,
+			child_count: 0,
+			status: 2,
+			opponent1: { id: 12 },
+			opponent2: { id: 10 },
+		},
+		{
+			id: 27,
+			number: 1,
+			stage_id: 0,
+			group_id: 1,
+			round_id: 8,
+			child_count: 0,
+			status: 2,
+			opponent1: { id: 4 },
+			opponent2: { id: 12 },
+		},
+		{
+			id: 28,
+			number: 1,
+			stage_id: 0,
+			group_id: 1,
+			round_id: 9,
+			child_count: 0,
+			status: 2,
+			opponent1: { id: 4 },
+			opponent2: { id: 12 },
+		},
+		{
+			id: 29,
+			number: 1,
+			stage_id: 0,
+			group_id: 2,
+			round_id: 10,
+			child_count: 0,
+			status: 2,
+			opponent1: { id: 0 },
+			opponent2: { id: 4 },
+		},
+		{
+			id: 30,
+			number: 1,
+			stage_id: 0,
+			group_id: 2,
+			round_id: 11,
+			child_count: 0,
+			status: 2,
+			opponent1: { id: 0 },
+			opponent2: { id: 4 },
+		},
+	],
+	match_game: [],
+};
+
+const participants = bracketData.participant.map((player, index) => ({
+	...player,
+	rank: index + 1,
+}));
 
 const formatDate = (dateString: string) => {
 	const date = new Date(dateString);
@@ -101,71 +461,276 @@ const formatDate = (dateString: string) => {
 	});
 };
 
-const getAvatarUrl = (username: string) => {
-	return `https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&background=random&size=128`;
+const getStatusBadgeClass = (status: string) => {
+	const statusMap: Record<string, string> = {
+		open: 'badge-success',
+		closed: 'badge-neutral',
+		'in progress': 'badge-warning',
+		canceled: 'badge-error',
+		finished: 'badge-accent',
+	};
+	return statusMap[status] || 'badge-neutral';
 };
+
+const getPrivacyBadgeClass = (privacy: string) => {
+	return privacy === 'private' ? 'badge-secondary' : 'badge-primary';
+};
+
+const isClosed = ['closed', 'finished'].includes(tournament.status);
+const championLabel = tournament.type === 'tag' ? 'Champions' : 'Champion';
+const tournamentBanner = tournament.banner ?? '/banners/banner1.webp';
 
 const title = tournament.name;
 ---
 
-<Layout 
-	title={title}
-	description={`Join ${tournament.name} on ${tournament.platform}. Format: ${tournament.format}, Banlist: ${tournament.banlist}. Status: ${tournament.status}.`}
->
-	<main class='w-full max-w-[calc(100%-2rem)] text-[white] text-lg leading-[1.6] mx-auto my-4'>
-		<div class='flex flex-col lg:flex-row gap-4 lg:gap-6 lg:items-stretch'>
-			<!-- Left Side -->
-			<div class='flex flex-col lg:w-1/3'>
-				<!-- Tournament Details Section -->
-				<div class='card bg-base-300 shadow-xl h-full flex flex-col'>
-					<div class='card-body flex flex-col flex-1'>
-						<h2 class='card-title text-2xl mb-4'>{tournament.name}</h2>
-						<div class='flex flex-col gap-3 flex-1'>
-							<div class='flex flex-col gap-1'>
-								<span class='text-sm text-gray-400'>Platform</span>
-								<span class='text-lg font-semibold'>{tournament.platform}</span>
-							</div>
-							<div class='flex flex-col gap-1'>
-								<span class='text-sm text-gray-400'>Format</span>
-								<span class='text-lg font-semibold'>{tournament.format}</span>
-							</div>
-							<div class='flex flex-col gap-1'>
-								<span class='text-sm text-gray-400'>Banlist</span>
-								<span class='text-lg font-semibold'>{tournament.banlist}</span>
-							</div>
-							<div class='flex flex-col gap-1'>
-								<span class='text-sm text-gray-400'>Start Date</span>
-								<span class='text-lg font-semibold'>{formatDate(tournament.startDate)}</span>
-							</div>
-							<div class='flex flex-col gap-1'>
-								<span class='text-sm text-gray-400'>End Date</span>
-								<span class='text-lg font-semibold'>{formatDate(tournament.endDate)}</span>
-							</div>
-							<div class='flex flex-col gap-1'>
-								<span class='text-sm text-gray-400'>Max Participants</span>
-								<span class='text-lg font-semibold'>{tournament.maxParticipants}</span>
-							</div>
-							<div class='flex flex-col gap-1'>
-								<span class='text-sm text-gray-400'>Status</span>
-								<span class='text-lg font-semibold capitalize'>{tournament.status}</span>
-							</div>
+	<Layout 
+		title={title}
+		description={`Join ${tournament.name} on ${tournament.platform}. Type: ${tournament.type}. Banlist: ${tournament.banlist}. Status: ${tournament.status}.`}
+	>
+	<link
+		rel='stylesheet'
+		href='https://cdn.jsdelivr.net/npm/brackets-viewer@latest/dist/brackets-viewer.min.css'
+	/>
+	<script
+		is:inline
+		src='https://cdn.jsdelivr.net/npm/brackets-viewer@latest/dist/brackets-viewer.min.js'
+	></script>
+
+	<main class='w-full max-w-[calc(100%-2rem)] text-[white] text-lg leading-[1.6] mx-auto my-6'>
+		<div class='flex flex-col lg:flex-row gap-6 lg:items-stretch'>
+			<div class='flex flex-col lg:w-1/3 gap-4'>
+				<div class='card bg-base-100/90 border border-base-200 shadow-xl overflow-hidden h-full'>
+					<div class='relative h-40'>
+						<img
+							id='tournament-banner'
+							src={tournamentBanner}
+							alt={tournament.name}
+							class='h-full w-full object-cover'
+							loading='lazy'
+							decoding='async'
+						/>
+						<div class='absolute inset-0 bg-gradient-to-t from-base-300/90 via-base-300/30 to-transparent'></div>
+						<div class='absolute bottom-3 left-3 flex flex-wrap gap-2'>
+							<span class={`badge badge-sm ${getStatusBadgeClass(tournament.status)} capitalize`}>
+								{tournament.status}
+							</span>
+							<span class={`badge badge-sm ${getPrivacyBadgeClass(tournament.privacy)} capitalize`}>
+								{tournament.privacy}
+							</span>
 						</div>
-						<div class='mt-auto pt-6'>
+					</div>
+					<div class='card-body gap-4'>
+						<div>
+						<h2 class='text-2xl font-semibold bg-gradient-to-r from-emerald-300 via-sky-400 to-amber-300 bg-clip-text text-transparent'>
+							{tournament.name}
+						</h2>
+							<p class='text-sm text-base-content/70 mt-2'>{tournament.description}</p>
+						</div>
+						<div class='grid gap-3 text-sm'>
+							<div>
+								<p class='text-xs uppercase tracking-[0.2em] text-base-content/60'>Participants</p>
+								<p class='text-base font-semibold'>{tournament.participants.current}/{tournament.participants.max}</p>
+							</div>
+							<div>
+								<p class='text-xs uppercase tracking-[0.2em] text-base-content/60'>Dates</p>
+								<p class='text-base font-semibold'>{formatDate(tournament.startDate)}</p>
+								<p class='text-sm text-base-content/70'>{formatDate(tournament.endDate)}</p>
+							</div>
+							<div>
+								<p class='text-xs uppercase tracking-[0.2em] text-base-content/60'>Banlist</p>
+								<p class='text-base font-semibold'>{tournament.banlist}</p>
+							</div>
+							<div>
+								<p class='text-xs uppercase tracking-[0.2em] text-base-content/60'>Type</p>
+								<p class='text-base font-semibold capitalize'>{tournament.type}</p>
+							</div>
+							<div>
+								<p class='text-xs uppercase tracking-[0.2em] text-base-content/60'>Organizer</p>
+								<p class='text-base font-semibold'>{tournament.organizer}</p>
+							</div>
+							<div>
+								<p class='text-xs uppercase tracking-[0.2em] text-base-content/60'>Platform</p>
+								<p class='text-base font-semibold'>{tournament.platform}</p>
+							</div>
+							{isClosed && (
+								<div>
+									<p class='text-xs uppercase tracking-[0.2em] text-base-content/60'>{championLabel}</p>
+									<p class='text-base font-semibold'>{tournament.champions.join(' & ')}</p>
+								</div>
+							)}
+						</div>
+						<div class='flex flex-col gap-3'>
 							<button class='btn btn-primary btn-lg w-full'>
-								Register
+								{joinLabel}
 							</button>
+							<a class='btn btn-outline btn-sm w-full' href='#tournament-bracket'>
+								View Bracket
+							</a>
 						</div>
 					</div>
 				</div>
 			</div>
-
-			<!-- Right Side - Clans and Members -->
-			<div class='lg:w-2/3 flex flex-col'>
-				<ClanList
-					clans={clans}
-					client:only='react'
-				/>
+			<div class='lg:w-2/3 flex flex-col gap-4'>
+				<div class='card bg-base-100/90 border border-base-200 shadow-xl h-full'>
+					<div class='card-body h-full'>
+						<div class='flex items-center justify-between flex-wrap gap-2'>
+							<div>
+								<p class='text-xs uppercase tracking-[0.2em] text-base-content/60'>Participants</p>
+								<h3 class='text-xl font-semibold'>Registered Duelists</h3>
+							</div>
+							<div class='relative w-full sm:w-64'>
+								<input
+									class='input input-bordered input-sm w-full pr-10'
+									type='search'
+									name='participant-search'
+									id='participant-search'
+									placeholder='Search duelists'
+									aria-label='Search duelists'
+								/>
+								<svg
+									class='absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-base-content/40'
+									fill='none'
+									stroke='currentColor'
+									viewBox='0 0 24 24'
+								>
+									<path
+										stroke-linecap='round'
+										stroke-linejoin='round'
+										stroke-width='2'
+										d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'
+									/>
+								</svg>
+							</div>
+						</div>
+						<div class='mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 overflow-y-auto pr-1 flex-1 min-h-[420px]'>
+							{participants.map((participant) => (
+								<div
+									class='relative'
+									data-participant-card
+									data-name={participant.name}
+								>
+									<div class='absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-secondary/10 rounded-2xl'></div>
+									<div class='relative card bg-base-200/80 border border-base-300 rounded-2xl shadow-sm'>
+										<div class='card-body p-4'>
+											<div class='flex items-center justify-between gap-3'>
+												<div class='flex items-center gap-3'>
+													<div class='relative'>
+														<div class='absolute -inset-0.5 bg-gradient-to-r from-primary via-secondary to-accent rounded-full opacity-60' />
+														<img
+															src={`https://ui-avatars.com/api/?name=${encodeURIComponent(participant.name)}&background=random&size=96`}
+															alt={participant.name}
+															class='relative w-12 h-12 rounded-full object-cover ring-2 ring-base-100'
+															loading='lazy'
+															decoding='async'
+														/>
+													</div>
+													<div>
+														<p class='text-sm text-base-content/60'>Duelist</p>
+														<p class='text-base font-semibold'>{participant.name}</p>
+													</div>
+												</div>
+												<div class='text-right'>
+													<p class='text-xs uppercase tracking-[0.2em] text-base-content/60'>Seed</p>
+													<p class='text-lg font-semibold'>#{participant.rank}</p>
+												</div>
+											</div>
+									</div>
+								</div>
+							</div>
+							))}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class='mt-8'>
+			<div class='card bg-neutral/80 border border-base-300 shadow-xl'>
+				<div class='card-body'>
+					<div class='flex items-center justify-between flex-wrap gap-2'>
+						<div>
+							<p class='text-xs uppercase tracking-[0.2em] text-base-content/60'>Bracket</p>
+							<h3 class='text-xl font-semibold'>Double Elimination</h3>
+						</div>
+						<span class='badge badge-sm badge-outline'>Upper + Lower</span>
+					</div>
+					<div class='mt-6 overflow-x-auto'>
+						<div class='min-w-[900px] brackets-viewer' id='tournament-bracket'></div>
+					</div>
+				</div>
 			</div>
 		</div>
 	</main>
+
+	<script
+		is:inline
+		set:html={`
+			const bracketData = ${JSON.stringify(bracketData)};
+			const bannerOptions = ${JSON.stringify(banners)};
+			const shouldRandomizeBanner = ${JSON.stringify(shouldRandomizeBanner)};
+			const renderBracket = () => {
+				if (!window.bracketsViewer) return;
+				window.bracketsViewer.render(
+					{
+						stages: bracketData.stage,
+						matches: bracketData.match,
+						matchGames: bracketData.match_game,
+						participants: bracketData.participant,
+					},
+					{
+						selector: '#tournament-bracket',
+						clear: true,
+					}
+				);
+			};
+			const tryRenderBracket = () => {
+				if (window.bracketsViewer) {
+					renderBracket();
+					return;
+				}
+				setTimeout(tryRenderBracket, 120);
+			};
+			const handlePageLoad = () => {
+				tryRenderBracket();
+				if (shouldRandomizeBanner) {
+					const bannerElement = document.getElementById('tournament-banner');
+					if (bannerElement instanceof HTMLImageElement) {
+						const randomBanner =
+							bannerOptions[Math.floor(Math.random() * bannerOptions.length)];
+						bannerElement.src = randomBanner;
+					}
+				}
+			};
+			document.addEventListener('astro:page-load', handlePageLoad);
+			if (document.readyState === 'loading') {
+				document.addEventListener('DOMContentLoaded', handlePageLoad);
+			} else {
+				handlePageLoad();
+			}
+			const setupParticipantSearch = () => {
+				const participantSearch = document.getElementById('participant-search');
+				const participantCards = Array.from(
+					document.querySelectorAll('[data-participant-card]')
+				);
+				const filterParticipants = () => {
+					const query =
+						participantSearch instanceof HTMLInputElement
+							? participantSearch.value.trim().toLowerCase()
+							: '';
+					participantCards.forEach((card) => {
+						const name = card.getAttribute('data-name')?.toLowerCase() ?? '';
+						card.classList.toggle('hidden', query.length > 0 && !name.includes(query));
+					});
+				};
+				participantSearch?.removeEventListener('input', filterParticipants);
+				participantSearch?.addEventListener('input', filterParticipants);
+				filterParticipants();
+			};
+			document.addEventListener('astro:page-load', setupParticipantSearch);
+			if (document.readyState === 'loading') {
+				document.addEventListener('DOMContentLoaded', setupParticipantSearch);
+			} else {
+				setupParticipantSearch();
+			}
+		`}
+	/>
 </Layout>
