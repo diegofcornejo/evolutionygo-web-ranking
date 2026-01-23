@@ -380,11 +380,11 @@ const privacyFilterClassMap: Record<string, string> = {
 								data-status-filter={filter}
 							>
 								{statusFilterLabelMap[filter]}
-								<span class="badge badge-sm badge-ghost ml-1">
-									{statusCounts[filter] ?? 0}
-								</span>
-							</button>
-						))}
+							<span class="badge badge-sm badge-ghost ml-1" data-status-count>
+								{statusCounts[filter] ?? 0}
+							</span>
+						</button>
+					))}
 						<div class="w-px h-6 bg-base-300 mx-1 hidden sm:block" />
 						{privacyFilters.map((filter) => (
 							<button
@@ -393,11 +393,11 @@ const privacyFilterClassMap: Record<string, string> = {
 								data-privacy-filter={filter}
 							>
 								{privacyFilterLabelMap[filter]}
-								<span class="badge badge-sm badge-ghost ml-1">
-									{privacyCounts[filter] ?? 0}
-								</span>
-							</button>
-						))}
+							<span class="badge badge-sm badge-ghost ml-1" data-privacy-count>
+								{privacyCounts[filter] ?? 0}
+							</span>
+						</button>
+					))}
 					</div>
 				</div>
 			</div>
@@ -406,7 +406,7 @@ const privacyFilterClassMap: Record<string, string> = {
 				{sortedTournaments.map((tournament) => (
 					<a
 						href={`/tournaments/${tournament.id}`}
-							class="group flex flex-col rounded-2xl overflow-hidden bg-base-200 border border-base-300 shadow-xl transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary"
+						class="group flex flex-col rounded-2xl overflow-hidden bg-gradient-to-br from-[#b14bff] via-[#5ec4ff] to-[#1fb4ff] border border-base-300 text-slate-900 shadow-xl transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary"
 							data-tournament-card
 							data-name={tournament.name}
 							data-description={tournament.description}
@@ -438,7 +438,7 @@ const privacyFilterClassMap: Record<string, string> = {
 									<span class={`badge badge-xs ${getStatusBadgeClass(tournament.status)} capitalize`}>
 										{tournament.status}
 									</span>
-									<span class="badge badge-xs badge-outline max-w-[120px] truncate whitespace-nowrap">
+										<span class="badge badge-xs badge-outline max-w-[120px] truncate whitespace-nowrap text-white border-white">
 										{tournament.banlist}
 									</span>
 									<span class={`badge badge-xs ${getPrivacyBadgeClass(tournament.privacy)} capitalize`}>
@@ -449,16 +449,16 @@ const privacyFilterClassMap: Record<string, string> = {
 						</div>
 						
 						<div class="flex flex-1 flex-col px-5 pb-5 pt-8">
-							<h2 class="text-lg font-semibold text-white mb-2 line-clamp-1">
+						<h2 class="text-lg font-semibold mb-2 line-clamp-1">
 								{tournament.name}
 							</h2>
-							<p class="text-sm text-base-content/70 flex-1 line-clamp-3">
+						<p class="text-sm text-slate-800/90 flex-1 line-clamp-3">
 								{tournament.description}
 							</p>
-							<p class="text-xs text-base-content/60 mt-3">
+						<p class="text-xs text-slate-800/75 mt-3">
 								Admin: {tournament.createdBy}
 							</p>
-							<button class="btn btn-primary btn-sm mt-4 w-full">
+						<button class="btn btn-sm mt-4 w-full bg-slate-900 text-white border-transparent hover:bg-slate-800">
 								Enter tournament
 							</button>
 					</div>
@@ -537,6 +537,26 @@ const privacyFilterClassMap: Record<string, string> = {
 				});
 			};
 
+			const updateCountBadges = (statusCounts, privacyCounts) => {
+				statusButtons.forEach((button) => {
+					if (!(button instanceof HTMLButtonElement)) return;
+					const value = button.dataset.statusFilter ?? 'all';
+					const badge = button.querySelector('[data-status-count]');
+					if (badge) {
+						badge.textContent = String(statusCounts[value] ?? 0);
+					}
+				});
+
+				privacyButtons.forEach((button) => {
+					if (!(button instanceof HTMLButtonElement)) return;
+					const value = button.dataset.privacyFilter ?? 'all';
+					const badge = button.querySelector('[data-privacy-count]');
+					if (badge) {
+						badge.textContent = String(privacyCounts[value] ?? 0);
+					}
+				});
+			};
+
 			const filterCards = () => {
 				const season = seasonSelect instanceof HTMLSelectElement ? seasonSelect.value : '';
 				const banlist = banlistSelect instanceof HTMLSelectElement ? banlistSelect.value : '';
@@ -544,6 +564,8 @@ const privacyFilterClassMap: Record<string, string> = {
 					searchInput instanceof HTMLInputElement
 						? searchInput.value.trim().toLowerCase()
 						: '';
+				const statusCounts = { all: 0 };
+				const privacyCounts = { all: 0 };
 
 				cards.forEach((card) => {
 					const cardSeason = card.getAttribute('data-season');
@@ -557,11 +579,28 @@ const privacyFilterClassMap: Record<string, string> = {
 					const matchesStatus = activeStatus === 'all' || cardStatus === activeStatus;
 					const matchesPrivacy = activePrivacy === 'all' || cardPrivacy === activePrivacy;
 					const matchesQuery = !query || `${name} ${description}`.includes(query);
+					const matchesBase = matchesSeason && matchesBanlist && matchesQuery;
+					const matchesForStatusCounts = matchesBase;
+					const matchesForPrivacyCounts = matchesBase;
+
+					if (matchesForStatusCounts) {
+						const statusKey = cardStatus ?? 'unknown';
+						statusCounts[statusKey] = (statusCounts[statusKey] ?? 0) + 1;
+						statusCounts.all += 1;
+					}
+
+					if (matchesForPrivacyCounts) {
+						const privacyKey = cardPrivacy ?? 'unknown';
+						privacyCounts[privacyKey] = (privacyCounts[privacyKey] ?? 0) + 1;
+						privacyCounts.all += 1;
+					}
 					card.classList.toggle(
 						'hidden',
-						!(matchesSeason && matchesBanlist && matchesStatus && matchesPrivacy && matchesQuery)
+						!(matchesBase && matchesStatus && matchesPrivacy)
 					);
 				});
+
+				updateCountBadges(statusCounts, privacyCounts);
 			};
 
 			statusButtons.forEach((button) => {

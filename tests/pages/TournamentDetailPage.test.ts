@@ -8,10 +8,6 @@ vi.mock('@layouts/Layout.astro', async () => ({
   default: (await import('../__mocks__/Layout.astro')).default,
 }));
 
-vi.mock('@components/Tournaments/ClanList', async () => ({
-  default: (await import('../__mocks__/SimpleReact')).default,
-}));
-
 describe('tournaments/[id]/index.astro page', () => {
   it('renders tournament details', async () => {
     const TournamentPage = (await import('../../src/pages/tournaments/[id]/index.astro')).default;
@@ -24,8 +20,9 @@ describe('tournaments/[id]/index.astro page', () => {
       request: new Request('https://evolutionygo.com/tournaments/test'),
     });
 
-    expect(result).toContain('Tournament TEST');
-    expect(result).toContain('Register');
-    expect(result).toContain('component-url="@components/Tournaments/ClanList"');
+    expect(result).toContain('TEST');
+    expect(result).toContain('Request Join');
+    expect(result).toContain('Double Elimination');
+    expect(result).toContain('brackets-viewer');
   });
 });
