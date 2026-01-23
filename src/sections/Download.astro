@@ -235,12 +235,12 @@ const instructions = [
 		<h3 class='text-lg text-gray-400 leading-8 max-w-4xl'>{description}</h3>
 	</div>
 
-	<div class='flex flex-col md:flex-row gap-8 justify-center py-8'>
+	<div class='flex flex-col md:flex-row md:flex-wrap gap-8 justify-center py-8'>
 		{
 			clients.map((client) => {
 				const isComingSoon = client.comingSoon === true;
 				const baseClasses =
-					'btn btn-neutral btn-lg text-white min-w-[200px] h-auto py-2 rounded-2xl';
+					'btn btn-neutral btn-lg text-white min-w-[200px] w-full md:w-auto h-auto py-2 rounded-2xl';
 				const clientClasses = isComingSoon
 					? `${baseClasses} cursor-not-allowed pointer-events-none`
 					: `${baseClasses} hover:bg-secondary`;
@@ -264,7 +264,7 @@ const instructions = [
 				);
 
 				return isComingSoon ? (
-					<div class='client-spotlight' aria-disabled='true'>
+					<div class='client-spotlight w-full md:w-auto' aria-disabled='true'>
 						<div class={`${clientClasses} client-spotlight-inner`}>{content}</div>
 					</div>
 				) : (
