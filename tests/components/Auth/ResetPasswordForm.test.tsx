@@ -35,6 +35,7 @@ describe('ResetPasswordForm', () => {
   });
   afterEach(() => {
     vi.restoreAllMocks();
+    vi.useRealTimers();
   });
 
   it('renders password fields', () => {
@@ -52,20 +53,50 @@ describe('ResetPasswordForm', () => {
   });
 
   it('shows error on failed reset', async () => {
-    (fetch as any).mockResolvedValueOnce(mockResponse({ ok: false, statusText: 'fail', json: async () => ({}) }));
+    (fetch as any).mockResolvedValueOnce(mockResponse({ ok: false, json: async () => ({ message: 'Token expired' }) }));
     render(<ResetPasswordForm token={token} />);
     fireEvent.change(screen.getByPlaceholderText('New password'), { target: { value: '1234' } });
     fireEvent.change(screen.getByPlaceholderText('Repeat new password'), { target: { value: '1234' } });
     fireEvent.click(screen.getByText('Change Password'));
-    await waitFor(() => expect(screen.getByText('fail')).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText('Token expired')).toBeInTheDocument());
   });
 
-  it('shows toast on successful reset', async () => {
+  it('shows default error when response has no message', async () => {
+    (fetch as any).mockResolvedValueOnce(mockResponse({ ok: false, json: async () => ({}) }));
+    render(<ResetPasswordForm token={token} />);
+    fireEvent.change(screen.getByPlaceholderText('New password'), { target: { value: '1234' } });
+    fireEvent.change(screen.getByPlaceholderText('Repeat new password'), { target: { value: '1234' } });
+    fireEvent.click(screen.getByText('Change Password'));
+    await waitFor(() => expect(screen.getByText('Invalid or expired token')).toBeInTheDocument());
+  });
+
+  it('shows toast and redirects on successful reset', async () => {
+    const originalLocation = globalThis.location;
+    Object.defineProperty(globalThis, 'location', {
+      configurable: true,
+      value: { href: 'http://localhost:3000/' },
+    });
+    vi.useFakeTimers();
     (fetch as any).mockResolvedValueOnce(mockResponse({ ok: true, json: async () => ({}) }));
     render(<ResetPasswordForm token={token} />);
     fireEvent.change(screen.getByPlaceholderText('New password'), { target: { value: '1234' } });
     fireEvent.change(screen.getByPlaceholderText('Repeat new password'), { target: { value: '1234' } });
     fireEvent.click(screen.getByText('Change Password'));
-    await waitFor(() => expect(toast.success).toHaveBeenCalled());
+    await vi.runAllTimersAsync();
+    expect(toast.success).toHaveBeenCalled();
+    expect(globalThis.location.href).toContain('/login');
+    Object.defineProperty(globalThis, 'location', {
+      configurable: true,
+      value: originalLocation,
+    });
   });
-}); 
+
+  it('shows connection error on network failure', async () => {
+    (fetch as any).mockRejectedValueOnce(new Error('Network error'));
+    render(<ResetPasswordForm token={token} />);
+    fireEvent.change(screen.getByPlaceholderText('New password'), { target: { value: '1234' } });
+    fireEvent.change(screen.getByPlaceholderText('Repeat new password'), { target: { value: '1234' } });
+    fireEvent.click(screen.getByText('Change Password'));
+    await waitFor(() => expect(screen.getByText('No connection to server')).toBeInTheDocument());
+  });
+});

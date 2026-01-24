@@ -62,6 +62,15 @@ describe('SignInForm', () => {
     await waitFor(() => expect(screen.getByText('fail')).toBeInTheDocument());
   });
 
+  it('shows default error message when login response has no message', async () => {
+    (fetch as any).mockResolvedValueOnce(mockResponse({ ok: false, json: async () => ({}) }));
+    render(<SignInForm dialog={dialog} />);
+    fireEvent.change(screen.getByPlaceholderText('Email'), { target: { value: 'a@b.com' } });
+    fireEvent.change(screen.getByPlaceholderText('Password'), { target: { value: '123' } });
+    fireEvent.click(screen.getByText('Login'));
+    await waitFor(() => expect(screen.getByText('Invalid credentials')).toBeInTheDocument());
+  });
+
   it('calls updateSession on successful login', async () => {
     (fetch as any).mockResolvedValueOnce(mockResponse({ ok: true, json: async () => ({ token: 't', id: 1, username: 'u' }) }));
     render(<SignInForm dialog={dialog} />);
@@ -79,4 +88,26 @@ describe('SignInForm', () => {
     fireEvent.click(screen.getByText('Reset Password'));
     await waitFor(() => expect(toast.success).toHaveBeenCalled());
   });
-}); 
+
+  it('shows connection error on network failure', async () => {
+    (fetch as any).mockRejectedValueOnce(new Error('Network error'));
+    render(<SignInForm dialog={dialog} />);
+    fireEvent.change(screen.getByPlaceholderText('Email'), { target: { value: 'a@b.com' } });
+    fireEvent.change(screen.getByPlaceholderText('Password'), { target: { value: '123' } });
+    fireEvent.click(screen.getByText('Login'));
+    await waitFor(() => expect(screen.getByText('No connection to server')).toBeInTheDocument());
+  });
+
+  it('clears form when close button is clicked', async () => {
+    const closeSpy = vi.fn();
+    const getElementSpy = vi.spyOn(document, 'getElementById').mockReturnValue({ close: closeSpy } as any);
+    render(<SignInForm dialog={dialog} />);
+    fireEvent.change(screen.getByPlaceholderText('Email'), { target: { value: 'a@b.com' } });
+    fireEvent.change(screen.getByPlaceholderText('Password'), { target: { value: '123' } });
+    fireEvent.click(screen.getByText('Close'));
+    await waitFor(() => expect(screen.getByPlaceholderText('Email')).toHaveValue(''));
+    expect(screen.getByPlaceholderText('Password')).toHaveValue('');
+    expect(closeSpy).toHaveBeenCalled();
+    getElementSpy.mockRestore();
+  });
+});

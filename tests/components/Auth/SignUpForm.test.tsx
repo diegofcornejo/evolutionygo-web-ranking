@@ -11,10 +11,17 @@ import { render, fireEvent, screen, waitFor } from '@testing-library/react';
 import { SignUpForm } from '@components/Auth/SignUpForm';
 import { toast } from 'sonner';
 
-function mockResponse({ ok = true, statusText = '', json = async () => ({}) }) {
+type MockResponseOptions = {
+  ok?: boolean;
+  status?: number;
+  statusText?: string;
+  json?: () => Promise<unknown>;
+};
+
+function mockResponse({ ok = true, status, statusText = '', json = async () => ({}) }: MockResponseOptions) {
   return {
     ok,
-    status: ok ? 200 : 400,
+    status: status ?? (ok ? 200 : 400),
     statusText,
     json,
     headers: new Headers(),
@@ -78,6 +85,15 @@ describe('SignUpForm', () => {
     fireEvent.change(screen.getByPlaceholderText('Username'), { target: { value: 'user' } });
     fireEvent.click(screen.getByText('Register'));
     await waitFor(() => expect(screen.getByText('fail')).toBeInTheDocument());
+  });
+
+  it('shows conflict error when email already exists', async () => {
+    (fetch as any).mockResolvedValueOnce(mockResponse({ ok: false, status: 409, statusText: 'Conflict' }));
+    render(<SignUpForm dialog={dialog} />);
+    fireEvent.change(screen.getByPlaceholderText('Email'), { target: { value: 'a@b.com' } });
+    fireEvent.change(screen.getByPlaceholderText('Username'), { target: { value: 'user' } });
+    fireEvent.click(screen.getByText('Register'));
+    await waitFor(() => expect(screen.getByText('Email or username already in use')).toBeInTheDocument());
   });
 
   it('shows default error message when no message provided', async () => {

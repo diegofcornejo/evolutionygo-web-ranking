@@ -59,10 +59,17 @@ tests/                # Unit tests (mirrors src/ structure)
 
 ## Path Aliases
 
-`@components/*`, `@sections/*`, `@stores/*`, `@layouts/*`, `@pages/*`, `@types/*` → `./src/<folder>/*`
-`@types` → `./src/types/types.d.ts`
+`@components/*`, `@sections/*`, `@stores/*`, `@layouts/*`, `@pages/*`, `@types/*` -> `./src/<folder>/*`
+`@types` -> `./src/types/types.d.ts`
 
 ## Code Style Guidelines
+
+### Formatting
+
+- TypeScript strict mode via `astro/tsconfigs/strict`.
+- Prefer single quotes in TS/JS; keep JSX attributes double quoted.
+- Keep props typed with `Readonly<Props>` in React components.
+- Avoid unnecessary comments; add only for non-obvious logic.
 
 ### Import Order
 
@@ -82,13 +89,6 @@ tests/                # Unit tests (mirrors src/ structure)
 | Types        | PascalCase        | `Duelist`, `Session`, `Room`      |
 | Functions    | camelCase         | `getSession`, `updateRoom`        |
 
-### TypeScript
-
-- **Strict mode** via `astro/tsconfigs/strict`
-- Use `type` keyword for type-only imports: `import type { Session } from '@types'`
-- Define types in `src/types/*.d.ts` and export via `types.d.ts`
-- Use `Readonly<Props>` for component props
-
 ### Component Conventions
 
 | Extension  | Framework | When to Use                            |
@@ -97,10 +97,13 @@ tests/                # Unit tests (mirrors src/ structure)
 | `.tsx`     | React     | Interactive components, forms          |
 | `.svelte`  | Svelte    | Animations, real-time updates          |
 
-### React Components
+### React Example
 
 ```tsx
-interface Props { userId: string; size?: 'sm' | 'md' | 'lg'; }
+interface Props {
+  userId: string;
+  size?: 'sm' | 'md' | 'lg';
+}
 
 export function Component({ userId, size = 'md' }: Readonly<Props>) {
   const [value, setValue] = useState('');
@@ -108,7 +111,7 @@ export function Component({ userId, size = 'md' }: Readonly<Props>) {
 }
 ```
 
-### Svelte Components
+### Svelte Example
 
 ```svelte
 <script lang="ts">
@@ -131,16 +134,17 @@ try {
 }
 ```
 
-- Display errors via `toast` from `sonner` or component state
+- Display errors via `toast` from `sonner` or component state.
 
 ### Styling
 
-- Use Tailwind CSS classes in `className` (React) or `class` (Svelte/Astro)
-- DaisyUI components: `btn`, `card`, `input`, `modal`, `table`, etc.
+- Use Tailwind CSS classes in `className` (React) or `class` (Svelte/Astro).
+- Prefer DaisyUI primitives: `btn`, `card`, `input`, `modal`, `table`.
 
 ## Testing
 
-Location: `tests/` (mirrors `src/`). Naming: `*.test.ts` or `*.test.tsx`
+- Tests live in `tests/` and mirror `src/` structure.
+- Naming: `*.test.ts` or `*.test.tsx`.
 
 ```tsx
 import { render } from '@testing-library/react';
@@ -158,13 +162,13 @@ describe('Component', () => {
 
 ## Git Hooks (Husky)
 
-- **pre-commit:** `bunx lint-staged && bun run test:changed`
-- **commit-msg:** Validates conventional commit format
-- **pre-push:** Runs `bun run build`
+- pre-commit: `bunx lint-staged && bun run test:changed`
+- commit-msg: validates conventional commit format
+- pre-push: `bun run build`
 
 ### Commit Format
 
-`<type>: <description>` — Types: `feat`, `fix`, `docs`, `chore`, `perf`, `refactor`, `style`, `test`
+`<type>: <description>` - Types: `feat`, `fix`, `docs`, `chore`, `perf`, `refactor`, `style`, `test`
 
 ## State Management
 
@@ -172,10 +176,13 @@ Stores in `src/stores/` use Nanostores:
 - React: `const sessionData = useStore(session);`
 - Svelte: `{$roomsStore.length}`
 
-## Important Notes
+## Environment Notes
 
-1. **React 19** - Use new React 19 APIs when applicable
-2. **Tailwind 4** - Updated syntax; check docs for changes
-3. **SSR Mode** - App runs server-side, not static
-4. **Icons** - Use `astro-icon` with `@iconify-json/ic` and `@iconify-json/mdi`
-5. **API URL** - Use `import.meta.env.PUBLIC_API_URL` for API calls
+- Use `import.meta.env.PUBLIC_API_URL` for API calls.
+- SSR mode (`output: 'server'`); avoid browser-only code in Astro frontmatter.
+- Icons via `astro-icon` with `@iconify-json/ic` and `@iconify-json/mdi`.
+
+## Repo Rules
+
+- No Cursor rules found in `.cursor/rules/` or `.cursorrules`.
+- No GitHub Copilot instructions found in `.github/copilot-instructions.md`.

@@ -35,16 +35,21 @@ export function SignUpForm({ dialog }: Readonly<{ dialog: string }>) {
 				body: JSON.stringify({ email, username })
 			});
 
-			const data = await response.json();
-
 			if (response.ok) {
 				closeModal();
 				toast.success('Registration successful, please verify your email', {
 					position: 'bottom-center',
 				});
-			} else {
-				setError(data.message || 'Error in registration');
+				return;
 			}
+
+			if (response.status === 409) {
+				setError('Email or username already in use');
+				return;
+			}
+
+			const data = await response.json().catch(() => ({}));
+			setError(data.message || 'Error in registration');
 		} catch (error) {
 			console.error('Error in registration:', error);
 			setError('No connection to server');
