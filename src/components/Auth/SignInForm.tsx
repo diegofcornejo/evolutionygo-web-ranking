@@ -47,7 +47,7 @@ export function SignInForm({ dialog }: Readonly<{ dialog: string }>) {
 				body: JSON.stringify(isLoginMode ? { email, password } : { email })
 			});
 
-			const data = await response.json();
+			const data = await response.json().catch(() => ({}));
 
 			if (response.ok) {
 				if (isLoginMode) {
@@ -61,9 +61,10 @@ export function SignInForm({ dialog }: Readonly<{ dialog: string }>) {
 					toast.success('Password reset email sent, please check your inbox');
 				}
 				closeModal();
-			} else {
-				setError(data.message || 'Error in request');
+				return;
 			}
+
+			setError(data.message || 'Invalid credentials');
 		} catch (error) {
 			console.error('Error in sign in:', error);
 			setError('No connection to server');

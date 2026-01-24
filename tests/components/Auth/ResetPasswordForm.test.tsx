@@ -52,12 +52,12 @@ describe('ResetPasswordForm', () => {
   });
 
   it('shows error on failed reset', async () => {
-    (fetch as any).mockResolvedValueOnce(mockResponse({ ok: false, statusText: 'fail', json: async () => ({}) }));
+    (fetch as any).mockResolvedValueOnce(mockResponse({ ok: false, json: async () => ({ message: 'Token expired' }) }));
     render(<ResetPasswordForm token={token} />);
     fireEvent.change(screen.getByPlaceholderText('New password'), { target: { value: '1234' } });
     fireEvent.change(screen.getByPlaceholderText('Repeat new password'), { target: { value: '1234' } });
     fireEvent.click(screen.getByText('Change Password'));
-    await waitFor(() => expect(screen.getByText('fail')).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText('Token expired')).toBeInTheDocument());
   });
 
   it('shows toast on successful reset', async () => {

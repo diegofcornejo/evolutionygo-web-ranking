@@ -27,14 +27,17 @@ export function ResetPasswordForm({ token }: Readonly<ResetPasswordFormProps>) {
 					'Authorization': `Bearer ${token}`
 				}
 			});
+
 			if (response.ok) {
 				toast.success('Password reset successful');
 				setTimeout(() => {
 					globalThis.location.href = '/login';
 				}, 5000);
-			} else {
-				setError(response.statusText);
+				return;
 			}
+
+			const data = await response.json().catch(() => ({}));
+			setError(data.message || 'Invalid or expired token');
 		} catch (error) {
 			console.error('Error resetting password:', error);
 			setError('No connection to server');
