@@ -28,10 +28,15 @@ export default function CommandTable() {
 	const description = 'Use these commands to play with special formats. You can combine them with well-known commands such as M, NC, NS, S, ST, TM, and others.';
 	const commands: Command[] = [
 		{
+			code: 'BO',
+			description: 'Best of X matches, set the number of matches to play',
+			example: 'BO5#123',
+			banlist: 'NEW'
+		},
+		{
 			code: 'G or GENESYS',
 			description: 'Genesys format, default to 100 points, points can be modified',
 			example: 'G#123 | GENESYS150#123',
-			banlist: 'NEW'
 		},
 		{
 			code: 'TCG',
@@ -85,7 +90,7 @@ export default function CommandTable() {
 			banlist: getCurrentBanlist($banlists, 'OCG'),
 		},
 		{
-			code: '⁠EDISON',
+			code: 'EDISON',
 			description: 'Traditional Edison with its original erratas',
 			example: 'EDISON,ST6#123',
 		},
