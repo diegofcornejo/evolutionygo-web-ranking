@@ -38,8 +38,8 @@ const menuItems: MenuItem[] = [
 	{
 		name: 'Stats',
 		href: '/stats',
-		badgeLabel: 'ALPHA',
-		badgeClass: 'text-warning',
+		// badgeLabel: 'ALPHA',
+		// badgeClass: 'text-warning',
 		// icon: 'mdi:chart-bar',
 		trackEvent: 'menu-click-stats',
 	},

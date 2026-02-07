@@ -30,7 +30,6 @@ describe('StatsSection', () => {
       writable: true,
     });
 
-    vi.spyOn(Math, 'random').mockReturnValue(0.5);
     vi.useFakeTimers();
 
     target = document.createElement('div');
@@ -53,9 +52,31 @@ describe('StatsSection', () => {
     unmount(instance);
   });
 
-  it('renders stats content after fetching banlists', async () => {
+  it('renders stats content after fetching historical stats', async () => {
     (global.fetch as any) = vi.fn().mockResolvedValue({
-      json: async () => ['2024-01', '2024-02', 'N/A', 'Global'],
+      ok: true,
+      json: async () => ({
+        stats: {
+          totalDuels: 6000,
+          activeBanLists: 2,
+          avgDuelsPerBanList: 3000,
+        },
+        historical: [
+          { name: 'Season 1', value: 1500 },
+          { name: 'Season 2', value: 4200 },
+          { name: 'Season 3', value: 6000 },
+        ],
+        banListBreakdown: [
+          { banListName: '2024-01', totalDuels: 4000, percentage: 66.7, popularity: 100 },
+          { banListName: '2024-02', totalDuels: 2000, percentage: 33.3, popularity: 50 },
+        ],
+        dailyDuels: [
+          { date: '2026-01-01', banListName: '2024-01', count: 50 },
+          { date: '2026-01-01', banListName: '2024-02', count: 20 },
+          { date: '2026-01-02', banListName: '2024-01', count: 30 },
+          { date: '2026-01-02', banListName: '2024-02', count: 10 },
+        ],
+      }),
     });
 
     const instance = mount(StatsSection as any, { target });
@@ -73,7 +94,10 @@ describe('StatsSection', () => {
 
     expect(target.innerHTML).toContain('2024-01');
     expect(target.innerHTML).toContain('2024-02');
-    expect(target.innerHTML).toContain('50.0%');
+    expect(target.innerHTML).toContain('66.7%');
+
+    const firstFetchCall = (global.fetch as any).mock.calls[0][0];
+    expect(firstFetchCall).toContain('/historical-stats?season=');
 
     const { Chart } = await import('chart.js');
     expect(Chart).toHaveBeenCalledTimes(3);

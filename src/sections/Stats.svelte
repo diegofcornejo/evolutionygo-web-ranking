@@ -8,9 +8,10 @@
   const DEFAULT_SEASON = import.meta.env.PUBLIC_DEFAULT_SEASON;
 
   let season = $state<string>(DEFAULT_SEASON);
-  let banlistOptions = $state<string[]>([]);
   let loading = $state<boolean>(true);
   let totalDuels = $state<number>(0);
+  let activeBanLists = $state<number>(0);
+  let avgDuelsPerBanList = $state<number>(0);
   let dataReady = $state<boolean>(false);
   
   // Visualization instances
@@ -23,13 +24,43 @@
   let seasonComparisonCanvas: HTMLCanvasElement | undefined = $state();
   let dailyStackedCanvas: HTMLCanvasElement | undefined = $state();
 
-  // Mock data for duels per banlist - will be replaced with real data structure
   interface BanlistDuelData {
     banlist: string;
     duels: number;
+    percentage: number;
+    popularity: number;
+  }
+
+  interface HistoricalSeasonData {
+    name: string;
+    value: number;
+  }
+
+  interface DailyDuelData {
+    date: string;
+    banListName: string;
+    count: number;
+  }
+
+  interface HistoricalStatsResponse {
+    stats?: {
+      totalDuels?: number;
+      activeBanLists?: number;
+      avgDuelsPerBanList?: number;
+    };
+    historical?: HistoricalSeasonData[];
+    banListBreakdown?: {
+      banListName: string;
+      totalDuels: number;
+      percentage?: number;
+      popularity?: number;
+    }[];
+    dailyDuels?: DailyDuelData[];
   }
   
   let banlistDuelData = $state<BanlistDuelData[]>([]);
+  let historicalSeasonData = $state<HistoricalSeasonData[]>([]);
+  let dailyDuelsData = $state<DailyDuelData[]>([]);
   
   // Derived sorted data for the table (avoid mutating state in template)
   let sortedBanlistData = $derived([...banlistDuelData].sort((a, b) => b.duels - a.duels));
@@ -41,21 +72,36 @@
     borders: ['#8B5CF6', '#EC4899', '#F59E0B', '#10B981', '#3B82F6', '#EF4444', '#06B6D4', '#84CC16'],
   };
 
-  const getBanListOptions = async () => {
+  const getHistoricalStats = async () => {
     try {
-      const response = await fetch(`${API_URL}/ban-lists?season=${season}`);
-      const data = await response.json();
-      banlistOptions = data.filter((option: string) => option !== 'N/A' && option !== 'Global');
-      
-      // Generate mock duel data for each banlist
-      banlistDuelData = banlistOptions.map((banlist: string) => ({
-        banlist,
-        duels: Math.floor(Math.random() * 5000) + 500
+      const response = await fetch(`${API_URL}/historical-stats?season=${season}`);
+      if (!response.ok) {
+        throw new Error(`Request failed with status ${response.status}`);
+      }
+
+      const data: HistoricalStatsResponse = await response.json();
+
+      banlistDuelData = (data.banListBreakdown ?? []).map((item) => ({
+        banlist: item.banListName,
+        duels: item.totalDuels,
+        percentage: item.percentage ?? 0,
+        popularity: item.popularity ?? 0,
       }));
-      
-      totalDuels = banlistDuelData.reduce((acc, item) => acc + item.duels, 0);
+
+      historicalSeasonData = data.historical ?? [];
+      dailyDuelsData = data.dailyDuels ?? [];
+
+      totalDuels = data.stats?.totalDuels ?? banlistDuelData.reduce((acc, item) => acc + item.duels, 0);
+      activeBanLists = data.stats?.activeBanLists ?? banlistDuelData.length;
+      avgDuelsPerBanList = data.stats?.avgDuelsPerBanList ?? Math.round(totalDuels / Math.max(activeBanLists, 1));
     } catch (error) {
-      console.error('Error fetching ban lists:', error);
+      console.error('Error fetching historical stats:', error);
+      banlistDuelData = [];
+      historicalSeasonData = [];
+      dailyDuelsData = [];
+      totalDuels = 0;
+      activeBanLists = 0;
+      avgDuelsPerBanList = 0;
     } finally {
       loading = false;
       dataReady = true;
@@ -65,7 +111,7 @@
   const handleSeasonChange = () => {
     loading = true;
     dataReady = false;
-    getBanListOptions();
+    getHistoricalStats();
   };
 
   const destroyCharts = () => {
@@ -146,9 +192,8 @@
       }
     });
 
-    // Season Comparison - Line Chart (Mock data)
-    const seasonLabels = Array.from({ length: parseInt(DEFAULT_SEASON) }, (_, i) => `Season ${i + 1}`);
-    const seasonDuels = seasonLabels.map(() => Math.floor(Math.random() * 50000) + 10000);
+    const seasonLabels = historicalSeasonData.map((item) => item.name);
+    const seasonDuels = historicalSeasonData.map((item) => item.value);
     
     seasonComparisonInstance = new Chart(seasonComparisonCanvas, {
       type: 'line',
@@ -193,59 +238,54 @@
       }
     });
 
-    // Generate daily history data for stacked bar chart
-    const generateDailyHistoryData = () => {
-      const days = 90;
-      const labels: string[] = [];
-      const today = new Date();
-      const banlistData: { banlist: string; data: number[] }[] = [];
-      
-      // Generate date labels
-      for (let i = days - 1; i >= 0; i--) {
-        const date = new Date(today);
-        date.setDate(date.getDate() - i);
-        labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+    const buildDailyHistoryData = () => {
+      if (!dailyDuelsData.length) {
+        return { labels: [] as string[], datasets: [] as { label: string; data: number[]; backgroundColor: string; borderColor: string; borderWidth: number; }[] };
       }
-      
-      // Generate data for each banlist
-      banlistDuelData.slice(0, 8).forEach((banlistItem) => {
-        const data: number[] = [];
-        const basePopularity = banlistItem.duels / 90;
-        
-        for (let i = days - 1; i >= 0; i--) {
-          const date = new Date(today);
-          date.setDate(date.getDate() - i);
-          
-          const dayOfWeek = date.getDay();
-          const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
-          const weekendMultiplier = isWeekend ? 1.4 : 1;
-          const variance = (Math.random() * 0.6) - 0.3;
-          const value = Math.max(5, Math.round(basePopularity * weekendMultiplier * (1 + variance)));
-          data.push(value);
+
+      const totalsByBanlist = new Map<string, number>();
+      for (const item of dailyDuelsData) {
+        totalsByBanlist.set(item.banListName, (totalsByBanlist.get(item.banListName) ?? 0) + item.count);
+      }
+
+      const topBanlists = [...totalsByBanlist.entries()]
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 8)
+        .map(([banlist]) => banlist);
+
+      const uniqueDates = [...new Set(dailyDuelsData.map((item) => item.date))].sort((a, b) => a.localeCompare(b));
+      const labels = uniqueDates.map((date) => new Date(`${date}T00:00:00`).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+
+      const byDateBanlist = new Map<string, Map<string, number>>();
+      for (const item of dailyDuelsData) {
+        if (!topBanlists.includes(item.banListName)) {
+          continue;
         }
-        
-        banlistData.push({ banlist: banlistItem.banlist, data });
-      });
-      
-      return { labels, banlistData };
+
+        const dateMap = byDateBanlist.get(item.date) ?? new Map<string, number>();
+        dateMap.set(item.banListName, (dateMap.get(item.banListName) ?? 0) + item.count);
+        byDateBanlist.set(item.date, dateMap);
+      }
+
+      const datasets = topBanlists.map((banlist, index) => ({
+        label: banlist,
+        data: uniqueDates.map((date) => byDateBanlist.get(date)?.get(banlist) ?? 0),
+        backgroundColor: colors.backgrounds[index % colors.backgrounds.length],
+        borderColor: colors.borders[index % colors.borders.length],
+        borderWidth: 1,
+      }));
+
+      return { labels, datasets };
     };
-    
-    const dailyData = generateDailyHistoryData();
+
+    const dailyData = buildDailyHistoryData();
     
     // Daily Duels - Stacked Bar Chart
-    const stackedDatasets = dailyData.banlistData.map((item, index) => ({
-      label: item.banlist,
-      data: item.data,
-      backgroundColor: colors.backgrounds[index % colors.backgrounds.length],
-      borderColor: colors.borders[index % colors.borders.length],
-      borderWidth: 1,
-    }));
-    
     dailyStackedInstance = new Chart(dailyStackedCanvas, {
       type: 'bar',
       data: {
         labels: dailyData.labels,
-        datasets: stackedDatasets
+        datasets: dailyData.datasets
       },
       options: {
         responsive: true,
@@ -312,7 +352,7 @@
   };
 
   onMount(() => {
-    getBanListOptions();
+    getHistoricalStats();
   });
 
   onDestroy(() => {
@@ -364,7 +404,7 @@
       <div class="card bg-gradient-to-br from-pink-900/40 to-pink-800/20 border border-pink-500/30 shadow-xl shadow-pink-900/20">
         <div class="card-body items-center text-center">
           <div class="text-5xl font-bold bg-gradient-to-r from-pink-400 to-amber-400 bg-clip-text text-transparent">
-            {banlistOptions.length}
+            {activeBanLists}
           </div>
           <p class="text-gray-400 mt-2">Active Banlists</p>
         </div>
@@ -373,7 +413,7 @@
       <div class="card bg-gradient-to-br from-amber-900/40 to-amber-800/20 border border-amber-500/30 shadow-xl shadow-amber-900/20">
         <div class="card-body items-center text-center">
           <div class="text-5xl font-bold bg-gradient-to-r from-amber-400 to-emerald-400 bg-clip-text text-transparent">
-            {Math.round(totalDuels / Math.max(banlistOptions.length, 1)).toLocaleString()}
+            {avgDuelsPerBanList.toLocaleString()}
           </div>
           <p class="text-gray-400 mt-2">Avg. Duels per Banlist</p>
         </div>
@@ -427,7 +467,7 @@
           </thead>
           <tbody>
             {#each sortedBanlistData as item, index}
-              {@const percentage = ((item.duels / totalDuels) * 100).toFixed(1)}
+              {@const percentage = Number.isFinite(item.percentage) ? item.percentage.toFixed(1) : ((item.duels / Math.max(totalDuels, 1)) * 100).toFixed(1)}
               <tr class="hover:bg-white/5 transition-colors">
                 <td class="font-medium">
                   <div class="flex items-center gap-2">
@@ -442,12 +482,12 @@
                 <td class="text-right font-mono">{percentage}%</td>
                 <td>
                   <div class="w-full bg-gray-700 rounded-full h-2.5">
-                    <div 
-                      class="h-2.5 rounded-full transition-all duration-500" 
-                      style="width: {percentage}%; background-color: {colors.primary[index % colors.primary.length]}"
-                    ></div>
-                  </div>
-                </td>
+                     <div 
+                       class="h-2.5 rounded-full transition-all duration-500" 
+                       style="width: {item.popularity}%; background-color: {colors.primary[index % colors.primary.length]}"
+                     ></div>
+                   </div>
+                 </td>
               </tr>
             {/each}
           </tbody>
