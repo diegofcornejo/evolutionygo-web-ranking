@@ -57,6 +57,12 @@ export function SignInForm({ dialog }: Readonly<{ dialog: string }>) {
 						user: { id: data.id, username: data.username },
 					};
 					updateSession(sessionData);
+
+					const loginSource = sessionStorage.getItem('wrapped-login-source');
+					if (loginSource === 'home-cta') {
+						(window as Window & { umami?: { track: (eventName: string) => void } }).umami?.track('wrapped-cta-login-success');
+						sessionStorage.removeItem('wrapped-login-source');
+					}
 				} else {
 					toast.success('Password reset email sent, please check your inbox');
 				}

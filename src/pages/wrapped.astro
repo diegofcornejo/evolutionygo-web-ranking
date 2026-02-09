@@ -1,0 +1,325 @@
+---
+import Layout from '@layouts/Layout.astro';
+
+const defaultSeason = import.meta.env.PUBLIC_DEFAULT_SEASON;
+const maxSeason = Number.parseInt(defaultSeason, 10);
+const seasonUpperBound = Number.isNaN(maxSeason) ? 1 : Math.max(maxSeason, 1);
+const seasonOptions = Array.from({ length: seasonUpperBound }, (_, index) => String(seasonUpperBound - index));
+---
+
+<Layout
+	title='Love Wrapped | Evolution YGO'
+	description="Generate your Valentine's Day Love Wrapped with your best season stats."
+	noindex={true}
+	nofollow={true}
+>
+	<main id='wrapped-root' data-default-season={defaultSeason} class='mx-auto min-h-[80vh] w-[95%] max-w-6xl py-8 text-white md:py-12'>
+		<section class='wrapped-page relative overflow-hidden rounded-3xl border border-rose-300/30 p-4 md:p-5'>
+			<div class='wrapped-burst' aria-hidden='true'></div>
+			<div class='relative z-10 space-y-3'>
+				<div class='flex flex-wrap items-end justify-between gap-2'>
+					<div>
+						<p class='text-[10px] font-semibold uppercase tracking-[0.2em] text-rose-200 md:text-xs'>Valentine's Day Edition</p>
+						<h1 class='mt-1 text-xl font-black leading-tight md:text-3xl'>Your Evolution Love Wrapped</h1>
+					</div>
+					<p id='wrapped-status' class='text-sm text-rose-100/90 md:text-base'>Preparing your story...</p>
+				</div>
+				<div class='flex flex-wrap items-center gap-2'>
+					<label for='wrapped-season-select' class='text-xs font-bold uppercase tracking-[0.15em] text-rose-100/80'>Season</label>
+					<select id='wrapped-season-select' class='select select-sm w-28 border-rose-300/50 bg-rose-950/60 text-white'>
+						{
+							seasonOptions.map((season) => (
+								<option value={season}>{season}</option>
+							))
+						}
+					</select>
+					<button id='wrapped-generate' data-umami-event='wrapped-generate-click' class='btn btn-sm border-0 bg-rose-500 text-white hover:bg-rose-400'>
+						Generate
+					</button>
+					<a id='wrapped-open' class='btn btn-sm btn-outline border-rose-200 text-rose-100 hover:bg-rose-100/10 hidden' target='_blank' rel='noopener noreferrer'>
+						Open in New Tab
+					</a>
+				</div>
+			</div>
+		</section>
+
+		<section class='mt-6 overflow-hidden rounded-2xl border border-base-200 bg-base-300/60 p-2 md:p-4'>
+			<div id='wrapped-loader' class='flex h-[65vh] items-center justify-center'>
+				<span class='loading loading-spinner loading-lg text-rose-300'></span>
+			</div>
+			<iframe
+				id='wrapped-frame'
+				title='Evolution Love Wrapped'
+				class='hidden h-[70vh] w-full rounded-xl border border-base-200 bg-white'
+				loading='eager'
+			></iframe>
+		</section>
+	</main>
+</Layout>
+
+<style>
+	.wrapped-page {
+		background:
+			radial-gradient(circle at 0% 0%, rgb(251 113 133 / 0.3), transparent 42%),
+			radial-gradient(circle at 100% 100%, rgb(244 114 182 / 0.22), transparent 52%),
+			linear-gradient(135deg, rgb(80 7 36), rgb(136 19 55), rgb(157 23 77));
+	}
+
+	.wrapped-burst {
+		position: absolute;
+		right: -5%;
+		top: -25%;
+		width: min(500px, 55vw);
+		height: min(500px, 55vw);
+		background: radial-gradient(circle, rgb(255 255 255 / 0.26), transparent 60%);
+		filter: blur(30px);
+		animation: wrapped-breathe 6s ease-in-out infinite;
+	}
+
+	@keyframes wrapped-breathe {
+		0%,
+		100% {
+			transform: scale(1);
+		}
+		50% {
+			transform: scale(1.08);
+		}
+	}
+</style>
+
+<script>
+	import { getSession, session } from '@stores/sessionStore';
+
+	let statusElement: HTMLElement | null = null;
+	let loaderElement: HTMLElement | null = null;
+	let iframeElement: HTMLElement | null = null;
+	let openButton: HTMLElement | null = null;
+	let generateButton: HTMLElement | null = null;
+	let seasonSelect: HTMLElement | null = null;
+	let defaultSeason = '';
+	let isGenerating = false;
+
+	const hydrateDomRefs = () => {
+		statusElement = document.getElementById('wrapped-status');
+		loaderElement = document.getElementById('wrapped-loader');
+		iframeElement = document.getElementById('wrapped-frame');
+		openButton = document.getElementById('wrapped-open');
+		generateButton = document.getElementById('wrapped-generate');
+		seasonSelect = document.getElementById('wrapped-season-select');
+		const wrappedRoot = document.getElementById('wrapped-root');
+		defaultSeason = wrappedRoot?.dataset.defaultSeason ?? '';
+	};
+
+	const getSessionWhenReady = async (
+		timeoutMs = 5000,
+		intervalMs = 250,
+	): Promise<ReturnType<typeof getSession>> => {
+		const isSessionReady = (sessionData: ReturnType<typeof getSession>) => {
+			return Boolean(sessionData?.isLoggedIn && sessionData?.user?.id && sessionData?.token);
+		};
+
+		const currentSession = getSession();
+		if (isSessionReady(currentSession)) {
+			return currentSession;
+		}
+
+		const startTime = Date.now();
+
+		return await new Promise<ReturnType<typeof getSession>>((resolve) => {
+			let resolved = false;
+			let poller = 0;
+			let unsub = () => {
+				return;
+			};
+
+			const finish = (value: ReturnType<typeof getSession>) => {
+				if (resolved) {
+					return;
+				}
+				resolved = true;
+				window.clearInterval(poller);
+				unsub();
+				resolve(value);
+			};
+
+			poller = window.setInterval(() => {
+				const nextSession = getSession();
+				if (isSessionReady(nextSession)) {
+					finish(nextSession);
+					return;
+				}
+
+				if (Date.now() - startTime >= timeoutMs) {
+					finish(nextSession);
+				}
+			}, intervalMs);
+
+			unsub = session.subscribe(() => {
+				const nextSession = getSession();
+				if (isSessionReady(nextSession)) {
+					finish(nextSession);
+				}
+			});
+		});
+	};
+
+	const setStatus = (message: string) => {
+		if (statusElement) {
+			statusElement.textContent = message;
+		}
+	};
+
+	const setReadyState = (wrappedUrl: string) => {
+		if (loaderElement) {
+			loaderElement.classList.add('hidden');
+		}
+		if (iframeElement) {
+			iframeElement.classList.remove('hidden');
+		}
+		if (generateButton instanceof HTMLButtonElement) {
+			generateButton.disabled = false;
+		}
+		if (openButton instanceof HTMLAnchorElement && wrappedUrl) {
+			openButton.href = wrappedUrl;
+			openButton.classList.remove('hidden');
+		}
+	};
+
+	const setLoadingState = (isLoading: boolean) => {
+		if (loaderElement) {
+			loaderElement.classList.toggle('hidden', !isLoading);
+		}
+		if (iframeElement) {
+			iframeElement.classList.toggle('hidden', isLoading);
+		}
+		if (generateButton instanceof HTMLButtonElement) {
+			generateButton.disabled = isLoading;
+		}
+		if (isLoading) {
+			if (openButton instanceof HTMLAnchorElement) {
+				openButton.classList.add('hidden');
+			}
+		}
+	};
+
+	const fetchWrappedHtml = async (seasonId: string, playerId: string, authorization: string) => {
+		const response = await fetch(
+			`/api/wrapped?seasonId=${encodeURIComponent(seasonId)}&playerId=${encodeURIComponent(playerId)}`,
+			{
+				headers: {
+					Authorization: authorization,
+				},
+			},
+		);
+
+		if (!response.ok) {
+			const payload = await response.json().catch(() => ({}));
+			const message = payload?.message || `Failed with status ${response.status}`;
+			throw new Error(message);
+		}
+
+		return response.text();
+	};
+
+	const getUserFriendlyError = (rawMessage: string) => {
+		if (!rawMessage) {
+			return 'Could not generate your Wrapped. Please try again.';
+		}
+
+		try {
+			const parsed = JSON.parse(rawMessage) as { error?: string; details?: string; message?: string };
+			if (parsed.details) {
+				return parsed.details;
+			}
+			if (parsed.message) {
+				return parsed.message;
+			}
+			if (parsed.error) {
+				return parsed.error;
+			}
+		} catch {
+			// Keep original message when it is plain text.
+		}
+
+		return rawMessage;
+	};
+
+	const generateWrapped = async () => {
+		if (isGenerating) {
+			return;
+		}
+		isGenerating = true;
+
+		setStatus('Checking your session...');
+		const sessionData = await getSessionWhenReady();
+		if (!sessionData?.isLoggedIn || !sessionData?.user?.id) {
+			setStatus('You are not signed in. Redirecting to login...');
+			window.location.href = '/login';
+			isGenerating = false;
+			return;
+		}
+
+		const selectedSeason = seasonSelect instanceof HTMLSelectElement ? seasonSelect.value : '';
+		const seasonId = selectedSeason || defaultSeason;
+		if (seasonSelect instanceof HTMLSelectElement && seasonId) {
+			seasonSelect.value = seasonId;
+		}
+
+		try {
+			setLoadingState(true);
+			setStatus('Generating your Love Wrapped...');
+			const authorization = `Bearer ${sessionData.token}`;
+			const wrappedHtml = await fetchWrappedHtml(seasonId, sessionData.user.id, authorization);
+
+			const url = new URL(window.location.href);
+			url.searchParams.set('season', seasonId);
+			window.history.replaceState({}, '', url.toString());
+
+			if (iframeElement instanceof HTMLIFrameElement) {
+				iframeElement.srcdoc = wrappedHtml;
+			}
+
+			const wrappedBlob = new Blob([wrappedHtml], { type: 'text/html' });
+			const wrappedUrl = URL.createObjectURL(wrappedBlob);
+			setReadyState(wrappedUrl);
+			setStatus(`Done. Wrapped loaded for season ${seasonId}.`);
+			(window as Window & { umami?: { track: (eventName: string) => void } }).umami?.track('wrapped-generate-success');
+		} catch (error) {
+			console.error('Error generating wrapped:', error);
+			const message = error instanceof Error ? getUserFriendlyError(error.message) : 'Could not generate your Wrapped.';
+			setStatus(`Error: ${message}`);
+			setLoadingState(false);
+		} finally {
+			isGenerating = false;
+		}
+	};
+
+	const bindActions = () => {
+		hydrateDomRefs();
+
+		if (seasonSelect instanceof HTMLSelectElement) {
+			seasonSelect.value = defaultSeason;
+		}
+
+		generateWrapped();
+
+		if (generateButton instanceof HTMLButtonElement) {
+			generateButton.onclick = async () => {
+				await generateWrapped();
+			};
+		}
+
+	};
+
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', () => {
+			bindActions();
+		});
+	} else {
+		bindActions();
+	}
+
+	document.addEventListener('astro:page-load', () => {
+		bindActions();
+	});
+</script>

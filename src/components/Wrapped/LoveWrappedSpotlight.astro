@@ -1,0 +1,104 @@
+<section id='section-wrapped' class='mx-auto w-[95%] max-w-6xl py-4 md:py-5'>
+	<div class='wrapped-shell relative overflow-hidden rounded-2xl border border-rose-300/30 p-4 md:p-5'>
+		<div class='wrapped-glow' aria-hidden='true'></div>
+		<div class='relative z-10 flex flex-wrap items-center justify-between gap-3'>
+			<div>
+				<p class='text-[10px] font-semibold uppercase tracking-[0.2em] text-rose-200 md:text-xs'>Valentine's Day Special</p>
+				<p class='mt-1 text-lg font-black leading-tight md:text-2xl'>Evolution Love Wrapped</p>
+				<p class='text-sm text-rose-50/90 md:text-base'>Your season in a love-and-friendship edition.</p>
+			</div>
+			<div class='flex flex-wrap gap-2'>
+				<a id='wrapped-cta-logged' data-umami-event='wrapped-cta-open' class='wrapped-cta btn btn-sm border-0 bg-rose-500 text-white shadow-lg shadow-rose-600/35 hover:bg-rose-400 md:btn-md' href='/wrapped'>
+						Generate My Wrapped
+					</a>
+					<button id='wrapped-cta-guest' data-umami-event='wrapped-cta-login-click' class='btn btn-sm btn-outline border-rose-200 text-rose-100 hover:bg-rose-100/10 md:btn-md'>
+						Sign In to Unlock
+					</button>
+			</div>
+		</div>
+	</div>
+</section>
+
+<style>
+	.wrapped-shell {
+		background:
+			radial-gradient(circle at 10% 10%, rgb(253 164 175 / 0.35), transparent 45%),
+			radial-gradient(circle at 90% 80%, rgb(251 113 133 / 0.3), transparent 50%),
+			linear-gradient(135deg, rgb(136 19 55), rgb(157 23 77) 40%, rgb(190 24 93));
+	}
+
+	.wrapped-glow {
+		position: absolute;
+		inset: -40% auto auto -30%;
+		width: 70%;
+		height: 70%;
+		background: radial-gradient(circle, rgb(255 255 255 / 0.25), transparent 60%);
+		filter: blur(20px);
+		animation: wrapped-float 5.5s ease-in-out infinite;
+	}
+
+	.wrapped-cta {
+		border: 1px solid rgb(251 191 203 / 0.8);
+		box-shadow: 0 0 0 1px rgb(255 255 255 / 0.25), 0 0 10px rgb(251 113 133 / 0.45);
+		animation: wrapped-cta-shine 2.8s linear infinite;
+	}
+
+	@keyframes wrapped-float {
+		0%,
+		100% {
+			transform: translate3d(0, 0, 0);
+		}
+		50% {
+			transform: translate3d(18px, 16px, 0);
+		}
+	}
+
+	@keyframes wrapped-cta-shine {
+		0% {
+			box-shadow: 0 0 0 1px rgb(255 255 255 / 0.25), 0 0 8px rgb(251 113 133 / 0.4);
+		}
+		50% {
+			box-shadow: 0 0 0 1px rgb(255 255 255 / 0.35), 0 0 14px rgb(251 113 133 / 0.65);
+		}
+		100% {
+			box-shadow: 0 0 0 1px rgb(255 255 255 / 0.25), 0 0 8px rgb(251 113 133 / 0.4);
+		}
+	}
+</style>
+
+<script>
+	import { getSession, session } from '@stores/sessionStore';
+
+	const updateCtaState = () => {
+		const loggedButton = document.getElementById('wrapped-cta-logged');
+		const guestButton = document.getElementById('wrapped-cta-guest');
+		const isLoggedIn = getSession().isLoggedIn;
+
+		if (!loggedButton || !guestButton) {
+			return;
+		}
+
+		loggedButton.style.display = isLoggedIn ? 'inline-flex' : 'none';
+		guestButton.style.display = isLoggedIn ? 'none' : 'inline-flex';
+	};
+
+	session.subscribe(() => {
+		updateCtaState();
+	});
+
+	document.addEventListener('astro:page-load', () => {
+		updateCtaState();
+		const guestButton = document.getElementById('wrapped-cta-guest');
+		if (!guestButton) {
+			return;
+		}
+
+		guestButton.onclick = () => {
+			sessionStorage.setItem('wrapped-login-source', 'home-cta');
+			const signinButton = document.getElementById('button-modal-signin');
+			if (signinButton instanceof HTMLButtonElement) {
+				signinButton.click();
+			}
+		};
+	});
+</script>

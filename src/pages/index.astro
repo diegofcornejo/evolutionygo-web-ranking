@@ -9,6 +9,7 @@ import Faqs from '@sections/Faqs.astro';
 import Crew from '@sections/Crew.astro';
 import { RoomsWebSocketListener } from '@components/RoomsWebSocketListener';
 import DuelistOfTheWeek from '@components/Cards/DuelistOfTheWeek.astro';
+import LoveWrappedSpotlight from '@components/Wrapped/LoveWrappedSpotlight.astro';
 
 const currentSeason = import.meta.env.PUBLIC_DEFAULT_SEASON;
 const title = `Evolution YGO Season ${currentSeason}`;
@@ -48,6 +49,7 @@ const keywords = [
 			<!-- <p class='flex justify-center'><Eyes client:only='react' /></p> -->
 			<span class='text-gradient'> {title} </span> 
 		</h1>
+		<LoveWrappedSpotlight />
 		<News client:only='react' />
 		<RoomsWebSocketListener client:only='react' />
 		<Live client:only='svelte' />
