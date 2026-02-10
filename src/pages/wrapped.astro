@@ -1,10 +1,7 @@
 ---
 import Layout from '@layouts/Layout.astro';
-
-const defaultSeason = import.meta.env.PUBLIC_DEFAULT_SEASON;
-const maxSeason = Number.parseInt(defaultSeason, 10);
-const seasonUpperBound = Number.isNaN(maxSeason) ? 1 : Math.max(maxSeason, 1);
-const seasonOptions = Array.from({ length: seasonUpperBound }, (_, index) => String(seasonUpperBound - index));
+const wrappedSeasonId = '5';
+const wrappedSeasonOptions = ['5', '4', '3'];
 ---
 
 <Layout
@@ -13,7 +10,7 @@ const seasonOptions = Array.from({ length: seasonUpperBound }, (_, index) => Str
 	noindex={true}
 	nofollow={true}
 >
-	<main id='wrapped-root' data-default-season={defaultSeason} class='mx-auto min-h-[80vh] w-[95%] max-w-6xl py-8 text-white md:py-12'>
+	<main id='wrapped-root' data-wrapped-season={wrappedSeasonId} class='mx-auto min-h-[80vh] w-[95%] max-w-6xl py-8 text-white md:py-12'>
 		<section class='wrapped-page relative overflow-hidden rounded-3xl border border-rose-300/30 p-4 md:p-5'>
 			<div class='wrapped-burst' aria-hidden='true'></div>
 			<div class='relative z-10 space-y-3'>
@@ -28,7 +25,7 @@ const seasonOptions = Array.from({ length: seasonUpperBound }, (_, index) => Str
 					<label for='wrapped-season-select' class='text-xs font-bold uppercase tracking-[0.15em] text-rose-100/80'>Season</label>
 					<select id='wrapped-season-select' class='select select-sm w-28 border-rose-300/50 bg-rose-950/60 text-white'>
 						{
-							seasonOptions.map((season) => (
+							wrappedSeasonOptions.map((season) => (
 								<option value={season}>{season}</option>
 							))
 						}
@@ -96,7 +93,7 @@ const seasonOptions = Array.from({ length: seasonUpperBound }, (_, index) => Str
 	let openButton: HTMLElement | null = null;
 	let generateButton: HTMLElement | null = null;
 	let seasonSelect: HTMLElement | null = null;
-	let defaultSeason = '';
+	let wrappedSeason = '5';
 	let isGenerating = false;
 
 	const hydrateDomRefs = () => {
@@ -107,7 +104,7 @@ const seasonOptions = Array.from({ length: seasonUpperBound }, (_, index) => Str
 		generateButton = document.getElementById('wrapped-generate');
 		seasonSelect = document.getElementById('wrapped-season-select');
 		const wrappedRoot = document.getElementById('wrapped-root');
-		defaultSeason = wrappedRoot?.dataset.defaultSeason ?? '';
+		wrappedSeason = wrappedRoot?.dataset.wrappedSeason ?? '5';
 	};
 
 	const getSessionWhenReady = async (
@@ -259,21 +256,13 @@ const seasonOptions = Array.from({ length: seasonUpperBound }, (_, index) => Str
 			return;
 		}
 
-		const selectedSeason = seasonSelect instanceof HTMLSelectElement ? seasonSelect.value : '';
-		const seasonId = selectedSeason || defaultSeason;
-		if (seasonSelect instanceof HTMLSelectElement && seasonId) {
-			seasonSelect.value = seasonId;
-		}
+		const seasonId = seasonSelect instanceof HTMLSelectElement ? seasonSelect.value : wrappedSeason;
 
 		try {
 			setLoadingState(true);
 			setStatus('Generating your Love Wrapped...');
 			const authorization = `Bearer ${sessionData.token}`;
 			const wrappedHtml = await fetchWrappedHtml(seasonId, sessionData.user.id, authorization);
-
-			const url = new URL(window.location.href);
-			url.searchParams.set('season', seasonId);
-			window.history.replaceState({}, '', url.toString());
 
 			if (iframeElement instanceof HTMLIFrameElement) {
 				iframeElement.srcdoc = wrappedHtml;
@@ -298,7 +287,7 @@ const seasonOptions = Array.from({ length: seasonUpperBound }, (_, index) => Str
 		hydrateDomRefs();
 
 		if (seasonSelect instanceof HTMLSelectElement) {
-			seasonSelect.value = defaultSeason;
+			seasonSelect.value = wrappedSeason;
 		}
 
 		generateWrapped();
