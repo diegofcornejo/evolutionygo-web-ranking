@@ -73,8 +73,10 @@ describe('StatsSection', () => {
         dailyDuels: [
           { date: '2026-01-01', banListName: '2024-01', count: 50 },
           { date: '2026-01-01', banListName: '2024-02', count: 20 },
+          { date: '2026-01-01', banListName: '2026.01 OCG', count: 1 },
           { date: '2026-01-02', banListName: '2024-01', count: 30 },
           { date: '2026-01-02', banListName: '2024-02', count: 10 },
+          { date: '2026-01-02', banListName: '2026.01 OCG', count: 2 },
         ],
       }),
     });
@@ -101,6 +103,9 @@ describe('StatsSection', () => {
 
     const { Chart } = await import('chart.js');
     expect(Chart).toHaveBeenCalledTimes(3);
+    const dailyChartConfig = (Chart as any).mock.calls[2][1];
+    expect(dailyChartConfig.data.datasets).toHaveLength(3);
+    expect(dailyChartConfig.data.datasets.map((dataset: { label: string }) => dataset.label)).toContain('2026.01 OCG');
 
     unmount(instance);
   });

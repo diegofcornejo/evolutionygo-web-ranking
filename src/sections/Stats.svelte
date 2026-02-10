@@ -248,9 +248,8 @@
         totalsByBanlist.set(item.banListName, (totalsByBanlist.get(item.banListName) ?? 0) + item.count);
       }
 
-      const topBanlists = [...totalsByBanlist.entries()]
+      const sortedBanlists = [...totalsByBanlist.entries()]
         .sort((a, b) => b[1] - a[1])
-        .slice(0, 8)
         .map(([banlist]) => banlist);
 
       const uniqueDates = [...new Set(dailyDuelsData.map((item) => item.date))].sort((a, b) => a.localeCompare(b));
@@ -258,16 +257,12 @@
 
       const byDateBanlist = new Map<string, Map<string, number>>();
       for (const item of dailyDuelsData) {
-        if (!topBanlists.includes(item.banListName)) {
-          continue;
-        }
-
         const dateMap = byDateBanlist.get(item.date) ?? new Map<string, number>();
         dateMap.set(item.banListName, (dateMap.get(item.banListName) ?? 0) + item.count);
         byDateBanlist.set(item.date, dateMap);
       }
 
-      const datasets = topBanlists.map((banlist, index) => ({
+      const datasets = sortedBanlists.map((banlist, index) => ({
         label: banlist,
         data: uniqueDates.map((date) => byDateBanlist.get(date)?.get(banlist) ?? 0),
         backgroundColor: colors.backgrounds[index % colors.backgrounds.length],
