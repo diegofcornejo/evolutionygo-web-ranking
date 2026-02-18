@@ -43,3 +43,7 @@ pnpm-debug.log*
 coverage/
 
 .vercel
+
+.agents/
+
+.kilocode/

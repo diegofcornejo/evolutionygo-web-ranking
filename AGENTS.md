@@ -89,7 +89,7 @@ tests/                # Unit tests (mirrors src/ structure)
 | Types        | PascalCase        | `Duelist`, `Session`, `Room`      |
 | Functions    | camelCase         | `getSession`, `updateRoom`        |
 
-### Component Conventions
+### Component Frameworks
 
 | Extension  | Framework | When to Use                            |
 | ---------- | --------- | -------------------------------------- |
@@ -97,37 +97,80 @@ tests/                # Unit tests (mirrors src/ structure)
 | `.tsx`     | React     | Interactive components, forms          |
 | `.svelte`  | Svelte    | Animations, real-time updates          |
 
-### React Example
+### React Component Example
 
 ```tsx
-interface Props {
-  userId: string;
-  size?: 'sm' | 'md' | 'lg';
+import type { Duelist } from '@types';
+import Rating from '@components/Rating';
+
+interface Props extends Duelist {
+  banListName: string;
+  season: string;
+  clickable?: boolean;
 }
 
-export function Component({ userId, size = 'md' }: Readonly<Props>) {
-  const [value, setValue] = useState('');
-  return <div className="card">{/* JSX */}</div>;
+export default function DuelistCard({
+  userId,
+  username,
+  points,
+  wins,
+  losses,
+  winRate,
+  position,
+  borderColor = 'transparent',
+  banListName,
+  season,
+  clickable = true,
+}: Readonly<Props>) {
+  const image = `https://ui-avatars.com/api/?name=${username}&background=random&size=128`;
+  return (
+    <a href={clickable ? `/duelists/${userId}/${banListName}?username=${username}&season=${season}` : undefined}
+      className="card bg-base-300 w-full shadow-xl cursor-pointer max-w-sm hover:bg-neutral transition-all duration-200 ease-in-out border-2 border-${borderColor}">
+      {/* JSX content */}
+    </a>
+  );
 }
 ```
 
-### Svelte Example
+### Svelte Component Example
 
 ```svelte
-<script lang="ts">
-  import type { Room } from 'src/types/Room';
-  export let room: Room;
+<script>
+  import { onMount } from 'svelte'
+  export let room;
   $: filtered = room.players.filter((p) => p.team === 0);
 </script>
 <div class="card">{/* Template */}</div>
+```
+
+### Astro Page Example
+
+```astro
+---
+import Layout from '@layouts/Layout.astro';
+import Ranking from '@sections/Ranking';
+import Live from '@sections/Live.svelte';
+---
+
+<Layout title="Page Title" description="Page description">
+  <main class="w-full text-[white]">
+    <Ranking client:load />
+    <Live client:only="svelte" />
+  </main>
+</Layout>
 ```
 
 ### Error Handling
 
 ```tsx
 try {
-  const response = await fetch(url);
-  if (!response.ok) setError(data.message || 'Error in request');
+  const response = await fetch(`${import.meta.env.PUBLIC_API_URL}/endpoint`);
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    setError(data.message || 'Error in request');
+    return;
+  }
+  // Handle success
 } catch (error) {
   console.error('Error:', error);
   setError('No connection to server');
@@ -145,17 +188,28 @@ try {
 
 - Tests live in `tests/` and mirror `src/` structure.
 - Naming: `*.test.ts` or `*.test.tsx`.
+- Vitest globals enabled; use `describe`, `it`, `expect`, `vi` from `vitest`.
+- Use `@testing-library/react` for React component testing.
 
 ```tsx
-import { render } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { render, fireEvent, screen, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { SignInForm } from '@components/Auth/SignInForm';
 
 vi.mock('@stores/sessionStore', () => ({ updateSession: vi.fn() }));
 
-describe('Component', () => {
-  it('renders correctly', () => {
-    const { getByText } = render(<Component {...props} />);
-    expect(getByText('Expected')).toBeTruthy();
+describe('SignInForm', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.spyOn(global, 'fetch').mockImplementation(() => Promise.resolve(mockResponse({})));
+  });
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('renders email and password fields', () => {
+    render(<SignInForm dialog="test-dialog" />);
+    expect(screen.getByPlaceholderText('Email')).toBeInTheDocument();
   });
 });
 ```
@@ -173,16 +227,26 @@ describe('Component', () => {
 ## State Management
 
 Stores in `src/stores/` use Nanostores:
+
+```tsx
+import { atom } from 'nanostores';
+import { persistentAtom } from '@nanostores/persistent';
+
+export const session = persistentAtom<string>('session', '', {
+  encode: JSON.stringify,
+  decode: JSON.parse,
+});
+
+export const banlists = atom<string[]>([]);
+```
+
 - React: `const sessionData = useStore(session);`
 - Svelte: `{$roomsStore.length}`
 
 ## Environment Notes
 
 - Use `import.meta.env.PUBLIC_API_URL` for API calls.
+- Use `import.meta.env.PUBLIC_WEBSOCKET_URL` for WebSocket connections.
 - SSR mode (`output: 'server'`); avoid browser-only code in Astro frontmatter.
 - Icons via `astro-icon` with `@iconify-json/ic` and `@iconify-json/mdi`.
-
-## Repo Rules
-
-- No Cursor rules found in `.cursor/rules/` or `.cursorrules`.
-- No GitHub Copilot instructions found in `.github/copilot-instructions.md`.
+- Client directives: `client:load` for interactivity, `client:only="react"` or `client:only="svelte"` for client-only components.

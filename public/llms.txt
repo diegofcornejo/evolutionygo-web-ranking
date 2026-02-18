@@ -1,0 +1,46 @@
+# Evolution YGO
+
+> Evolution YGO is a Yu-Gi-Oh! dueling server and community platform. The website provides rankings, player statistics, achievements, tournament information, and real-time duel visualization for duelists on the Evolution YGO server.
+
+Evolution YGO hosts duels in multiple formats including TCG, OCG, GOAT, and Edison. Players can compete in ranked matches to earn points, climb seasonal leaderboards, and unlock achievements. The platform supports both casual and competitive play with various banlist options.
+
+## Rankings
+
+- [Seasonal Rankings](https://evolutionygo.com/): View top duelists filtered by season and banlist format. Rankings display points, wins, losses, and win rates.
+- [Duelist Profiles](https://evolutionygo.com/duelists/): Access detailed player statistics including match history, achievements earned, and performance across different formats.
+
+## Tournaments
+
+- [Tournament Listings](https://evolutionygo.com/tournaments/): Browse upcoming and past tournaments with registration details, brackets, and results.
+
+## Statistics
+
+- [Server Statistics](https://evolutionygo.com/stats): View aggregate data about the server including total duelists, matches played, and activity metrics.
+
+## Features
+
+- [Server Features](https://evolutionygo.com/#section-features): Evolution YGO offers duel reconnection, automatic ranking updates, and is completely free to use. Built on EDOPro and Mercury (Koishi) servers with full client compatibility.
+
+## Downloads
+
+- [Game Clients](https://evolutionygo.com/#section-download): Download compatible clients including EDOPro (recommended), YGO Mobile, Koishi Pro, and MDPro3. EvoPro client coming soon.
+- [Client Setup](https://evolutionygo.com/#setup): Generate a custom user_configs.json file to connect your client to Evolution YGO servers with official banlists, card pictures, and community resources.
+- [Special Commands](https://evolutionygo.com/#commands): Reference table of in-game commands for different formats (TCG, OCG, GOAT, Edison) to start duels with specific rulesets.
+
+## Authentication
+
+- [Login](https://evolutionygo.com/login/): Sign in to access your profile and track your progress.
+- [Register](https://evolutionygo.com/register/): Create an account to participate in ranked duels and earn achievements.
+- [Password Recovery](https://evolutionygo.com/forgot-password/): Reset your password if you've forgotten it.
+
+## Community
+
+- [Discord](https://discord.com/invite/bgjddgWkWk): Join the Evolution YGO Discord server for announcements, matchmaking, and community discussions.
+- [GitHub](https://github.com/diegofcornejo/evolutionygo-web-ranking): View the source code and contribute to the project.
+- [Meet the Crew](https://evolutionygo.com/#section-crew): Learn about the team behind Evolution YGO - developers, designers, and community managers.
+- [Server Status](https://status.evolutionygo.com): Check the current operational status of Evolution YGO services and servers.
+
+## Optional
+
+- [Wrapped](https://evolutionygo.com/wrapped/): Annual summary of your dueling activity and achievements.
+- [Developers](https://evolutionygo.com/developers/): Resources and documentation for developers contributing to Evolution YGO (under construction).
