@@ -9,9 +9,7 @@ const subtitle = 'Just download a client';
 const description =
 	'Evolution does not have its own client. We recommend downloading the official EDOPro client or any of the other clients listed below.';
 
-type GameClientStatus = GameClient & { comingSoon?: boolean };
-
-const clients = [
+const clients: GameClient[] = [
 	{
 		name: 'YGO Mobile',
 		link: 'https://ygom.top/',
@@ -31,7 +29,7 @@ const clients = [
 		icon: { name: 'mdi:rocket-launch', classes: 'text-primary text-xl' },
 		platforms: ['web', 'windows', 'apple', 'linux'],
 		trackEvent: 'download-click-evolution',
-		comingSoon: true,
+		badge: 'Closed Alpha',
 	},
 	{
 		name: 'MDPro3',
@@ -45,7 +43,7 @@ const clients = [
 		platforms: ['windows', 'apple'],
 		trackEvent: 'download-click-koishi',
 	},
-] as GameClientStatus[];
+];
 
 const title2 = 'Setup your client';
 const description2 =
@@ -237,24 +235,24 @@ const instructions = [
 
 	<div class='flex flex-col md:flex-row md:flex-wrap gap-8 justify-center py-8'>
 		{
-			clients.map((client) => {
-				const isComingSoon = client.comingSoon === true;
-				const baseClasses =
-					'btn btn-neutral btn-lg text-white min-w-[200px] w-full md:w-auto h-auto py-2 rounded-2xl';
-				const clientClasses = isComingSoon
-					? `${baseClasses} cursor-not-allowed pointer-events-none`
-					: `${baseClasses} hover:bg-secondary`;
-				const content = (
-					<div class='flex flex-col gap-2 text-center'>
-						<div class='flex flex-row gap-2 items-center justify-center'>
-							{client.icon && (
-								<Icon name={client.icon.name} class={client.icon.classes} />
-							)}
-							{client.name}
-							{isComingSoon && (
-								<span class='badge badge-warning badge-xs'>Coming soon</span>
-							)}
-						</div>
+		clients.map((client) => {
+			const hasBadge = !!client.badge;
+			const baseClasses =
+				'btn btn-neutral btn-lg text-white min-w-[200px] w-full md:w-auto h-auto py-2 rounded-2xl';
+			const clientClasses = hasBadge
+				? `${baseClasses} cursor-not-allowed pointer-events-none`
+				: `${baseClasses} hover:bg-secondary`;
+			const content = (
+				<div class='flex flex-col gap-2 text-center'>
+					<div class='flex flex-row gap-2 items-center justify-center'>
+						{client.icon && (
+							<Icon name={client.icon.name} class={client.icon.classes} />
+						)}
+						{client.name}
+						{client.badge && (
+							<span class='badge badge-warning badge-xs'>{client.badge}</span>
+						)}
+					</div>
 						<div class='flex flex-row gap-2 justify-center'>
 							{client.platforms.map((platform) => (
 								<Icon name={`mdi:${platform}`} class='text-xl text-white' />
@@ -263,7 +261,7 @@ const instructions = [
 					</div>
 				);
 
-				return isComingSoon ? (
+				return hasBadge ? (
 					<div class='client-spotlight w-full md:w-auto' aria-disabled='true'>
 						<div class={`${clientClasses} client-spotlight-inner`}>{content}</div>
 					</div>
