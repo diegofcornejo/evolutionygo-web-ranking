@@ -9,6 +9,13 @@ import 'swiper/css/autoplay';
 
 export default function NewsSection() {
 	const news: News[] = [
+
+		{
+			id: 4,
+			image: '/banners/banner4.webp',
+			title: 'Torneo Continental TCG BPRO TCG - GR 2026',
+			description: 'Country Cuba "A" is the new champion: Meliodas (líder), Just Hansel, YanxAsh, Eislier, LD, Leynier, Plácido, Legarde, Ray_V, Guevara'
+		},
 		{
 			id: 1,
 			image: '/banners/banner1.webp',
@@ -26,7 +33,7 @@ export default function NewsSection() {
 			image: '/banners/banner3.webp',
 			title: 'Edison Champions',
 			description: 'TEAM AyD Heaven is the new champion!'
-		}
+		},
 	];
 	return (
 		<div className='mb-8 mx-4'>
