@@ -23,7 +23,7 @@ export const GET: APIRoute = async ({ request, url }) => {
 	}
 
 	try {
-		const endpoint = `${import.meta.env.PUBLIC_API_URL}/seasons/${encodeURIComponent(seasonId)}/wrapped/${encodeURIComponent(playerId)}/html?theme=valentines`;
+		const endpoint = `${import.meta.env.PUBLIC_API_URL}/seasons/${encodeURIComponent(seasonId)}/wrapped/${encodeURIComponent(playerId)}/html`;
 		const response = await fetch(endpoint, {
 			headers: {
 				Authorization: authorization,

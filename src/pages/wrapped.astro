@@ -5,35 +5,35 @@ const wrappedSeasonOptions = ['5', '4', '3'];
 ---
 
 <Layout
-	title='Love Wrapped | Evolution YGO'
-	description="Generate your Valentine's Day Love Wrapped with your best season stats."
+	title='Wrapped | Evolution YGO'
+	description="Generate your Evolution Wrapped with your best season stats."
 	noindex={true}
 	nofollow={true}
 >
 	<main id='wrapped-root' data-wrapped-season={wrappedSeasonId} class='mx-auto min-h-[80vh] w-[95%] max-w-6xl py-8 text-white md:py-12'>
-		<section class='wrapped-page relative overflow-hidden rounded-3xl border border-rose-300/30 p-4 md:p-5'>
+		<section class='wrapped-page relative overflow-hidden rounded-3xl border border-purple-500/30 p-4 md:p-5'>
 			<div class='wrapped-burst' aria-hidden='true'></div>
 			<div class='relative z-10 space-y-3'>
 				<div class='flex flex-wrap items-end justify-between gap-2'>
 					<div>
-						<p class='text-[10px] font-semibold uppercase tracking-[0.2em] text-rose-200 md:text-xs'>Valentine's Day Edition</p>
-						<h1 class='mt-1 text-xl font-black leading-tight md:text-3xl'>Your Evolution Love Wrapped</h1>
+						<p class='text-[10px] font-semibold uppercase tracking-[0.2em] text-purple-300 md:text-xs'>Season Stats</p>
+						<h1 class='mt-1 text-xl font-black leading-tight md:text-3xl'>Your Evolution Wrapped</h1>
 					</div>
-					<p id='wrapped-status' class='text-sm text-rose-100/90 md:text-base'>Preparing your story...</p>
+					<p id='wrapped-status' class='text-sm text-gray-300/90 md:text-base'>Preparing your story...</p>
 				</div>
 				<div class='flex flex-wrap items-center gap-2'>
-					<label for='wrapped-season-select' class='text-xs font-bold uppercase tracking-[0.15em] text-rose-100/80'>Season</label>
-					<select id='wrapped-season-select' class='select select-sm w-28 border-rose-300/50 bg-rose-950/60 text-white'>
+					<label for='wrapped-season-select' class='text-xs font-bold uppercase tracking-[0.15em] text-purple-200/80'>Season</label>
+					<select id='wrapped-season-select' class='select select-sm w-28 border-purple-500/50 bg-purple-950/60 text-white'>
 						{
 							wrappedSeasonOptions.map((season) => (
 								<option value={season}>{season}</option>
 							))
 						}
 					</select>
-					<button id='wrapped-generate' data-umami-event='wrapped-generate-click' class='btn btn-sm border-0 bg-rose-500 text-white hover:bg-rose-400'>
+					<button id='wrapped-generate' data-umami-event='wrapped-generate-click' class='btn btn-sm border-0 bg-purple-600 text-white hover:bg-purple-500'>
 						Generate
 					</button>
-					<a id='wrapped-open' class='btn btn-sm btn-outline border-rose-200 text-rose-100 hover:bg-rose-100/10 hidden' target='_blank' rel='noopener noreferrer'>
+					<a id='wrapped-open' class='btn btn-sm btn-outline border-purple-300 text-purple-100 hover:bg-purple-100/10 hidden' target='_blank' rel='noopener noreferrer'>
 						Open in New Tab
 					</a>
 				</div>
@@ -42,11 +42,11 @@ const wrappedSeasonOptions = ['5', '4', '3'];
 
 		<section class='mt-6 overflow-hidden rounded-2xl border border-base-200 bg-base-300/60 p-2 md:p-4'>
 			<div id='wrapped-loader' class='flex h-[65vh] items-center justify-center'>
-				<span class='loading loading-spinner loading-lg text-rose-300'></span>
+				<span class='loading loading-spinner loading-lg text-purple-400'></span>
 			</div>
 			<iframe
 				id='wrapped-frame'
-				title='Evolution Love Wrapped'
+				title='Evolution Wrapped'
 				class='hidden h-[70vh] w-full rounded-xl border border-base-200 bg-white'
 				loading='eager'
 			></iframe>
@@ -57,9 +57,9 @@ const wrappedSeasonOptions = ['5', '4', '3'];
 <style>
 	.wrapped-page {
 		background:
-			radial-gradient(circle at 0% 0%, rgb(251 113 133 / 0.3), transparent 42%),
-			radial-gradient(circle at 100% 100%, rgb(244 114 182 / 0.22), transparent 52%),
-			linear-gradient(135deg, rgb(80 7 36), rgb(136 19 55), rgb(157 23 77));
+			radial-gradient(circle at 0% 0%, rgb(147 51 234 / 0.3), transparent 42%),
+			radial-gradient(circle at 100% 100%, rgb(99 102 241 / 0.22), transparent 52%),
+			linear-gradient(135deg, rgb(30 10 60), rgb(55 20 100), rgb(40 15 80));
 	}
 
 	.wrapped-burst {
@@ -68,7 +68,7 @@ const wrappedSeasonOptions = ['5', '4', '3'];
 		top: -25%;
 		width: min(500px, 55vw);
 		height: min(500px, 55vw);
-		background: radial-gradient(circle, rgb(255 255 255 / 0.26), transparent 60%);
+		background: radial-gradient(circle, rgb(147 51 234 / 0.2), transparent 60%);
 		filter: blur(30px);
 		animation: wrapped-breathe 6s ease-in-out infinite;
 	}
@@ -260,7 +260,7 @@ const wrappedSeasonOptions = ['5', '4', '3'];
 
 		try {
 			setLoadingState(true);
-			setStatus('Generating your Love Wrapped...');
+			setStatus('Generating your Wrapped...');
 			const authorization = `Bearer ${sessionData.token}`;
 			const wrappedHtml = await fetchWrappedHtml(seasonId, sessionData.user.id, authorization);
 
