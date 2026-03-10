@@ -31,9 +31,9 @@
 	},
 	"dependencies": {
 		"@astrojs/partytown": "2.1.4",
-		"@astrojs/react": "5.0.0",
-		"@astrojs/sitemap": "3.7.1",
-		"@astrojs/svelte": "8.0.0",
+		"@astrojs/react": "4",
+		"@astrojs/sitemap": "3.6",
+		"@astrojs/svelte": "7",
 		"@astrojs/vercel": "9.0.5",
 		"@fontsource-variable/plus-jakarta-sans": "5.2.8",
 		"@iconify-json/ic": "1.2.4",
