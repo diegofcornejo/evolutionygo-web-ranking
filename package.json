@@ -23,7 +23,7 @@
 		"astro": "astro",
 		"lint": "oxlint",
 		"lint:fix": "oxlint --fix",
-		"prepare": "husky",
+		"prepare": "husky || true",
 		"test": "vitest run",
 		"test:watch": "vitest --watch",
 		"test:coverage": "vitest run --coverage",
