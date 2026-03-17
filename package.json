@@ -30,6 +30,7 @@
 		"test:changed": "vitest run --changed"
 	},
 	"dependencies": {
+		"@astrojs/check": "0.9.7",
 		"@astrojs/partytown": "2.1.4",
 		"@astrojs/react": "4",
 		"@astrojs/sitemap": "3.6",
@@ -48,6 +49,7 @@
 		"chart.js": "4.5.1",
 		"daisyui": "5.5.19",
 		"nanostores": "1.1.1",
+		"@playform/compress": "0.2.1",
 		"react": "19.2.4",
 		"react-dom": "19.2.4",
 		"react-svg": "17.2.4",
@@ -58,10 +60,8 @@
 		"tailwindcss": "4.2.1"
 	},
 	"devDependencies": {
-		"@astrojs/check": "0.9.7",
 		"@commitlint/cli": "20.4.3",
 		"@commitlint/config-conventional": "20.4.3",
-		"@playform/compress": "0.2.1",
 		"@testing-library/jest-dom": "6.9.1",
 		"@testing-library/react": "16.3.2",
 		"@types/react": "19.2.14",
