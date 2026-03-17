@@ -17,6 +17,12 @@ export default function NewsSection() {
 			description: 'Country Cuba "A" is the new champion: Meliodas (líder), Just Hansel, YanxAsh, Eislier, LD, Leynier, Plácido, Legarde, Ray_V, Guevara'
 		},
 		{
+			id: 5,
+			image: '/banners/banner5.webp',
+			title: 'WAR LATAM Diciembre 2025 a Marzo 2026',
+			description: 'Team DragonSlayers is the new champion: Ricardostar07, Akeno, Akane, JesusVE, Shinobu, Killer BR, El Chema'
+		},
+		{
 			id: 1,
 			image: '/banners/banner1.webp',
 			title: 'Season 6 is here!',
