@@ -25,6 +25,8 @@
     const dialog = document.getElementById('match-card-dialog') as HTMLDialogElement;
     dialog?.close();
   };
+
+  const defaultSeason = import.meta.env.PUBLIC_DEFAULT_SEASON;
 </script>
 
 <button
@@ -36,12 +38,14 @@
     <div class="flex flex-row justify-between w-full text-center">
       <div class="flex flex-col flex-1 px-2 gap-1">
         {#each team0 as player}
-          <p
-            class="whitespace-nowrap overflow-hidden text-ellipsis w-full text-center"
+          <a
+            href={`/duelists/${player.userId}/${room.banList.name}?username=${player.username}&season=${defaultSeason}`}
+            class="whitespace-nowrap overflow-hidden text-ellipsis w-full text-center hover:underline"
             title={player.username}
+            on:click|stopPropagation
           >
             {player.username}
-          </p>
+          </a>
         {/each}
         {#if team0.length > 0}
           <p class="text-center font-semibold mt-1">{team0[0].lps}</p>
@@ -59,12 +63,14 @@
 
       <div class="flex flex-col flex-1 px-2 gap-1">
         {#each team1 as player}
-          <p
-            class="whitespace-nowrap overflow-hidden text-ellipsis w-full text-center"
+          <a
+            href={`/duelists/${player.userId}/${room.banList.name}?username=${player.username}&season=${defaultSeason}`}
+            class="whitespace-nowrap overflow-hidden text-ellipsis w-full text-center hover:underline"
             title={player.username}
+            on:click|stopPropagation
           >
             {player.username}
-          </p>
+          </a>
         {/each}
         {#if team1.length > 0}
           <p class="text-center font-semibold mt-1">{team1[0].lps}</p>
@@ -99,7 +105,9 @@
 							<td class='text-center'>
 								{#each room.players as player}
 									{#if player.team === 0}
-										<p>{player.username}</p>
+										<a href={`/duelists/${player.userId}/${room.banList.name}?username=${player.username}&season=${defaultSeason}`} class="hover:underline">
+											{player.username}
+										</a>
 									{/if}
 								{/each}
 							</td>
@@ -116,7 +124,9 @@
 							<td class='text-center'>
 								{#each room.players as player}
 									{#if player.team === 1}
-										<p>{player.username}</p>
+										<a href={`/duelists/${player.userId}/${room.banList.name}?username=${player.username}&season=${defaultSeason}`} class="hover:underline">
+											{player.username}
+										</a>
 									{/if}
 								{/each}
 							</td>
