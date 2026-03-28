@@ -1,5 +1,5 @@
-/// <reference types="vitest" />
 // @vitest-environment node
+/// <reference types="vitest" />
 import { describe, it, expect } from 'vitest';
 import { experimental_AstroContainer } from 'astro/container';
 // @ts-ignore Astro component import

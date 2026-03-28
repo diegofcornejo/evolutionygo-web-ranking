@@ -17,12 +17,6 @@ import partytown from '@astrojs/partytown';
 
 import tailwindcss from '@tailwindcss/vite';
 
-import maintenance from 'astro-maintenance';
-
-import { loadEnv } from "vite";
-
-const { MAINTENANCE_ENABLED } = loadEnv(process.env.NODE_ENV || "", process.cwd(), "");
-
 // Pages to exclude from sitemap (private/auth pages)
 const EXCLUDED_PAGES = new Set([
 	'https://evolutionygo.com/login/',
@@ -48,17 +42,6 @@ export default defineConfig({
 		}),
 		svelte(),
 		partytown(),
-		maintenance({
-			enabled: MAINTENANCE_ENABLED === 'true',
-			template: 'simple',
-			title: 'Under Maintenance',
-			description: 'We are currently performing maintenance on the site. Please check back later.',
-			logo: 'logo.svg',
-			socials: {
-				discord: 'https://discord.com/invite/bgjddgWkWk',
-				github: 'https://github.com/evolutionygo'
-			}
-		})
 	],
 	vite: {
 		resolve: {
@@ -66,7 +49,7 @@ export default defineConfig({
 				'@fontsource-variable/plus-jakarta-sans': '@fontsource-variable/plus-jakarta-sans'
 			}
 		},
-		plugins: [tailwindcss()]
+		plugins: [/** @type {any} */ (tailwindcss())],
 	},
 	site: 'https://evolutionygo.com',
 	output: 'server',
