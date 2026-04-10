@@ -23,9 +23,6 @@ declare module '*.css' {}
 
 declare module '@fontsource-variable/*' {}
 
-declare module 'swiper/css' {}
-declare module 'swiper/css/*' {}
-
 declare module '@stores/sessionStore' {
 	import type { Atom } from 'nanostores';
 	import type { Session } from '@types';

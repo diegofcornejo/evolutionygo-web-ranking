@@ -22,6 +22,7 @@
         "astro": "^6.1.1",
         "astro-icon": "1.1.5",
         "astro-maintenance": "2.0.0",
+        "astro-swiper": "^2.5.1",
         "chart.js": "4.5.1",
         "daisyui": "5.5.19",
         "nanostores": "1.2.0",
@@ -31,7 +32,6 @@
         "sonner": "2.0.7",
         "svelte": "5.55.0",
         "svelte-fast-marquee": "1.0.2",
-        "swiper": "12.1.3",
         "tailwindcss": "4.2.2",
       },
       "devDependencies": {
@@ -660,6 +660,8 @@
     "astro-icon": ["astro-icon@1.1.5", "", { "dependencies": { "@iconify/tools": "^4.0.5", "@iconify/types": "^2.0.0", "@iconify/utils": "^2.1.30" } }, "sha512-CJYS5nWOw9jz4RpGWmzNQY7D0y2ZZacH7atL2K9DeJXJVaz7/5WrxeyIxO8KASk1jCM96Q4LjRx/F3R+InjJrw=="],
 
     "astro-maintenance": ["astro-maintenance@2.0.0", "", { "dependencies": { "@astrojs/node": "^9.2.2", "cookie": "^1.0.2", "handlebars": "^4.7.8" }, "peerDependencies": { "astro": "^5.0.0" } }, "sha512-fQoeRMLjmEjJMWChFbKOlLJbfKqdt47/L1BYLMv69ehlcaUs1KUkUSfQs2ckKZepDdgP730+IxdFl4Qqah3MSQ=="],
+
+    "astro-swiper": ["astro-swiper@2.5.1", "", { "dependencies": { "swiper": "^12.1.3" } }, "sha512-XaWv5Ykkuyhv7lv+e06GnzmjkBnn2A20KlNuPePr9BI/xIpLJB8mtFi1lmrmK3QpGyIOGYa8BPcksP3JrmvTZA=="],
 
     "async-sema": ["async-sema@3.1.1", "", {}, "sha512-tLRNUXati5MFePdAk8dw7Qt7DpxPB60ofAgn8WRhW6a2rcimZnYBP9oxHiv0OHy+Wz7kPMG+t4LGdt31+4EmGg=="],
 

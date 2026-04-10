@@ -1,0 +1,67 @@
+---
+import { Swiper, SwiperWrapper, SwiperSlide } from 'astro-swiper';
+import Banner from '@components/Banner.tsx';
+import type { News } from '@types';
+
+const news: News[] = [
+	{
+		id: 4,
+		image: '/banners/banner4.webp',
+		title: 'Torneo Continental TCG BPRO TCG - GR 2026',
+		description: 'Country Cuba "A" is the new champion: Meliodas (líder), Just Hansel, YanxAsh, Eislier, LD, Leynier, Plácido, Legarde, Ray_V, Guevara'
+	},
+	{
+		id: 5,
+		image: '/banners/banner5.webp',
+		title: 'WAR LATAM Diciembre 2025 a Marzo 2026',
+		description: 'Team DragonSlayers is the new champion: Ricardostar07, Akeno, Akane, JesusVE, Shinobu, Killer BR, El Chema'
+	},
+	{
+		id: 1,
+		image: '/banners/banner1.webp',
+		title: 'Season 6 is here!',
+		description: 'Evolution version 2.11.0 is now available!'
+	},
+	{
+		id: 2,
+		image: '/banners/banner2.webp',
+		title: 'TCG Champions',
+		description: 'TEAM HABANA is the new champion!'
+	},
+	{
+		id: 3,
+		image: '/banners/banner3.webp',
+		title: 'Edison Champions',
+		description: 'TEAM AyD Heaven is the new champion!'
+	},
+];
+
+---
+
+<div class='mb-8 mx-4'>
+	<Swiper options={{
+			slidesPerView:1,
+			autoplay: {
+				delay: 5000,
+				disableOnInteraction: true,
+			},
+			pagination: {
+				clickable: true,
+			}
+		}}>
+			<SwiperWrapper>
+				{news.map((newsItem) => (
+					<SwiperSlide>
+						<Banner
+							id={newsItem.id}
+							image={newsItem.image}
+							title={newsItem.title}
+							description={newsItem.description}
+							buttonLink={newsItem.buttonLink}
+							buttonText={newsItem.buttonText}
+						/>
+					</SwiperSlide>
+				))}
+			</SwiperWrapper>
+	</Swiper>
+</div>
