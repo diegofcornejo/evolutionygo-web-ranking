@@ -1,6 +1,6 @@
 ---
 import Layout from '@layouts/Layout.astro';
-import News from '@sections/News';
+import News from '@sections/News.astro';
 import Live from '@sections/Live.svelte';
 import Ranking from '@sections/Ranking';
 import Features from '@sections/Features.astro';
@@ -35,8 +35,8 @@ const keywords = [
 ];
 ---
 
-<Layout 
-	title={title} 
+<Layout
+	title={title}
 	description={description}
 	keywords={keywords}
 	image="/banners/banner1.webp"
@@ -47,10 +47,10 @@ const keywords = [
 			class='text-4xl sm:text-5xl font-bold leading-none text-center mb-[1em] max-w-sm md:max-w-full pt-[1em]'
 		>
 			<!-- <p class='flex justify-center'><Eyes client:only='react' /></p> -->
-			<span class='text-gradient'> {title} </span> 
+			<span class='text-gradient'> {title} </span>
 		</h1>
 		<WrappedSpotlight />
-		<News client:only='react' />
+		<News />
 		<RoomsWebSocketListener client:only='react' />
 		<Live client:only='svelte' />
 		<DuelistOfTheWeek />
