@@ -302,7 +302,7 @@
           },
           title: {
             display: true,
-            text: `Daily Duels by Banlist - Season ${season} (Last 90 Days)`,
+            text: `Daily Duels by Banlist - Season ${season}`,
             color: '#fff',
             font: { size: 16, weight: 'bold' }
           },
