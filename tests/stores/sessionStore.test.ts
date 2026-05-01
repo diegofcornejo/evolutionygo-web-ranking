@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { getSession, updateSession, updateSessionProperty } from '@stores/sessionStore';
+import { getSession, updateSession } from '@stores/sessionStore';
 
 vi.mock('@nanostores/persistent', () => {
   const store = {
@@ -22,11 +22,5 @@ describe('sessionStore', () => {
   it('returns parsed session data', () => {
     updateSession({ isLoggedIn: true, token: 'abc', user: { id: '1', username: 'Ace' } });
     expect(getSession()).toEqual({ isLoggedIn: true, token: 'abc', user: { id: '1', username: 'Ace' } });
-  });
-
-  it('updates a session property', () => {
-    updateSession({ isLoggedIn: false, token: '', user: { id: '1', username: 'Ace' } });
-    updateSessionProperty('token', 'token-123');
-    expect(getSession().token).toBe('token-123');
   });
 });

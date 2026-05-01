@@ -33,7 +33,6 @@ declare module '@stores/sessionStore' {
 	export const session: Atom<string>;
 	export const getSession: () => Session;
 	export const updateSession: (sessionData: Session) => void;
-	export const updateSessionProperty: <K extends keyof Session>(property: K, value: Session[K]) => void;
 	export const currentNavPath: Atom<string>;
 	export const setNavPath: (path: string) => void;
 }

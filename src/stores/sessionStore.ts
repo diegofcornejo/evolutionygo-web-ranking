@@ -15,16 +15,10 @@ const updateSession = (sessionData: Session) => {
 	session.set(JSON.stringify(sessionData));
 };
 
-const updateSessionProperty = <K extends keyof Session>(property: K, value: Session[K]) => {
-	const sessionData = getSession();
-	sessionData[property] = value;
-	updateSession(sessionData);
-};
-
 const currentNavPath = atom<string>('');
 
 const setNavPath = (path: string) => {
 	currentNavPath.set(path);
 };
 
-export { session, getSession, updateSession, updateSessionProperty, currentNavPath, setNavPath };
+export { session, getSession, updateSession, currentNavPath, setNavPath };

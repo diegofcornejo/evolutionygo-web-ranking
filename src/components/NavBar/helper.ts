@@ -71,4 +71,4 @@ const setTheme = () => {
 	document.getElementById('button-navbar-theme').addEventListener('change', toggleTheme);
 }
 
-export { update, updateUser, setTheme, handleLogout, logout, handleOpenSettings, openSettings };
+export { update, updateUser, setTheme, handleLogout, logout, handleOpenSettings };

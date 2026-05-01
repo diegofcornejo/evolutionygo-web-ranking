@@ -1,12 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { 
-  logout, 
-  handleLogout, 
-  openSettings, 
-  handleOpenSettings, 
-  update, 
-  updateUser, 
-  setTheme 
+import {
+  logout,
+  handleLogout,
+  handleOpenSettings,
+  update,
+  updateUser,
+  setTheme
 } from '@components/NavBar/helper';
 import { getSession, updateSession } from '@stores/sessionStore';
 import { theme } from '@stores/themeStore';
@@ -87,18 +86,6 @@ describe('NavBar Helper Functions', () => {
     });
   });
 
-  describe('openSettings', () => {
-    it('calls showModal on settings dialog', () => {
-      const mockDialog = { showModal: vi.fn() };
-      vi.spyOn(document, 'getElementById').mockReturnValue(mockDialog as any);
-
-      openSettings();
-
-      expect(document.getElementById).toHaveBeenCalledWith('dialog-settings');
-      expect(mockDialog.showModal).toHaveBeenCalled();
-    });
-  });
-
   describe('handleOpenSettings', () => {
     it('adds click event listener to settings button', () => {
       const mockButton = { addEventListener: vi.fn() };
@@ -107,7 +94,7 @@ describe('NavBar Helper Functions', () => {
       handleOpenSettings();
 
       expect(document.getElementById).toHaveBeenCalledWith('button-navbar-settings');
-      expect(mockButton.addEventListener).toHaveBeenCalledWith('click', openSettings);
+      expect(mockButton.addEventListener).toHaveBeenCalledWith('click', expect.any(Function));
     });
   });
 
