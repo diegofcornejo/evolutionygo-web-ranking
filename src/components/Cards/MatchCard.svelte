@@ -103,12 +103,10 @@
 							<td class='text-center'>{room.bestOf}</td>
 							<td>{room.banList.name}</td>
 							<td class='text-center'>
-								{#each room.players as player}
-									{#if player.team === 0}
-										<a href={`/duelists/${player.userId}/${room.banList.name}?username=${player.username}&season=${defaultSeason}`} class="hover:underline">
-											{player.username}
-										</a>
-									{/if}
+								{#each room.players.filter((player) => player.team === 0) as player, index}
+									<a href={`/duelists/${player.userId}/${room.banList.name}?username=${player.username}&season=${defaultSeason}`} class="hover:underline">
+										{player.username}
+									</a>{index < room.players.filter((player) => player.team === 0).length - 1 ? ', ' : ''}
 								{/each}
 							</td>
 							<td class='text-center text-lg'>
@@ -122,12 +120,10 @@
 								{room.players.find((p) => p.team === 1)?.lps}
 							</td>
 							<td class='text-center'>
-								{#each room.players as player}
-									{#if player.team === 1}
-										<a href={`/duelists/${player.userId}/${room.banList.name}?username=${player.username}&season=${defaultSeason}`} class="hover:underline">
-											{player.username}
-										</a>
-									{/if}
+								{#each room.players.filter((player) => player.team === 1) as player, index}
+									<a href={`/duelists/${player.userId}/${room.banList.name}?username=${player.username}&season=${defaultSeason}`} class="hover:underline">
+										{player.username}
+									</a>{index < room.players.filter((player) => player.team === 1).length - 1 ? ', ' : ''}
 								{/each}
 							</td>
 							<td class="{isRoomRanked(room) ? 'text-gold' : ''}">{room.notes}</td>
