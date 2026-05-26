@@ -310,9 +310,14 @@
             backgroundColor: 'rgba(17, 24, 39, 0.95)',
             titleColor: '#fff',
             bodyColor: '#9CA3AF',
+            footerColor: '#fff',
             borderColor: 'rgba(255,255,255,0.2)',
             borderWidth: 1,
             padding: 12,
+            bodySpacing: 4,
+            boxPadding: 4,
+            filter: (item) => (item.parsed.y ?? 0) > 0,
+            itemSort: (a, b) => (b.parsed.y ?? 0) - (a.parsed.y ?? 0),
             callbacks: {
               label: (context) => {
                 const value = context.parsed.y ?? 0;
