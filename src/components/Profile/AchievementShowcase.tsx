@@ -9,7 +9,6 @@ interface AchievementShowcaseProps {
 const mockAchievements: Achievement[] = [
 	{
 		id: '1',
-		icon: 'ic:round-emoji-events',
 		name: 'First Victory',
 		labels: ['Beginner', 'Combat'],
 		unlockedAt: new Date('2024-01-15'),
@@ -19,7 +18,6 @@ const mockAchievements: Achievement[] = [
 	},
 	{
 		id: '2',
-		icon: 'ic:round-local-fire-department',
 		name: 'Hot Streak',
 		labels: ['Streak', 'Combat'],
 		unlockedAt: new Date('2024-02-20'),
@@ -29,7 +27,6 @@ const mockAchievements: Achievement[] = [
 	},
 	{
 		id: '3',
-		icon: 'ic:round-star',
 		name: 'Rising Star',
 		labels: ['Ranking', 'Prestige'],
 		unlockedAt: new Date('2024-03-10'),
