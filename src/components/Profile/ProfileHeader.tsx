@@ -1,7 +1,6 @@
 import Rating from '@components/Rating';
 
 interface ProfileHeaderProps {
-	userId: string;
 	username: string;
 	points: number;
 	wins: number;
@@ -117,11 +116,11 @@ export default function ProfileHeader({
 	};
 
 	const getRankBadge = () => {
-		if (normalizedPosition === 1) return { label: 'Champion', color: 'badge-warning', icon: 'ic:round-emoji-events' };
-		if (normalizedPosition === 2) return { label: '2nd Place', color: 'badge-secondary', icon: 'ic:round-star' };
-		if (normalizedPosition === 3) return { label: '3rd Place', color: 'badge-accent', icon: 'ic:round-star-half' };
-		if (normalizedPosition <= 10) return { label: 'Top 10', color: 'badge-primary', icon: 'ic:round-trending-up' };
-		if (normalizedPosition <= 20) return { label: 'Top 20', color: 'badge-info', icon: 'ic:round-leaderboard' };
+		if (normalizedPosition === 1) return { label: 'Champion', color: 'badge-warning' };
+		if (normalizedPosition === 2) return { label: '2nd Place', color: 'badge-secondary' };
+		if (normalizedPosition === 3) return { label: '3rd Place', color: 'badge-accent' };
+		if (normalizedPosition <= 10) return { label: 'Top 10', color: 'badge-primary' };
+		if (normalizedPosition <= 20) return { label: 'Top 20', color: 'badge-info' };
 		return null;
 	};
 
