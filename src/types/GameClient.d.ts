@@ -8,4 +8,6 @@ export type GameClient = {
 	platforms: string[];
 	trackEvent?: string;
 	badge?: string;
+	allowClick?: boolean;
+	spotlight?: boolean;
 }

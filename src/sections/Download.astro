@@ -5,9 +5,9 @@ import type { GameClient } from '@types';
 import CommandTable from '@components/CommandTable';
 
 const title = 'Ready to duel?';
-const subtitle = 'Just download a client';
+const subtitle = "It's simple";
 const description =
-	'Evolution does not have its own client. We recommend downloading the official EDOPro client or any of the other clients listed below.';
+	"Just open EvoDuel right here in your browser. Nothing to download, nothing to install, just jump in and start dueling. And if you're old school, no worries, we are fully compatible: download any of the recommended clients below.";
 
 const clients: GameClient[] = [
 	{
@@ -19,17 +19,18 @@ const clients: GameClient[] = [
 	{
 		name: 'EDOPro',
 		link: 'https://projectignis.github.io/download.html',
-		icon: { name: 'mdi:star', classes: 'text-warning text-xl' },
+		// icon: { name: 'mdi:star', classes: 'text-warning text-xl' },
 		platforms: ['windows', 'apple', 'linux', 'android'],
 		trackEvent: 'download-click-edopro',
 	},
 	{
-		name: 'EvoPro',
-		link: '#section-download',
-		icon: { name: 'mdi:rocket-launch', classes: 'text-primary text-xl' },
+		name: 'EvoDuel',
+		link: 'https://evoduel.com',
+		// icon: { name: 'mdi:rocket-launch', classes: 'text-primary text-xl' },
 		platforms: ['web', 'windows', 'apple', 'linux'],
-		trackEvent: 'download-click-evolution',
+		trackEvent: 'download-click-evoduel',
 		badge: 'Open Beta',
+		spotlight: true,
 	},
 	{
 		name: 'MDPro3',
@@ -236,12 +237,16 @@ const instructions = [
 	<div class='flex flex-col md:flex-row md:flex-wrap gap-8 justify-center py-8'>
 		{
 		clients.map((client) => {
-			const hasBadge = !!client.badge;
+			const isClickBlocked = client.allowClick === false;
+			const hasSpotlight = client.spotlight === true;
 			const baseClasses =
 				'btn btn-neutral btn-lg text-white min-w-[200px] w-full md:w-auto h-auto py-2 rounded-2xl';
-			const clientClasses = hasBadge
+			const clientClasses = isClickBlocked
 				? `${baseClasses} cursor-not-allowed pointer-events-none`
 				: `${baseClasses} hover:bg-secondary`;
+			const innerClasses = hasSpotlight
+				? `${clientClasses} client-spotlight-inner`
+				: clientClasses;
 			const content = (
 				<div class='flex flex-col gap-2 text-center'>
 					<div class='flex flex-row gap-2 items-center justify-center'>
@@ -261,19 +266,23 @@ const instructions = [
 					</div>
 				);
 
-				return hasBadge ? (
-					<div class='client-spotlight w-full md:w-auto' aria-disabled='true'>
-						<div class={`${clientClasses} client-spotlight-inner`}>{content}</div>
-					</div>
+				const clientElement = isClickBlocked ? (
+					<div class={innerClasses} aria-disabled='true'>{content}</div>
 				) : (
 					<a
 						href={client.link}
 						target='_blank'
-						class={clientClasses}
+						class={innerClasses}
 						data-umami-event={client.trackEvent}
 					>
 						{content}
 					</a>
+				);
+
+				return hasSpotlight ? (
+					<div class='client-spotlight w-full md:w-auto'>{clientElement}</div>
+				) : (
+					clientElement
 				);
 			})
 		}

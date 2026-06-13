@@ -15,7 +15,8 @@ describe('NavBar Menu Items', () => {
     expect(menuNames).toContain('Features');
     expect(menuNames).toContain('Downloads');
     expect(menuNames).toContain('Commands');
-    expect(menuNames).toContain('Tournaments');
+    expect(menuNames).toContain('Play');
+    // expect(menuNames).toContain('Tournaments');
     // expect(menuNames).toContain('Developers');
     expect(menuNames).toContain('Stats');
     expect(menuNames).toContain('Status');
@@ -59,13 +60,15 @@ describe('NavBar Menu Items', () => {
     }
   });
 
-  it('has correct structure for disabled items', () => {
-    const tournamentsItem = menuItems.find(item => item.name === 'Tournaments');
-    
-    expect(tournamentsItem).toBeDefined();
-    expect(tournamentsItem?.disabled).toBe(true);
-    expect(tournamentsItem?.comingSoon).toBe(true);
-    expect(tournamentsItem?.trackEvent).toBe('menu-click-tournaments');
+  it('has correct structure for Play item', () => {
+    const playItem = menuItems.find(item => item.name === 'Play');
+
+    expect(playItem).toBeDefined();
+    expect(playItem?.href).toBe('https://evoduel.com');
+    expect(playItem?.target).toBe('_blank');
+    expect(playItem?.badgeLabel).toBe('NEW');
+    expect(playItem?.badgeClass).toBe('text-warning');
+    expect(playItem?.trackEvent).toBe('menu-click-play');
   });
 
   it('has correct structure for submenu items', () => {
