@@ -59,7 +59,7 @@ tests/                # Unit tests (mirrors src/ structure)
 
 ## Path Aliases
 
-`@components/*`, `@sections/*`, `@stores/*`, `@layouts/*`, `@pages/*`, `@types/*` -> `./src/<folder>/*`
+`@components/*`, `@sections/*`, `@stores/*`, `@layouts/*`, `@pages/*`, `@utils/*`, `@types/*` -> `./src/<folder>/*`
 `@types` -> `./src/types/types.d.ts`
 
 ## Code Style Guidelines
