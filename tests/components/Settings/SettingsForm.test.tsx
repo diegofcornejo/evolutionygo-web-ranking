@@ -359,21 +359,22 @@ describe('SettingsForm', () => {
   // ── Game PIN section ──────────────────────────────────────────────────────
 
   // SC-PIN-1: idle state
-  it('SC-PIN-1: idle state shows Generar button, no PIN value visible', () => {
+  it('SC-PIN-1: idle state shows Generate button, no PIN value visible, and shows explanatory paragraph', () => {
     render(<SettingsForm dialog={dialog} />);
 
-    expect(screen.getByRole('button', { name: /generar/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /generate dueling pin/i })).toBeInTheDocument();
     expect(screen.queryByTestId('game-pin-value')).not.toBeInTheDocument();
+    expect(screen.getByText(/dueling pin lets external clients/i)).toBeInTheDocument();
   });
 
   // SC-PIN-2: click triggers fetch
-  it('SC-PIN-2: clicking Generar calls POST /users/game-password with Bearer, no body', async () => {
+  it('SC-PIN-2: clicking Generate PIN calls POST /users/game-password with Bearer, no body', async () => {
     (fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce(
       mockResponse({ ok: true, json: async () => ({ gamePassword: 'XK29' }) }),
     );
     render(<SettingsForm dialog={dialog} />);
 
-    fireEvent.click(screen.getByRole('button', { name: /generar pin/i }));
+    fireEvent.click(screen.getByRole('button', { name: /generate dueling pin/i }));
 
     await waitFor(() => {
       expect(fetch).toHaveBeenCalledWith(
@@ -397,7 +398,7 @@ describe('SettingsForm', () => {
     );
     render(<SettingsForm dialog={dialog} />);
 
-    const genBtn = screen.getByRole('button', { name: /generar pin/i });
+    const genBtn = screen.getByRole('button', { name: /generate dueling pin/i });
     fireEvent.click(genBtn);
 
     await waitFor(() => expect(genBtn).toBeDisabled());
@@ -416,12 +417,13 @@ describe('SettingsForm', () => {
     );
     render(<SettingsForm dialog={dialog} />);
 
-    fireEvent.click(screen.getByRole('button', { name: /generar pin/i }));
+    fireEvent.click(screen.getByRole('button', { name: /generate dueling pin/i }));
 
     await waitFor(() => {
       expect(screen.getByText('XK29')).toBeInTheDocument();
       expect(screen.getByRole('button', { name: /copy|copiar/i })).toBeInTheDocument();
       expect(screen.getByRole('alert')).toBeInTheDocument();
+      expect(screen.getByText(/this pin is shown only once/i)).toBeInTheDocument();
     });
   });
 
@@ -432,7 +434,7 @@ describe('SettingsForm', () => {
     );
     render(<SettingsForm dialog={dialog} />);
 
-    fireEvent.click(screen.getByRole('button', { name: /generar pin/i }));
+    fireEvent.click(screen.getByRole('button', { name: /generate dueling pin/i }));
     await waitFor(() => expect(screen.getByText('XK29')).toBeInTheDocument());
 
     fireEvent.click(screen.getByRole('button', { name: /copy|copiar/i }));
@@ -456,11 +458,11 @@ describe('SettingsForm', () => {
     render(<SettingsForm dialog={dialog} />);
 
     // First generate
-    fireEvent.click(screen.getByRole('button', { name: /generar pin/i }));
+    fireEvent.click(screen.getByRole('button', { name: /generate dueling pin/i }));
     await waitFor(() => expect(screen.getByText('XK29')).toBeInTheDocument());
 
-    // Click Regenerar — old PIN should disappear during generation
-    fireEvent.click(screen.getByRole('button', { name: /regenerar/i }));
+    // Click Regenerate — old PIN should disappear during generation
+    fireEvent.click(screen.getByRole('button', { name: /regenerate/i }));
 
     await waitFor(() => {
       expect(screen.queryByText('XK29')).not.toBeInTheDocument();
@@ -485,12 +487,12 @@ describe('SettingsForm', () => {
     );
     render(<SettingsForm dialog={dialog} />);
 
-    fireEvent.click(screen.getByRole('button', { name: /generar pin/i }));
+    fireEvent.click(screen.getByRole('button', { name: /generate dueling pin/i }));
 
     await waitFor(() => {
       expect(screen.getByRole('alert')).toBeInTheDocument();
       // Generate button should be re-enabled (not in generating state)
-      expect(screen.getByRole('button', { name: /generar pin/i })).not.toBeDisabled();
+      expect(screen.getByRole('button', { name: /generate dueling pin/i })).not.toBeDisabled();
     });
   });
 
@@ -499,7 +501,7 @@ describe('SettingsForm', () => {
     (fetch as ReturnType<typeof vi.fn>).mockRejectedValueOnce(new Error('Network error'));
     render(<SettingsForm dialog={dialog} />);
 
-    fireEvent.click(screen.getByRole('button', { name: /generar pin/i }));
+    fireEvent.click(screen.getByRole('button', { name: /generate dueling pin/i }));
 
     await waitFor(() => {
       expect(screen.getByText('No connection to server')).toBeInTheDocument();

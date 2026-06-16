@@ -114,6 +114,9 @@ export function SignUpForm({ dialog }: Readonly<{ dialog: string }>) {
 				<p className="text-error text-xs">Passwords do not match</p>
 			)}
 			<AuthErrorMessage message={error} />
+			<p className="text-xs text-base-content/60">
+				This password is for your web account. You'll generate a separate dueling PIN from your profile to play on external clients.
+			</p>
 			<div className='flex justify-end gap-2'>
 				<button
 					className="btn btn-primary"

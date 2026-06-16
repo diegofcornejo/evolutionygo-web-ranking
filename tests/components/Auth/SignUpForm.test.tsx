@@ -69,6 +69,12 @@ describe('SignUpForm', () => {
     expect(screen.getByPlaceholderText('Username')).toBeInTheDocument();
   });
 
+  // Credential model note — explains two-credential model to new users
+  it('renders a note explaining the separate dueling PIN credential', () => {
+    render(<SignUpForm dialog={dialog} />);
+    expect(screen.getByText(/separate dueling pin/i)).toBeInTheDocument();
+  });
+
   // SC-REGISTER-1 — form renders password, confirm-password, and PasswordStrengthMeter
   it('renders password and confirm-password fields with PasswordStrengthMeter (SC-REGISTER-1)', () => {
     render(<SignUpForm dialog={dialog} />);

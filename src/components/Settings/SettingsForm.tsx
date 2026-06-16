@@ -224,6 +224,9 @@ export default function SettingsForm({ dialog }: Readonly<{ dialog: string }>) {
 			{/* Section 3: Generate Game PIN */}
 			<div className="mt-12">
 				<h3 className="divider">Generate Game PIN</h3>
+				<p className="text-sm text-base-content/70 mt-6">
+					Your dueling PIN lets external clients (like EDOpro) connect to the Evolution server. Generate one whenever you need it. It is shown only once, and generating a new one replaces the previous PIN.
+				</p>
 				<div className="mt-8 space-y-4">
 					{pinState === 'shown' && gamePin !== null ? (
 						<>
@@ -243,7 +246,7 @@ export default function SettingsForm({ dialog }: Readonly<{ dialog: string }>) {
 								</button>
 							</div>
 							<p role="alert" className="text-warning text-xs">
-								Este PIN se muestra una sola vez. Guardalo antes de cerrar.
+								This PIN is shown only once. Save it before closing.
 							</p>
 						</>
 					) : null}
@@ -259,10 +262,10 @@ export default function SettingsForm({ dialog }: Readonly<{ dialog: string }>) {
 						disabled={pinState === 'generating'}
 					>
 						{pinState === 'generating'
-							? 'Generando...'
+							? 'Generating...'
 							: pinState === 'shown'
-							? 'Regenerar PIN'
-							: 'Generar PIN de duelo'}
+							? 'Regenerate PIN'
+							: 'Generate dueling PIN'}
 					</button>
 				</div>
 			</div>

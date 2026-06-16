@@ -62,6 +62,8 @@ describe('reset-account-password.astro page', () => {
 
     expect(result).toContain('component-url="@components/Auth"');
     expect(result).toContain('ResetAccountPasswordForm');
+    expect(result).toContain('Set your account password');
+    expect(result).toContain('Your game PIN and stats stay the same');
   });
 
   it('shows a missing token message when no token provided', async () => {
