@@ -143,6 +143,27 @@ describe('SignUpForm', () => {
     });
   });
 
+  // SC-REGISTER-5b — success without a gamePassword falls back to navigating to '/'
+  it('navigates to "/" when the API omits gamePassword on success (SC-REGISTER-5b)', async () => {
+    (fetch as any).mockResolvedValueOnce(mockResponse({
+      ok: true,
+      json: async () => ({ id: 2, username: 'u2', email: 'e@e.com', token: 'regTok' }),
+    }));
+    render(<SignUpForm dialog={dialog} />);
+    fireEvent.change(screen.getByPlaceholderText('Email'), { target: { value: 'e@e.com' } });
+    fireEvent.change(screen.getByPlaceholderText('Username'), { target: { value: 'u2' } });
+    fireEvent.change(screen.getByPlaceholderText('Password'), { target: { value: VALID_PASSWORD } });
+    fireEvent.change(screen.getByPlaceholderText('Confirm password'), { target: { value: VALID_PASSWORD } });
+    fireEvent.click(screen.getByRole('button', { name: /register/i }));
+    await waitFor(() => {
+      expect(updateSession).toHaveBeenCalledWith(
+        expect.objectContaining({ token: 'regTok', mustUpgrade: false })
+      );
+      expect(window.location.href).toBe('/');
+    });
+    expect(screen.queryByTestId('game-pin-value')).not.toBeInTheDocument();
+  });
+
   // SC-REGISTER-8 — clicking Continue on PIN screen navigates to '/'
   it('navigates to "/" when Continue is clicked on the PIN screen (SC-REGISTER-8)', async () => {
     (fetch as any).mockResolvedValueOnce(mockResponse({

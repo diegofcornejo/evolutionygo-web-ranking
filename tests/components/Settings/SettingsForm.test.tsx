@@ -306,6 +306,54 @@ describe('SettingsForm', () => {
     });
   });
 
+  // SC-SETTINGS-6b: sets a flash so /login can confirm the change after the redirect
+  it('SC-SETTINGS-6b: stores a password-changed flash on success', async () => {
+    sessionStorage.clear();
+    (fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce(mockResponse({ ok: true }));
+    render(<SettingsForm dialog={dialog} />);
+
+    fireEvent.change(screen.getByPlaceholderText('Current Password'), {
+      target: { value: 'oldPass1' },
+    });
+    fireEvent.change(screen.getByPlaceholderText('New Password'), {
+      target: { value: VALID_PASSWORD },
+    });
+    fireEvent.change(screen.getByPlaceholderText('Confirm New Password'), {
+      target: { value: VALID_PASSWORD },
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /save password/i }));
+
+    await waitFor(() => {
+      expect(sessionStorage.getItem('flash')).toBe('password-changed');
+    });
+  });
+
+  // SC-SETTINGS-RESET: closing the dialog must not leave the one-time PIN on screen
+  it('SC-SETTINGS-RESET: clears the generated PIN when the dialog closes', async () => {
+    const realDialog = document.createElement('dialog');
+    realDialog.id = dialog;
+    document.body.appendChild(realDialog);
+    (document.getElementById as ReturnType<typeof vi.fn>).mockImplementation(
+      (id: string) => (id === dialog ? realDialog : null),
+    );
+
+    (fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce(
+      mockResponse({ ok: true, json: async () => ({ gamePassword: 'XK29' }) }),
+    );
+    render(<SettingsForm dialog={dialog} />);
+
+    fireEvent.click(screen.getByRole('button', { name: /generate dueling pin/i }));
+    await waitFor(() => expect(screen.getByTestId('game-pin-value')).toBeInTheDocument());
+
+    await act(async () => {
+      realDialog.dispatchEvent(new Event('close'));
+    });
+
+    expect(screen.queryByTestId('game-pin-value')).not.toBeInTheDocument();
+    realDialog.remove();
+  });
+
   // SC-SETTINGS-7: 401 wrong current password
   it('SC-SETTINGS-7: shows error on 401 without calling logout', async () => {
     (fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce(

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ReactSVG } from 'react-svg';
 import { toast } from 'sonner';
 import { logout } from '@components/NavBar/helper';
@@ -37,6 +37,27 @@ export default function SettingsForm({ dialog }: Readonly<{ dialog: string }>) {
 			modal.close();
 		}
 	};
+
+	// Reset all state whenever the dialog closes (✕, backdrop, ESC or programmatic).
+	// Prevents the one-time game PIN and entered passwords from lingering in memory
+	// and being shown again on the next open without a reload.
+	useEffect(() => {
+		const modal = document.getElementById(dialog);
+		if (!modal?.addEventListener) return;
+		const handleClose = () => {
+			setUsername('');
+			setUsernameError(null);
+			setCurrentPassword('');
+			setNewPassword('');
+			setConfirmNewPassword('');
+			setPasswordError(null);
+			setPinState('idle');
+			setGamePin(null);
+			setPinError(null);
+		};
+		modal.addEventListener('close', handleClose);
+		return () => modal.removeEventListener('close', handleClose);
+	}, [dialog]);
 
 	// ── Section 1: Change Username ────────────────────────────────────────────
 	const handleSaveUsername = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -93,6 +114,7 @@ export default function SettingsForm({ dialog }: Readonly<{ dialog: string }>) {
 			const data = await response.json().catch(() => ({}));
 
 			if (response.ok) {
+				sessionStorage.setItem('flash', 'password-changed');
 				logout();
 				window.location.href = '/login';
 			} else {
@@ -134,7 +156,12 @@ export default function SettingsForm({ dialog }: Readonly<{ dialog: string }>) {
 
 	const handleCopyPin = async () => {
 		if (gamePin === null) return;
-		await navigator.clipboard.writeText(gamePin);
+		try {
+			await navigator.clipboard.writeText(gamePin);
+			toast.success('PIN copied', { position: 'bottom-center' });
+		} catch {
+			toast.error('Could not copy — copy it manually', { position: 'bottom-center' });
+		}
 	};
 
 	return (

@@ -51,11 +51,18 @@ export function SignUpForm({ dialog }: Readonly<{ dialog: string }>) {
 			if (response.ok) {
 				updateSession({
 					token: data.token,
-					user: { id: data.id, username: data.username },
+					user: { id: String(data.id), username: data.username },
 					isLoggedIn: true,
 					mustUpgrade: false,
 				});
-				setGamePassword(data.gamePassword ?? null);
+
+				// Show the one-time dueling PIN if the API returned it; otherwise the
+				// account is still created and logged in, so go straight to the app.
+				if (data.gamePassword) {
+					setGamePassword(data.gamePassword);
+				} else {
+					window.location.href = '/';
+				}
 				return;
 			}
 
@@ -68,6 +75,15 @@ export function SignUpForm({ dialog }: Readonly<{ dialog: string }>) {
 		} catch (err) {
 			console.error('Error in registration:', err);
 			setError('No connection to server');
+		}
+	};
+
+	const handleCopyPin = async () => {
+		if (gamePassword === null) return;
+		try {
+			await navigator.clipboard.writeText(gamePassword);
+		} catch {
+			// clipboard unavailable (insecure context / old browser) — PIN stays visible to copy manually
 		}
 	};
 
@@ -85,7 +101,7 @@ export function SignUpForm({ dialog }: Readonly<{ dialog: string }>) {
 					<button
 						type="button"
 						className="btn btn-sm btn-outline"
-						onClick={() => void navigator.clipboard.writeText(gamePassword)}
+						onClick={handleCopyPin}
 					>
 						Copy
 					</button>
