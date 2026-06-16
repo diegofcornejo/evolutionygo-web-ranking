@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { ReactSVG } from 'react-svg';
-import { toast } from 'sonner';
 import type { Session } from '@types';
 import { updateSession } from '@stores/sessionStore';
 import { AuthEmailField, AuthErrorMessage } from './FormFields';
@@ -10,12 +9,14 @@ export function SignInForm({ dialog }: Readonly<{ dialog: string }>) {
 	const [password, setPassword] = useState('');
 	const [error, setError] = useState<string | null>(null);
 	const [forgotPassword, setForgotPassword] = useState(false);
+	const [resetSent, setResetSent] = useState(false);
 	const isLoginMode = !forgotPassword;
 
 	const cleanForm = () => {
 		setEmail('');
 		setPassword('');
 		setError(null);
+		setResetSent(false);
 	}
 
 	const closeModal = () => {
@@ -69,10 +70,12 @@ export function SignInForm({ dialog }: Readonly<{ dialog: string }>) {
 						window.location.href = '/upgrade-password';
 						return;
 					}
-				} else {
-					toast.success('Password reset email sent, please check your inbox');
+
+					closeModal();
+					return;
 				}
-				closeModal();
+
+				setResetSent(true);
 				return;
 			}
 
@@ -82,6 +85,27 @@ export function SignInForm({ dialog }: Readonly<{ dialog: string }>) {
 			setError('No connection to server');
 		}
 	};
+
+	if (resetSent) {
+		return (
+			<div className='space-y-4 text-center'>
+				<div className='flex justify-center'>
+					<div className='w-12 h-12 rounded-full bg-success/20 flex items-center justify-center text-success text-2xl'>
+						✓
+					</div>
+				</div>
+				<h3 className='text-lg font-semibold'>Check your inbox</h3>
+				<p className='text-sm'>
+					We sent a password reset link to <strong>{email}</strong>. It expires in 1 hour. Don't forget to check your spam folder.
+				</p>
+				<div className='flex justify-end'>
+					<button className='btn btn-primary' type='button' onClick={closeModal}>
+						Done
+					</button>
+				</div>
+			</div>
+		);
+	}
 
 	return (
 		<form className='space-y-4' onSubmit={handleSubmit}>

@@ -1,11 +1,9 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, fireEvent, screen, waitFor } from '@testing-library/react';
 import { SignInForm } from '@components/Auth/SignInForm';
-import { toast } from 'sonner';
 import { updateSession } from '@stores/sessionStore';
 
 vi.mock('react-svg', () => ({ ReactSVG: () => <span data-testid="svg" /> }));
-vi.mock('sonner', () => ({ toast: { success: vi.fn() } }));
 vi.mock('@stores/sessionStore', () => ({ updateSession: vi.fn() }));
 
 function mockResponse({ ok = true, statusText = '', json = async () => ({}) }) {
@@ -81,13 +79,34 @@ describe('SignInForm', () => {
     await waitFor(() => expect(updateSession).toHaveBeenCalled());
   });
 
-  it('shows toast on forgot password success', async () => {
+  it('shows confirmation panel on forgot password success', async () => {
+    const closeSpy = vi.fn();
+    const getElementSpy = vi.spyOn(document, 'getElementById').mockReturnValue({ close: closeSpy } as any);
     (fetch as any).mockResolvedValueOnce(mockResponse({ ok: true, json: async () => ({}) }));
     render(<SignInForm dialog={dialog} />);
     fireEvent.click(screen.getByText('Forgot password?'));
     fireEvent.change(screen.getByPlaceholderText('Email'), { target: { value: 'a@b.com' } });
     fireEvent.click(screen.getByText('Reset Password'));
-    await waitFor(() => expect(toast.success).toHaveBeenCalled());
+    await waitFor(() => expect(screen.getByText('Check your inbox')).toBeInTheDocument());
+    expect(screen.getByText(/reset link/i)).toBeInTheDocument();
+    expect(screen.getByText(/a@b\.com/)).toBeInTheDocument();
+    expect(updateSession).not.toHaveBeenCalled();
+    expect(closeSpy).not.toHaveBeenCalled();
+    getElementSpy.mockRestore();
+  });
+
+  it('closes modal when Done is clicked after forgot password success', async () => {
+    const closeSpy = vi.fn();
+    const getElementSpy = vi.spyOn(document, 'getElementById').mockReturnValue({ close: closeSpy } as any);
+    (fetch as any).mockResolvedValueOnce(mockResponse({ ok: true, json: async () => ({}) }));
+    render(<SignInForm dialog={dialog} />);
+    fireEvent.click(screen.getByText('Forgot password?'));
+    fireEvent.change(screen.getByPlaceholderText('Email'), { target: { value: 'a@b.com' } });
+    fireEvent.click(screen.getByText('Reset Password'));
+    await waitFor(() => expect(screen.getByText('Check your inbox')).toBeInTheDocument());
+    fireEvent.click(screen.getByText('Done'));
+    expect(closeSpy).toHaveBeenCalled();
+    getElementSpy.mockRestore();
   });
 
   it('shows connection error on network failure', async () => {
