@@ -138,35 +138,9 @@ export default function SettingsForm({ dialog }: Readonly<{ dialog: string }>) {
 	};
 
 	return (
-		<div>
-			{/* Section 1: Change Username */}
-			<div>
-				<h3 className="divider">Change Username</h3>
-				<form className="space-y-2 mt-8" onSubmit={handleSaveUsername}>
-					<label className="input input-bordered flex items-center gap-2 w-full">
-						<ReactSVG src="/icons/username.svg" className="w-4 h-4 opacity-70" />
-						<input
-							type="text"
-							className="grow"
-							placeholder="New Username"
-							value={username}
-							onChange={(e) => setUsername(e.target.value)}
-							required
-						/>
-					</label>
-					<p
-						className={`text-error text-xs h-4 transition-opacity duration-300 ${hasUsernameError ? 'opacity-100' : 'opacity-0'}`}
-					>
-						{usernameError || ' '}
-					</p>
-					<button className="btn btn-primary btn-sm" type="submit">
-						Save
-					</button>
-				</form>
-			</div>
-
-			{/* Section 2: Change Account Password */}
-			<div className="mt-12">
+		<div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-8">
+			{/* Left column (desktop): Change Account Password */}
+			<div className="order-2 md:order-1">
 				<h3 className="divider">Change Account Password</h3>
 				<form className="space-y-2 mt-8" onSubmit={handleSavePassword}>
 					<label className="input input-bordered flex items-center gap-2 w-full">
@@ -221,52 +195,81 @@ export default function SettingsForm({ dialog }: Readonly<{ dialog: string }>) {
 				</form>
 			</div>
 
-			{/* Section 3: Generate Game PIN */}
-			<div className="mt-12">
-				<h3 className="divider">Generate Game PIN</h3>
-				<p className="text-sm text-base-content/70 mt-6">
-					Your dueling PIN lets external clients (like EDOpro) connect to the Evolution server. Generate one whenever you need it. It is shown only once, and generating a new one replaces the previous PIN.
-				</p>
-				<div className="mt-8 space-y-4">
-					{pinState === 'shown' && gamePin !== null ? (
-						<>
-							<div className="flex items-center gap-3">
-								<code
-									data-testid="game-pin-value"
-									className="font-mono text-2xl font-bold"
-								>
-									{gamePin}
-								</code>
-								<button
-									type="button"
-									className="btn btn-sm btn-outline"
-									onClick={handleCopyPin}
-								>
-									Copy
-								</button>
-							</div>
-							<p role="alert" className="text-warning text-xs">
-								This PIN is shown only once. Save it before closing.
-							</p>
-						</>
-					) : null}
-					{pinState === 'error' ? (
-						<p role="alert" className="text-error text-xs">
-							{pinError}
+			{/* Right column (desktop): Change Username + Generate Game PIN */}
+			<div className="order-1 md:order-2 space-y-10">
+				{/* Section: Change Username */}
+				<div>
+					<h3 className="divider">Change Username</h3>
+					<form className="space-y-2 mt-8" onSubmit={handleSaveUsername}>
+						<label className="input input-bordered flex items-center gap-2 w-full">
+							<ReactSVG src="/icons/username.svg" className="w-4 h-4 opacity-70" />
+							<input
+								type="text"
+								className="grow"
+								placeholder="New Username"
+								value={username}
+								onChange={(e) => setUsername(e.target.value)}
+								required
+							/>
+						</label>
+						<p
+							className={`text-error text-xs h-4 transition-opacity duration-300 ${hasUsernameError ? 'opacity-100' : 'opacity-0'}`}
+						>
+							{usernameError || ' '}
 						</p>
-					) : null}
-					<button
-						type="button"
-						className="btn btn-primary btn-sm"
-						onClick={handleGeneratePin}
-						disabled={pinState === 'generating'}
-					>
-						{pinState === 'generating'
-							? 'Generating...'
-							: pinState === 'shown'
-							? 'Regenerate PIN'
-							: 'Generate dueling PIN'}
-					</button>
+						<button className="btn btn-primary btn-sm" type="submit">
+							Save
+						</button>
+					</form>
+				</div>
+
+				{/* Section: Generate Game PIN */}
+				<div>
+					<h3 className="divider">Generate Game PIN</h3>
+					<p className="text-sm text-base-content/70 mt-6">
+						Your dueling PIN lets external clients (like EDOpro) connect to the Evolution server. Generate one whenever you need it. It is shown only once, and generating a new one replaces the previous PIN.
+					</p>
+					<div className="mt-8 space-y-4">
+						{pinState === 'shown' && gamePin !== null ? (
+							<>
+								<div className="flex items-center gap-3">
+									<code
+										data-testid="game-pin-value"
+										className="font-mono text-2xl font-bold"
+									>
+										{gamePin}
+									</code>
+									<button
+										type="button"
+										className="btn btn-sm btn-outline"
+										onClick={handleCopyPin}
+									>
+										Copy
+									</button>
+								</div>
+								<p role="alert" className="text-warning text-xs">
+									This PIN is shown only once. Save it before closing.
+								</p>
+							</>
+						) : null}
+						{pinState === 'error' ? (
+							<p role="alert" className="text-error text-xs">
+								{pinError}
+							</p>
+						) : null}
+						<button
+							type="button"
+							className="btn btn-primary btn-sm"
+							onClick={handleGeneratePin}
+							disabled={pinState === 'generating'}
+						>
+							{pinState === 'generating'
+								? 'Generating...'
+								: pinState === 'shown'
+								? 'Regenerate PIN'
+								: 'Generate dueling PIN'}
+						</button>
+					</div>
 				</div>
 			</div>
 		</div>
