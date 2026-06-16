@@ -23,6 +23,7 @@ const EXCLUDED_PAGES = new Set([
 	'https://evolutionygo.com/register/',
 	'https://evolutionygo.com/forgot-password/',
 	'https://evolutionygo.com/reset-password/',
+	'https://evolutionygo.com/upgrade-password/',
 	'https://evolutionygo.com/404/',
 ]);
 

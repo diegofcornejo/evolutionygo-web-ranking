@@ -55,6 +55,7 @@ export function SignInForm({ dialog }: Readonly<{ dialog: string }>) {
 						isLoggedIn: true,
 						token: data.token,
 						user: { id: data.id, username: data.username },
+						mustUpgrade: data.mustUpgrade,
 					};
 					updateSession(sessionData);
 
@@ -62,6 +63,11 @@ export function SignInForm({ dialog }: Readonly<{ dialog: string }>) {
 					if (loginSource === 'home-cta') {
 						(window as Window & { umami?: { track: (eventName: string) => void } }).umami?.track('wrapped-cta-login-success');
 						sessionStorage.removeItem('wrapped-login-source');
+					}
+
+					if (data.mustUpgrade) {
+						window.location.href = '/upgrade-password';
+						return;
 					}
 				} else {
 					toast.success('Password reset email sent, please check your inbox');

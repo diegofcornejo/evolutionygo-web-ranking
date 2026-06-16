@@ -110,4 +110,44 @@ describe('SignInForm', () => {
     expect(closeSpy).toHaveBeenCalled();
     getElementSpy.mockRestore();
   });
+
+  // SC-LOGIN-1 — mustUpgrade:true → updateSession(mustUpgrade:true) + redirect to /upgrade-password
+  it('redirects to /upgrade-password and stores mustUpgrade:true when API returns mustUpgrade=true (SC-LOGIN-1)', async () => {
+    Object.defineProperty(window, 'location', {
+      value: { href: '', replace: vi.fn() },
+      writable: true,
+      configurable: true,
+    });
+    (fetch as any).mockResolvedValueOnce(
+      mockResponse({ ok: true, json: async () => ({ token: 'tok', id: 1, username: 'u', mustUpgrade: true }) })
+    );
+    render(<SignInForm dialog={dialog} />);
+    fireEvent.change(screen.getByPlaceholderText('Email'), { target: { value: 'a@b.com' } });
+    fireEvent.change(screen.getByPlaceholderText('Password'), { target: { value: 'pass' } });
+    fireEvent.click(screen.getByText('Login'));
+    await waitFor(() => {
+      expect(updateSession).toHaveBeenCalledWith(expect.objectContaining({ mustUpgrade: true }));
+      expect(window.location.href).toBe('/upgrade-password');
+    });
+  });
+
+  // SC-LOGIN-2 — mustUpgrade:false → updateSession(mustUpgrade:false), no upgrade-password redirect
+  it('does not redirect to /upgrade-password when mustUpgrade is false (SC-LOGIN-2)', async () => {
+    Object.defineProperty(window, 'location', {
+      value: { href: '', replace: vi.fn() },
+      writable: true,
+      configurable: true,
+    });
+    (fetch as any).mockResolvedValueOnce(
+      mockResponse({ ok: true, json: async () => ({ token: 'tok', id: 1, username: 'u', mustUpgrade: false }) })
+    );
+    render(<SignInForm dialog={dialog} />);
+    fireEvent.change(screen.getByPlaceholderText('Email'), { target: { value: 'a@b.com' } });
+    fireEvent.change(screen.getByPlaceholderText('Password'), { target: { value: 'pass' } });
+    fireEvent.click(screen.getByText('Login'));
+    await waitFor(() => {
+      expect(updateSession).toHaveBeenCalledWith(expect.objectContaining({ mustUpgrade: false }));
+    });
+    expect(window.location.href).not.toBe('/upgrade-password');
+  });
 });
