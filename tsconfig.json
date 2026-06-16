@@ -10,7 +10,8 @@
       "@sections/*": ["./src/sections/*"],
       "@stores/*": ["./src/stores/*"],
       "@layouts/*": ["./src/layouts/*"],
-      "@pages/*": ["./src/pages/*"]
+      "@pages/*": ["./src/pages/*"],
+      "@utils/*": ["./src/utils/*"]
     }
   },
   "exclude": ["node_modules", "dist", "coverage", "tests"]

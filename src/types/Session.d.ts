@@ -4,4 +4,5 @@ export type Session = {
 	token: string;
 	isLoggedIn: boolean;
 	user: User;
+	mustUpgrade?: boolean;
 };

@@ -47,3 +47,7 @@ coverage/
 .agents/
 
 .kilocode/
+
+# agent teams / SDD registry
+.atl/
+.codegraph/

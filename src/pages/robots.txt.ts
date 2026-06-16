@@ -11,7 +11,8 @@ Allow: /
 Disallow: /login
 Disallow: /register
 Disallow: /forgot-password
-Disallow: /reset-password
+Disallow: /reset-account-password
+Disallow: /upgrade-password
 
 # Block API endpoints if any are exposed
 Disallow: /api/
@@ -25,7 +26,8 @@ Allow: /
 Disallow: /login
 Disallow: /register
 Disallow: /forgot-password
-Disallow: /reset-password
+Disallow: /reset-account-password
+Disallow: /upgrade-password
 
 # Bing specific
 User-agent: Bingbot
@@ -33,7 +35,8 @@ Allow: /
 Disallow: /login
 Disallow: /register
 Disallow: /forgot-password
-Disallow: /reset-password
+Disallow: /reset-account-password
+Disallow: /upgrade-password
 Crawl-delay: 1
 
 # Google Images

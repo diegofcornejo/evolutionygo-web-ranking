@@ -21,6 +21,13 @@ import Layout from '@layouts/Layout.astro';
 </style>
 <script>
 	import { getSession } from '@stores/sessionStore';
+	import { toast } from 'sonner';
+
+	if (sessionStorage.getItem('flash') === 'password-changed') {
+		sessionStorage.removeItem('flash');
+		toast.success('Password updated. Please log in with your new password.');
+	}
+
 	if (getSession().isLoggedIn) {
 		window.location.href = '/';
 	}else{
