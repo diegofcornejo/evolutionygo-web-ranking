@@ -11,6 +11,7 @@ export function SignUpForm({ dialog }: Readonly<{ dialog: string }>) {
 	const [password, setPassword] = useState('');
 	const [confirmPassword, setConfirmPassword] = useState('');
 	const [error, setError] = useState<string | null>(null);
+	const [gamePassword, setGamePassword] = useState<string | null>(null);
 
 	const passwordValid = isPasswordValid(password);
 	const passwordsMatch = password === confirmPassword && confirmPassword.length > 0;
@@ -22,6 +23,7 @@ export function SignUpForm({ dialog }: Readonly<{ dialog: string }>) {
 		setPassword('');
 		setConfirmPassword('');
 		setError(null);
+		setGamePassword(null);
 	};
 
 	const closeModal = () => {
@@ -53,7 +55,7 @@ export function SignUpForm({ dialog }: Readonly<{ dialog: string }>) {
 					isLoggedIn: true,
 					mustUpgrade: false,
 				});
-				window.location.href = '/';
+				setGamePassword(data.gamePassword ?? null);
 				return;
 			}
 
@@ -68,6 +70,39 @@ export function SignUpForm({ dialog }: Readonly<{ dialog: string }>) {
 			setError('No connection to server');
 		}
 	};
+
+	if (gamePassword !== null) {
+		return (
+			<div className="space-y-4">
+				<h2 className="text-xl font-bold">Your account is ready!</h2>
+				<div className="flex items-center gap-3">
+					<code
+						data-testid="game-pin-value"
+						className="font-mono text-2xl font-bold"
+					>
+						{gamePassword}
+					</code>
+					<button
+						type="button"
+						className="btn btn-sm btn-outline"
+						onClick={() => void navigator.clipboard.writeText(gamePassword)}
+					>
+						Copy
+					</button>
+				</div>
+				<p role="alert" className="text-warning text-sm">
+					This is your dueling PIN. It&apos;s shown only once. Save it now — you&apos;ll need it to play on external clients like EDOpro. You can regenerate it anytime from Settings.
+				</p>
+				<button
+					type="button"
+					className="btn btn-primary"
+					onClick={() => { window.location.href = '/'; }}
+				>
+					Continue
+				</button>
+			</div>
+		);
+	}
 
 	return (
 		<form className='space-y-4' onSubmit={handleSubmit}>

@@ -105,7 +105,7 @@ describe('SignUpForm', () => {
   it('sends {email, username, password} in body — no pin or confirmPassword (SC-REGISTER-4)', async () => {
     (fetch as any).mockResolvedValueOnce(mockResponse({
       ok: true,
-      json: async () => ({ id: 2, username: 'u2', email: 'e@e.com', token: 'regTok' }),
+      json: async () => ({ id: 2, username: 'u2', email: 'e@e.com', token: 'regTok', gamePassword: 'aB3x' }),
     }));
     render(<SignUpForm dialog={dialog} />);
     fireEvent.change(screen.getByPlaceholderText('Email'), { target: { value: 'e@e.com' } });
@@ -122,11 +122,11 @@ describe('SignUpForm', () => {
     expect(body).not.toHaveProperty('confirmPassword');
   });
 
-  // SC-REGISTER-5 — auto-login: updateSession({token, mustUpgrade:false}) + window.location.href='/'
-  it('calls updateSession and navigates to "/" on success with token (SC-REGISTER-5)', async () => {
+  // SC-REGISTER-5 — auto-login: updateSession({token, mustUpgrade:false}) + PIN shown, no immediate redirect
+  it('calls updateSession and shows game PIN on success — no immediate redirect (SC-REGISTER-5)', async () => {
     (fetch as any).mockResolvedValueOnce(mockResponse({
       ok: true,
-      json: async () => ({ id: 2, username: 'u2', email: 'e@e.com', token: 'regTok' }),
+      json: async () => ({ id: 2, username: 'u2', email: 'e@e.com', token: 'regTok', gamePassword: 'aB3x' }),
     }));
     render(<SignUpForm dialog={dialog} />);
     fireEvent.change(screen.getByPlaceholderText('Email'), { target: { value: 'e@e.com' } });
@@ -138,8 +138,49 @@ describe('SignUpForm', () => {
       expect(updateSession).toHaveBeenCalledWith(
         expect.objectContaining({ token: 'regTok', mustUpgrade: false })
       );
-      expect(window.location.href).toBe('/');
+      expect(screen.getByTestId('game-pin-value')).toHaveTextContent('aB3x');
+      expect(window.location.href).not.toBe('/');
     });
+  });
+
+  // SC-REGISTER-8 — clicking Continue on PIN screen navigates to '/'
+  it('navigates to "/" when Continue is clicked on the PIN screen (SC-REGISTER-8)', async () => {
+    (fetch as any).mockResolvedValueOnce(mockResponse({
+      ok: true,
+      json: async () => ({ id: 2, username: 'u2', email: 'e@e.com', token: 'regTok', gamePassword: 'aB3x' }),
+    }));
+    render(<SignUpForm dialog={dialog} />);
+    fireEvent.change(screen.getByPlaceholderText('Email'), { target: { value: 'e@e.com' } });
+    fireEvent.change(screen.getByPlaceholderText('Username'), { target: { value: 'u2' } });
+    fireEvent.change(screen.getByPlaceholderText('Password'), { target: { value: VALID_PASSWORD } });
+    fireEvent.change(screen.getByPlaceholderText('Confirm password'), { target: { value: VALID_PASSWORD } });
+    fireEvent.click(screen.getByRole('button', { name: /register/i }));
+    await waitFor(() => expect(screen.getByRole('button', { name: /continue/i })).toBeInTheDocument());
+    fireEvent.click(screen.getByRole('button', { name: /continue/i }));
+    expect(window.location.href).toBe('/');
+  });
+
+  // SC-REGISTER-9 — clicking Copy on PIN screen calls clipboard.writeText with the PIN
+  it('copies the game PIN to clipboard when Copy is clicked (SC-REGISTER-9)', async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, 'clipboard', {
+      value: { writeText },
+      writable: true,
+      configurable: true,
+    });
+    (fetch as any).mockResolvedValueOnce(mockResponse({
+      ok: true,
+      json: async () => ({ id: 2, username: 'u2', email: 'e@e.com', token: 'regTok', gamePassword: 'aB3x' }),
+    }));
+    render(<SignUpForm dialog={dialog} />);
+    fireEvent.change(screen.getByPlaceholderText('Email'), { target: { value: 'e@e.com' } });
+    fireEvent.change(screen.getByPlaceholderText('Username'), { target: { value: 'u2' } });
+    fireEvent.change(screen.getByPlaceholderText('Password'), { target: { value: VALID_PASSWORD } });
+    fireEvent.change(screen.getByPlaceholderText('Confirm password'), { target: { value: VALID_PASSWORD } });
+    fireEvent.click(screen.getByRole('button', { name: /register/i }));
+    await waitFor(() => expect(screen.getByRole('button', { name: /copy/i })).toBeInTheDocument());
+    fireEvent.click(screen.getByRole('button', { name: /copy/i }));
+    expect(writeText).toHaveBeenCalledWith('aB3x');
   });
 
   // SC-REGISTER-6 — 409 conflict: error visible, no navigation to '/'
