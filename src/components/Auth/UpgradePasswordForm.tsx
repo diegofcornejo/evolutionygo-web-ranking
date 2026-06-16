@@ -13,7 +13,7 @@ export function UpgradePasswordForm() {
 	const passwordsMatch = password === confirmPassword && confirmPassword.length > 0;
 	const canSubmit = passwordValid && passwordsMatch;
 
-	const handleSubmit = async (event: React.FormEvent) => {
+	const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 
 		// defense-in-depth: bail out if not eligible

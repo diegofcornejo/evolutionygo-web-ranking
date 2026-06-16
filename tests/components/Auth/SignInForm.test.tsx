@@ -60,6 +60,7 @@ describe('SignInForm', () => {
     fireEvent.change(screen.getByPlaceholderText('Password'), { target: { value: '123' } });
     fireEvent.click(screen.getByText('Login'));
     await waitFor(() => expect(screen.getByText('fail')).toBeInTheDocument());
+    expect(updateSession).not.toHaveBeenCalled();
   });
 
   it('shows default error message when login response has no message', async () => {

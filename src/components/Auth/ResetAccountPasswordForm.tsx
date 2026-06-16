@@ -17,7 +17,7 @@ export function ResetAccountPasswordForm({ token }: Readonly<ResetAccountPasswor
   const passwordsMatch = password === confirmPassword && confirmPassword.length > 0;
   const canSubmit = passwordValid && passwordsMatch;
 
-  const handleSubmit = async (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError(null);
 
