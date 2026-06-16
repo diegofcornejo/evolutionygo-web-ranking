@@ -11,7 +11,7 @@ Allow: /
 Disallow: /login
 Disallow: /register
 Disallow: /forgot-password
-Disallow: /reset-password
+Disallow: /reset-account-password
 Disallow: /upgrade-password
 
 # Block API endpoints if any are exposed
@@ -26,7 +26,7 @@ Allow: /
 Disallow: /login
 Disallow: /register
 Disallow: /forgot-password
-Disallow: /reset-password
+Disallow: /reset-account-password
 Disallow: /upgrade-password
 
 # Bing specific
@@ -35,7 +35,7 @@ Allow: /
 Disallow: /login
 Disallow: /register
 Disallow: /forgot-password
-Disallow: /reset-password
+Disallow: /reset-account-password
 Disallow: /upgrade-password
 Crawl-delay: 1
 

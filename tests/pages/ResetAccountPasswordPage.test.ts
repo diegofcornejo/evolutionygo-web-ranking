@@ -21,23 +21,23 @@ vi.mock('@layouts/Layout.astro', async () => ({
 }));
 
 vi.mock('@components/Auth', async () => ({
-  ResetPasswordForm: (await import('../__mocks__/SimpleReact')).default,
+  ResetAccountPasswordForm: (await import('../__mocks__/SimpleReact')).default,
 }));
 
-describe('reset-password.astro page', () => {
+describe('reset-account-password.astro page', () => {
   it('renders invalid token state when validation fails', async () => {
     global.fetch = vi.fn(async () => ({
       ok: true,
       json: async () => ({ valid: false, message: 'Invalid' }),
     })) as unknown as typeof fetch;
 
-    const ResetPasswordPage = (await import('../../src/pages/reset-password.astro')).default;
+    const ResetAccountPasswordPage = (await import('../../src/pages/reset-account-password.astro')).default;
     const container = await experimental_AstroContainer.create();
     container.addServerRenderer({ name: '@astrojs/react', renderer: reactRenderer });
     container.addClientRenderer({ name: '@astrojs/react', entrypoint: '@astrojs/react/client.js' });
 
-    const result = await container.renderToString(ResetPasswordPage, {
-      request: new Request('https://evolutionygo.com/reset-password?token=token-123'),
+    const result = await container.renderToString(ResetAccountPasswordPage, {
+      request: new Request('https://evolutionygo.com/reset-account-password?token=token-123'),
     });
 
     expect(result).toContain('Invalid Token');
@@ -51,27 +51,27 @@ describe('reset-password.astro page', () => {
       json: async () => ({ valid: true }),
     })) as unknown as typeof fetch;
 
-    const ResetPasswordPage = (await import('../../src/pages/reset-password.astro')).default;
+    const ResetAccountPasswordPage = (await import('../../src/pages/reset-account-password.astro')).default;
     const container = await experimental_AstroContainer.create();
     container.addServerRenderer({ name: '@astrojs/react', renderer: reactRenderer });
     container.addClientRenderer({ name: '@astrojs/react', entrypoint: '@astrojs/react/client.js' });
 
-    const result = await container.renderToString(ResetPasswordPage, {
-      request: new Request('https://evolutionygo.com/reset-password?token=token-456'),
+    const result = await container.renderToString(ResetAccountPasswordPage, {
+      request: new Request('https://evolutionygo.com/reset-account-password?token=token-456'),
     });
 
     expect(result).toContain('component-url="@components/Auth"');
-    expect(result).toContain('ResetPasswordForm');
+    expect(result).toContain('ResetAccountPasswordForm');
   });
 
   it('shows a missing token message when no token provided', async () => {
-    const ResetPasswordPage = (await import('../../src/pages/reset-password.astro')).default;
+    const ResetAccountPasswordPage = (await import('../../src/pages/reset-account-password.astro')).default;
     const container = await experimental_AstroContainer.create();
     container.addServerRenderer({ name: '@astrojs/react', renderer: reactRenderer });
     container.addClientRenderer({ name: '@astrojs/react', entrypoint: '@astrojs/react/client.js' });
 
-    const result = await container.renderToString(ResetPasswordPage, {
-      request: new Request('https://evolutionygo.com/reset-password'),
+    const result = await container.renderToString(ResetAccountPasswordPage, {
+      request: new Request('https://evolutionygo.com/reset-account-password'),
     });
 
     expect(result).toContain('No reset token provided.');
