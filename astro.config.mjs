@@ -32,7 +32,7 @@ export default defineConfig({
 	integrations: [
 		react(),
 		icon(),
-		playformCompress(),
+		playformCompress({ CSS: false }),
 		sitemap({
 			// Filter out auth/private pages from sitemap
 			filter: (page) => !EXCLUDED_PAGES.has(page),
