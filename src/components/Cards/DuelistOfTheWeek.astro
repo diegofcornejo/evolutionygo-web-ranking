@@ -1,6 +1,5 @@
 ---
 import type { Duelist } from '@types';
-let errorMessage = '';
 let duelist: Duelist | null = null;
 
 try {
@@ -19,12 +18,9 @@ try {
 			winRate: Math.round((Number(d.wins) / (Number(d.wins) + Number(d.losses))) * 100),
 			position: d.position ?? 1,
 		};
-	} else {
-		errorMessage = 'No duelist of the week found.';
 	}
 } catch (err) {
 	console.error('Token validation error:', err);
-	errorMessage = 'Failed to fetch duelist of the week. Please try again later.';
 }
 
 const banListName = 'Global';

@@ -60,7 +60,7 @@ export default function SettingsForm({ dialog }: Readonly<{ dialog: string }>) {
 	}, [dialog]);
 
 	// ── Section 1: Change Username ────────────────────────────────────────────
-	const handleSaveUsername = async (event: React.FormEvent<HTMLFormElement>) => {
+	const handleSaveUsername = async (event: React.SyntheticEvent<HTMLFormElement>) => {
 		event.preventDefault();
 		setUsernameError(null);
 
@@ -93,7 +93,7 @@ export default function SettingsForm({ dialog }: Readonly<{ dialog: string }>) {
 	};
 
 	// ── Section 2: Change Account Password ───────────────────────────────────
-	const handleSavePassword = async (event: React.FormEvent<HTMLFormElement>) => {
+	const handleSavePassword = async (event: React.SyntheticEvent<HTMLFormElement>) => {
 		event.preventDefault();
 		if (!canSubmitPassword) return;
 		setPasswordError(null);
