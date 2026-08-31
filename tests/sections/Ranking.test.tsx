@@ -70,6 +70,14 @@ const mockFetch = ({ grouped, flat = flatBanLists, stats = [] }: FetchOverrides 
 const banListSelect = (container: HTMLElement) =>
   container.querySelector<HTMLSelectElement>('select[aria-label="Filter by banlist"]')!;
 
+const banListChipRow = (container: HTMLElement) =>
+  container.querySelector<HTMLElement>('[aria-label^="Ban lists in"]');
+
+const chipNames = (row: HTMLElement) =>
+  Array.from(row.querySelectorAll('button')).map(
+    (chip) => chip.getAttribute('aria-label') ?? chip.textContent
+  );
+
 describe('Ranking', () => {
   beforeEach(() => {
     vi.stubEnv('PUBLIC_API_URL', API_URL);
@@ -85,29 +93,125 @@ describe('Ranking', () => {
   });
 
   describe('ban list selector', () => {
-    it('renders optgroups and plain options from the grouped payload', async () => {
+    it('lists formats and orphan ban lists, never the members of a group', async () => {
       mockFetch();
 
       const { container } = render(<Ranking />);
 
       await waitFor(() => {
-        expect(container.querySelectorAll('optgroup')).toHaveLength(1);
+        expect(banListSelect(container).querySelectorAll('option')).toHaveLength(3);
       });
 
       const select = banListSelect(container);
-      const group = select.querySelector('optgroup')!;
-
-      expect(group.getAttribute('label')).toBe('TCG');
-      expect(Array.from(group.querySelectorAll('option')).map((option) => option.value)).toEqual([
+      expect(Array.from(select.querySelectorAll('option')).map((option) => option.value)).toEqual([
+        'Global',
         'TCG',
-        '2024.04 TCG',
-        '2024.07 TCG',
+        'Goat Format',
       ]);
+      expect(select.querySelector('optgroup')).toBeNull();
+    });
 
-      const plainOptions = Array.from(select.children)
-        .filter((child) => child.tagName === 'OPTION')
-        .map((child) => (child as HTMLOptionElement).value);
-      expect(plainOptions).toEqual(['Global', 'Goat Format']);
+    it('renders no member chips while the selected entry has no member ban list', async () => {
+      mockFetch();
+
+      const { container } = render(<Ranking />);
+
+      await waitFor(() => {
+        expect(banListSelect(container).querySelectorAll('option')).toHaveLength(3);
+      });
+
+      expect(banListChipRow(container)).toBeNull();
+    });
+
+    it('renders the member chips of the selected format, led by the format ladder itself', async () => {
+      mockFetch();
+
+      const { container } = render(<Ranking />);
+
+      await waitFor(() => {
+        expect(banListSelect(container).querySelectorAll('option')).toHaveLength(3);
+      });
+
+      fireEvent.change(banListSelect(container), { target: { value: 'TCG' } });
+
+      await waitFor(() => {
+        expect(banListChipRow(container)).not.toBeNull();
+      });
+
+      const row = banListChipRow(container)!;
+      expect(row.getAttribute('aria-label')).toBe('Ban lists in TCG');
+      expect(chipNames(row)).toEqual(['All TCG', '2024.04 TCG', '2024.07 TCG']);
+
+      const chips = Array.from(row.querySelectorAll('button'));
+      expect(chips.map((chip) => chip.getAttribute('aria-pressed'))).toEqual(['true', 'false', 'false']);
+    });
+
+    it('refetches the leaderboard with the clicked member ban list, keeping the format selected', async () => {
+      const fetchMock = mockFetch();
+
+      const { container } = render(<Ranking />);
+
+      await waitFor(() => {
+        expect(banListSelect(container).querySelectorAll('option')).toHaveLength(3);
+      });
+
+      fireEvent.change(banListSelect(container), { target: { value: 'TCG' } });
+
+      await waitFor(() => {
+        expect(banListChipRow(container)).not.toBeNull();
+      });
+
+      const memberChip = Array.from(banListChipRow(container)!.querySelectorAll('button')).find(
+        (chip) => chip.textContent === '2024.04 TCG'
+      )!;
+      fireEvent.click(memberChip);
+
+      await waitFor(() => {
+        expect(
+          fetchMock.mock.calls.some(([url]) => String(url).includes('banListName=2024.04 TCG'))
+        ).toBe(true);
+      });
+
+      expect(banListSelect(container).value).toBe('TCG');
+
+      const row = banListChipRow(container)!;
+      expect(row.getAttribute('aria-label')).toBe('Ban lists in TCG');
+      expect(
+        Array.from(row.querySelectorAll('button')).map((chip) => chip.getAttribute('aria-pressed'))
+      ).toEqual(['false', 'true', 'false']);
+    });
+
+    it('goes back to the format ladder through its own chip', async () => {
+      const fetchMock = mockFetch();
+
+      const { container } = render(<Ranking />);
+
+      await waitFor(() => {
+        expect(banListSelect(container).querySelectorAll('option')).toHaveLength(3);
+      });
+
+      fireEvent.change(banListSelect(container), { target: { value: 'TCG' } });
+
+      await waitFor(() => {
+        expect(banListChipRow(container)).not.toBeNull();
+      });
+
+      const chips = Array.from(banListChipRow(container)!.querySelectorAll('button'));
+      fireEvent.click(chips[1]);
+      await waitFor(() => {
+        expect(
+          fetchMock.mock.calls.some(([url]) => String(url).includes('banListName=2024.04 TCG'))
+        ).toBe(true);
+      });
+
+      fireEvent.click(Array.from(banListChipRow(container)!.querySelectorAll('button'))[0]);
+
+      await waitFor(() => {
+        expect(
+          Array.from(banListChipRow(container)!.querySelectorAll('button'))[0].getAttribute('aria-pressed')
+        ).toBe('true');
+      });
+      expect(fetchMock.mock.calls.some(([url]) => String(url).includes('banListName=TCG'))).toBe(true);
     });
 
     it('falls back to the flat ban list endpoint when the grouped request rejects', async () => {
@@ -125,6 +229,13 @@ describe('Ranking', () => {
         '2024.04 TCG',
       ]);
       expect(select.querySelector('optgroup')).toBeNull();
+      expect(banListChipRow(container)).toBeNull();
+
+      fireEvent.change(select, { target: { value: '2024.04 TCG' } });
+      await waitFor(() => {
+        expect(banListSelect(container).value).toBe('2024.04 TCG');
+      });
+      expect(banListChipRow(container)).toBeNull();
       expect(fetchMock.mock.calls.some(([url]) => String(url).includes('/ban-lists?season='))).toBe(true);
     });
 
