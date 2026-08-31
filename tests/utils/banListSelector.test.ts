@@ -1,7 +1,9 @@
 import { describe, it, expect } from 'vitest';
 import {
+  buildBanListChips,
   buildBanListSelectorOptions,
   buildFlatBanListSelectorOptions,
+  findBanListSelectorOption,
   flattenBanListSelectorOptions,
   isBanListSectionList,
 } from '@utils/banListSelector';
@@ -16,48 +18,35 @@ const groupedPayload: BanListSection[] = [
 
 describe('banListSelector', () => {
   describe('buildBanListSelectorOptions', () => {
-    it('turns a group section into an optgroup led by the group name itself', () => {
+    it('turns a group section into a single format option holding its member ban lists', () => {
       const options = buildBanListSelectorOptions(groupedPayload);
 
-      expect(options).toContainEqual({
-        kind: 'group',
-        label: 'TCG',
-        options: ['TCG', '2024.04 TCG', '2024.07 TCG'],
-      });
-      expect(options).toContainEqual({
-        kind: 'group',
-        label: 'OCG',
-        options: ['OCG', '2024.04 OCG'],
-      });
+      expect(options).toContainEqual({ value: 'TCG', members: ['2024.04 TCG', '2024.07 TCG'] });
+      expect(options).toContainEqual({ value: 'OCG', members: ['2024.04 OCG'] });
     });
 
-    it('turns global and leftover banlist sections into plain options, Global first', () => {
+    it('turns global and leftover banlist sections into options without members', () => {
       const options = buildBanListSelectorOptions(groupedPayload);
 
-      expect(options[0]).toEqual({ kind: 'option', value: 'Global' });
-      expect(options.at(-1)).toEqual({ kind: 'option', value: 'Goat Format' });
+      expect(options[0]).toEqual({ value: 'Global', members: [] });
+      expect(options.at(-1)).toEqual({ value: 'Goat Format', members: [] });
     });
 
     it('keeps the section order returned by the API', () => {
       const options = buildBanListSelectorOptions(groupedPayload);
 
-      expect(options.map((option) => (option.kind === 'group' ? option.label : option.value))).toEqual([
-        'Global',
-        'TCG',
-        'OCG',
-        'Goat Format',
-      ]);
+      expect(options.map((option) => option.value)).toEqual(['Global', 'TCG', 'OCG', 'Goat Format']);
     });
 
-    it('emits every ban list of a banlist section as its own option', () => {
+    it('emits every ban list of a banlist section as its own selectable option', () => {
       const options = buildBanListSelectorOptions([
         { name: 'Others', type: 'banlist', banLists: ['World Championship 2020', 'Edison'] },
       ]);
 
       expect(options).toEqual([
-        { kind: 'option', value: 'Others' },
-        { kind: 'option', value: 'World Championship 2020' },
-        { kind: 'option', value: 'Edison' },
+        { value: 'Others', members: [] },
+        { value: 'World Championship 2020', members: [] },
+        { value: 'Edison', members: [] },
       ]);
     });
 
@@ -69,8 +58,8 @@ describe('banListSelector', () => {
       ]);
 
       expect(options).toEqual([
-        { kind: 'option', value: 'Global' },
-        { kind: 'group', label: 'TCG', options: ['TCG', '2024.04 TCG'] },
+        { value: 'Global', members: [] },
+        { value: 'TCG', members: ['2024.04 TCG'] },
       ]);
     });
 
@@ -81,19 +70,30 @@ describe('banListSelector', () => {
       ]);
 
       expect(options).toEqual([
-        { kind: 'option', value: 'Global' },
-        { kind: 'group', label: 'TCG', options: ['TCG', '2024.04 TCG'] },
+        { value: 'Global', members: [] },
+        { value: 'TCG', members: ['2024.04 TCG'] },
       ]);
     });
 
-    it('drops groups that end up with no selectable option', () => {
+    it('keeps a group whose members are all excluded as a memberless format', () => {
+      const options = buildBanListSelectorOptions([
+        { name: 'TCG', type: 'group', banLists: ['N/A', ''] },
+      ]);
+
+      expect(options).toEqual([{ value: 'TCG', members: [] }]);
+    });
+
+    it('drops groups whose own name is not selectable, keeping their members as plain options', () => {
       const options = buildBanListSelectorOptions([
         { name: 'Global', type: 'global', banLists: [] },
         { name: 'N/A', type: 'group', banLists: ['N/A'] },
-        { name: 'Global', type: 'group', banLists: ['Global'] },
+        { name: 'Global', type: 'group', banLists: ['2024.04 TCG'] },
       ]);
 
-      expect(options).toEqual([{ kind: 'option', value: 'Global' }]);
+      expect(options).toEqual([
+        { value: 'Global', members: [] },
+        { value: '2024.04 TCG', members: [] },
+      ]);
     });
 
     it('ignores malformed sections and returns an empty list for an empty payload', () => {
@@ -104,12 +104,12 @@ describe('banListSelector', () => {
           { name: 'Global' } as unknown as BanListSection,
           { name: 'TCG', type: 'group', banLists: ['2024.04 TCG'] },
         ])
-      ).toEqual([{ kind: 'group', label: 'TCG', options: ['TCG', '2024.04 TCG'] }]);
+      ).toEqual([{ value: 'TCG', members: ['2024.04 TCG'] }]);
     });
   });
 
   describe('flattenBanListSelectorOptions', () => {
-    it('flattens group and plain options in render order', () => {
+    it('flattens formats and their members in render order', () => {
       const options = buildBanListSelectorOptions(groupedPayload);
 
       expect(flattenBanListSelectorOptions(options)).toEqual([
@@ -125,6 +125,42 @@ describe('banListSelector', () => {
 
     it('returns an empty list when there are no options', () => {
       expect(flattenBanListSelectorOptions([])).toEqual([]);
+    });
+  });
+
+  describe('findBanListSelectorOption', () => {
+    const options = buildBanListSelectorOptions(groupedPayload);
+
+    it('finds the option selected by its own name', () => {
+      expect(findBanListSelectorOption(options, 'OCG')).toEqual({ value: 'OCG', members: ['2024.04 OCG'] });
+      expect(findBanListSelectorOption(options, 'Goat Format')).toEqual({ value: 'Goat Format', members: [] });
+    });
+
+    it('finds the format a member ban list belongs to', () => {
+      expect(findBanListSelectorOption(options, '2024.07 TCG')).toEqual({
+        value: 'TCG',
+        members: ['2024.04 TCG', '2024.07 TCG'],
+      });
+    });
+
+    it('returns null for an unknown ban list', () => {
+      expect(findBanListSelectorOption(options, 'Unknown')).toBeNull();
+      expect(findBanListSelectorOption([], 'TCG')).toBeNull();
+    });
+  });
+
+  describe('buildBanListChips', () => {
+    it('leads the member ban lists with the format ladder itself', () => {
+      expect(buildBanListChips({ value: 'TCG', members: ['2024.04 TCG', '2024.07 TCG'] })).toEqual([
+        'TCG',
+        '2024.04 TCG',
+        '2024.07 TCG',
+      ]);
+    });
+
+    it('returns no chip for a format without members or for no selection', () => {
+      expect(buildBanListChips({ value: 'Goat Format', members: [] })).toEqual([]);
+      expect(buildBanListChips(null)).toEqual([]);
     });
   });
 
@@ -148,10 +184,10 @@ describe('banListSelector', () => {
   });
 
   describe('buildFlatBanListSelectorOptions', () => {
-    it('maps the flat fallback payload to plain options', () => {
+    it('maps the flat fallback payload to memberless options', () => {
       expect(buildFlatBanListSelectorOptions(['Global', '2024.04 TCG'])).toEqual([
-        { kind: 'option', value: 'Global' },
-        { kind: 'option', value: '2024.04 TCG' },
+        { value: 'Global', members: [] },
+        { value: '2024.04 TCG', members: [] },
       ]);
     });
 
@@ -159,8 +195,8 @@ describe('banListSelector', () => {
       expect(
         buildFlatBanListSelectorOptions(['Global', 'N/A', '', 'Global', 2024, '2024.04 TCG'])
       ).toEqual([
-        { kind: 'option', value: 'Global' },
-        { kind: 'option', value: '2024.04 TCG' },
+        { value: 'Global', members: [] },
+        { value: '2024.04 TCG', members: [] },
       ]);
     });
 

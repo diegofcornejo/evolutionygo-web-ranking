@@ -6,8 +6,10 @@ import type { BanListSelectorOption } from '@utils/banListSelector';
 import { banlists } from '@stores/banlistsStore';
 import { getSession } from '@stores/sessionStore';
 import {
+  buildBanListChips,
   buildBanListSelectorOptions,
   buildFlatBanListSelectorOptions,
+  findBanListSelectorOption,
   flattenBanListSelectorOptions,
   isBanListSectionList,
 } from '@utils/banListSelector';
@@ -167,6 +169,9 @@ export default function Ranking() {
 
   const getRating = (winRate: number) => 1 + (winRate / 100) * 4;
 
+	const selectedFormat = findBanListSelectorOption(banListOptions, banList);
+	const banListChips = buildBanListChips(selectedFormat);
+
 	const title = 'Top Players';
   const description = 'Explore the top players in our community. Discover who the standout competitors are in our tournaments and events. Get to know their achievements, strategies, and stay updated with the rankings.';
 
@@ -184,17 +189,9 @@ export default function Ranking() {
 					</option>
 				)).reverse()}
         </select>
-        <select className="select select-secondary w-full max-w-xs" value={banList} onChange={handleBanListChange} aria-label="Filter by banlist">
+        <select className="select select-secondary w-full max-w-xs" value={selectedFormat ? selectedFormat.value : banList} onChange={handleBanListChange} aria-label="Filter by banlist">
           {banListOptions.map((option: BanListSelectorOption) => (
-            option.kind === 'group' ? (
-              <optgroup key={option.label} label={option.label}>
-                {option.options.map((name: string) => (
-                  <option key={name} value={name}>{name}</option>
-                ))}
-              </optgroup>
-            ) : (
-              <option key={option.value} value={option.value}>{option.value}</option>
-            )
+            <option key={option.value} value={option.value}>{option.value}</option>
           ))}
         </select>
         <select className="select select-secondary w-full max-w-xs" value={sortBy} onChange={handleSortByChange} aria-label="Sort by">
@@ -202,6 +199,26 @@ export default function Ranking() {
           <option value="rating">Sort by Elo</option>
         </select>
       </div>
+      {banListChips.length > 0 && selectedFormat ? (
+        <div
+          className='flex flex-wrap justify-center gap-2 pt-4'
+          role='group'
+          aria-label={`Ban lists in ${selectedFormat.value}`}
+        >
+          {banListChips.map((chip: string, index: number) => (
+            <button
+              key={chip}
+              type='button'
+              className={`btn btn-xs ${chip === banList ? 'btn-secondary btn-active' : 'btn-outline'}`}
+              aria-pressed={chip === banList}
+              aria-label={index === 0 ? `All ${chip}` : undefined}
+              onClick={() => setBanList(chip)}
+            >
+              {index === 0 ? 'All' : chip}
+            </button>
+          ))}
+        </div>
+      ) : null}
       <ul
         className='grid grid-cols-1 md:grid-cols-4 gap-6 mt-8 p-0 place-items-stretch'
       >
