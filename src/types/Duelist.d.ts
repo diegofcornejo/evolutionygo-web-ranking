@@ -7,4 +7,7 @@ export type Duelist = {
 	winRate: number;
 	position: number;
 	borderColor?: 'transparent' | 'gold' | 'silver' | 'bronze';
+	rating?: number | null;
+	peak?: number | null;
+	provisional?: boolean | null;
 }

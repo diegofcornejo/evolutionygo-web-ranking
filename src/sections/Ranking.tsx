@@ -2,10 +2,19 @@ import { useState, useEffect } from 'react';
 import DuelistCard from '@components/Cards/DuelistCard';
 import Rating from '@components/Rating';
 import type { Duelist } from '@types';
+import type { BanListSelectorOption } from '@utils/banListSelector';
 import { banlists } from '@stores/banlistsStore';
 import { getSession } from '@stores/sessionStore';
+import {
+  buildBanListSelectorOptions,
+  buildFlatBanListSelectorOptions,
+  flattenBanListSelectorOptions,
+  isBanListSectionList,
+} from '@utils/banListSelector';
 
 type BorderColor = 'gold' | 'silver' | 'bronze';
+
+type SortBy = 'points' | 'rating';
 
 const getBorderColor = (index: number): BorderColor => {
   if (index === 0) return 'gold';
@@ -26,7 +35,8 @@ export default function Ranking() {
   const [topDuelists, setTopDuelists] = useState<Duelist[]>([]);
 	const [season, setSeason] = useState<string>(import.meta.env.PUBLIC_DEFAULT_SEASON);
 	const [banList, setBanList] = useState<string>(import.meta.env.PUBLIC_DEFAULT_BAN_LIST);
-	const [banListOptions, setBanListOptions] = useState<string[]>([]);
+	const [banListOptions, setBanListOptions] = useState<BanListSelectorOption[]>([]);
+	const [sortBy, setSortBy] = useState<SortBy>('points');
 	const [currentUser, setCurrentUser] = useState<{ id: string; username: string } | null>(null);
 	const [currentUserStats, setCurrentUserStats] = useState<Duelist | null>(null);
 	const API_URL = import.meta.env.PUBLIC_API_URL;
@@ -90,11 +100,40 @@ export default function Ranking() {
 		return [...duelists, currentUserDuelist];
 	};
   
+	const applyBanListOptions = (options: BanListSelectorOption[]) => {
+		setBanListOptions(options);
+		banlists.set(flattenBanListSelectorOptions(options));
+	};
+
+	const getFlatBanListOptions = async () => {
+		try {
+			const response = await fetch(`${API_URL}/ban-lists?season=${season}`);
+			const data = await response.json();
+			applyBanListOptions(buildFlatBanListSelectorOptions(data));
+		} catch (error) {
+			console.error('Error fetching ban lists:', error);
+		}
+	};
+
 	const getBanListOptions = async () => {
-		const response = await fetch(`${API_URL}/ban-lists?season=${season}`);
-		const data = await response.json();
-		setBanListOptions(data.filter((option: string) => option !== 'N/A'));
-		banlists.set(data.filter((option: string) => option !== 'N/A'));
+		try {
+			const response = await fetch(`${API_URL}/ban-lists/grouped?season=${season}`);
+			if (!response.ok) {
+				throw new Error(`Grouped ban lists request failed with status ${response.status}`);
+			}
+			const data = await response.json();
+			if (!isBanListSectionList(data)) {
+				throw new Error('Grouped ban lists payload is not a list of sections');
+			}
+			const options = buildBanListSelectorOptions(data);
+			if (options.length === 0) {
+				throw new Error('Grouped ban lists payload has no selectable ban list');
+			}
+			applyBanListOptions(options);
+		} catch (error) {
+			console.error('Error fetching grouped ban lists, falling back to the flat list:', error);
+			await getFlatBanListOptions();
+		}
 	};
 
 	const handleSeasonChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -105,10 +144,14 @@ export default function Ranking() {
 		setBanList(event.target.value);
 	};
 
+	const handleSortByChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+		setSortBy(event.target.value as SortBy);
+	};
+
   useEffect(() => {
     const fetchDuelists = async () => {
       const response = await fetch(
-        `${API_URL}/stats/?page=1&limit=20&banListName=${banList}&season=${season}`
+        `${API_URL}/stats/?page=1&limit=20&banListName=${banList}&season=${season}&sortBy=${sortBy}`
       );
       const data = await response.json();
       setTopDuelists(data.slice(0, 4));
@@ -116,7 +159,7 @@ export default function Ranking() {
     };
 
     fetchDuelists();
-  }, [API_URL, season, banList]);
+  }, [API_URL, season, banList, sortBy]);
 
 	useEffect(() => {
 		getBanListOptions();
@@ -133,7 +176,7 @@ export default function Ranking() {
         <h1 className='text-3xl md:text-5xl md:leading-[3.5rem] font-bold pt-6'>{title}</h1>
         <h2 className='text-lg text-gray-400 leading-8 max-w-4xl'>{description}</h2>
       </div>
-      <div className="flex flex-row justify-center gap-4 pt-4">
+      <div className="flex flex-col md:flex-row justify-center gap-4 pt-4">
         <select className="select select-secondary w-full max-w-xs" value={season} onChange={handleSeasonChange} aria-label="Filter by season">
 				{Array.from({ length: Number.parseInt(import.meta.env.PUBLIC_DEFAULT_SEASON) }, (_, index) => (
 					<option key={index} value={index + 1}>
@@ -142,9 +185,21 @@ export default function Ranking() {
 				)).reverse()}
         </select>
         <select className="select select-secondary w-full max-w-xs" value={banList} onChange={handleBanListChange} aria-label="Filter by banlist">
-          {banListOptions.map((option: string) => (
-            <option key={option} value={option}>{option}</option>
+          {banListOptions.map((option: BanListSelectorOption) => (
+            option.kind === 'group' ? (
+              <optgroup key={option.label} label={option.label}>
+                {option.options.map((name: string) => (
+                  <option key={name} value={name}>{name}</option>
+                ))}
+              </optgroup>
+            ) : (
+              <option key={option.value} value={option.value}>{option.value}</option>
+            )
           ))}
+        </select>
+        <select className="select select-secondary w-full max-w-xs" value={sortBy} onChange={handleSortByChange} aria-label="Sort by">
+          <option value="points">Sort by Points</option>
+          <option value="rating">Sort by Elo</option>
         </select>
       </div>
       <ul
@@ -168,6 +223,7 @@ export default function Ranking() {
               <th scope="col" className='max-w-[75px] text-center'>Position</th>
               <th scope="col" className='min-w-[200px]'>Username</th>
               <th scope="col">Points</th>
+              <th scope="col">Elo</th>
               <th scope="col">Games</th>
               <th scope="col">Wins</th>
               <th scope="col">Losses</th>
@@ -196,6 +252,18 @@ export default function Ranking() {
                   </a>
                 </td>
                 <td className='font-bold text-lg text-orange-300'>{duelist.points}</td>
+                <td>
+                  {duelist.rating == null ? (
+                    <span className='text-gray-400' aria-label='No Elo on this ladder'>—</span>
+                  ) : (
+                    <span className='flex items-center gap-2'>
+                      <span className='font-bold text-lg text-info'>{Math.round(duelist.rating)}</span>
+                      {duelist.provisional ? (
+                        <span className='badge badge-sm badge-warning' title='Provisional Elo — not enough duels yet'>?</span>
+                      ) : null}
+                    </span>
+                  )}
+                </td>
 								<td>{duelist.wins + duelist.losses}</td>
                 <td className='text-success'>{duelist.wins}</td>
                 <td className='text-error'>{duelist.losses}</td>
