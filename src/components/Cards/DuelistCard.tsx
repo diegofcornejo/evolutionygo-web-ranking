@@ -16,6 +16,8 @@ export default function DuelistCard({
 	losses,
 	winRate,
 	position,
+	rating: eloRating,
+	provisional,
 	borderColor = 'transparent',
 	banListName,
 	season,
@@ -45,6 +47,19 @@ export default function DuelistCard({
 					#{position} {username}
 				</h2>
 				<p className='text-lg font-bold text-orange-300'>Points: {points}</p>
+				<p className='text-sm'>
+					Elo:{' '}
+					{eloRating == null ? (
+						<span className='text-gray-400' aria-label='No Elo on this ladder'>—</span>
+					) : (
+						<>
+							<span className='font-bold text-info'>{Math.round(eloRating)}</span>
+							{provisional ? (
+								<span className='badge badge-sm badge-warning ml-1' title='Provisional Elo — not enough duels yet'>?</span>
+							) : null}
+						</>
+					)}
+				</p>
 				<p className='text-sm text-success'>Wins: {wins}</p>
 				<p className='text-sm text-error'>Losses: {losses}</p>
 				<p className='text-sm'>Win Rate: {winRate.toFixed(2)}%</p>

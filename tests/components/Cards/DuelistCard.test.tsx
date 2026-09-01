@@ -17,6 +17,28 @@ const mockProps = {
 };
 
 describe('DuelistCard', () => {
+  it('renders the rounded Elo rating without the provisional marker', () => {
+    const { getByText, queryByTitle } = render(
+      <DuelistCard {...mockProps} rating={1543.6} provisional={false} />
+    );
+    expect(getByText('1544')).toBeTruthy();
+    expect(queryByTitle('Provisional Elo — not enough duels yet')).toBeNull();
+  });
+
+  it('renders the provisional marker next to a provisional Elo rating', () => {
+    const { getByText, getByTitle } = render(
+      <DuelistCard {...mockProps} rating={1210.2} provisional />
+    );
+    expect(getByText('1210')).toBeTruthy();
+    expect(getByTitle('Provisional Elo — not enough duels yet')).toBeTruthy();
+  });
+
+  it('renders the empty placeholder when the ban list has no Elo', () => {
+    const { getByLabelText, getByText } = render(<DuelistCard {...mockProps} rating={null} />);
+    expect(getByLabelText('No Elo on this ladder')).toBeTruthy();
+    expect(getByText('—')).toBeTruthy();
+  });
+
   it('renders all duelist info and link', () => {
     const { getByText, getByAltText, container } = render(<DuelistCard {...mockProps} />);
     expect(getByText('#1 TestUser')).toBeTruthy();
