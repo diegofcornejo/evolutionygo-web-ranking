@@ -28,7 +28,12 @@ const buildDuelist = (overrides: Partial<Duelist> & { userId: string }): Duelist
 });
 
 // The first four entries are rendered as cards, the rest as table rows.
-const cardDuelists = ['1', '2', '3', '4'].map((userId) => buildDuelist({ userId }));
+const cardDuelists = [
+  buildDuelist({ userId: '1', username: 'RatedCardDuelist', rating: 1720.4, provisional: false }),
+  buildDuelist({ userId: '2', username: 'NewCardDuelist', rating: 1105.6, provisional: true }),
+  buildDuelist({ userId: '3', username: 'UnratedCardDuelist', rating: null }),
+  buildDuelist({ userId: '4', username: 'PlainCardDuelist' }),
+];
 
 const tableDuelists: Duelist[] = [
   buildDuelist({ userId: '5', username: 'RatedDuelist', position: 5, rating: 1543.6, provisional: false }),
@@ -290,6 +295,31 @@ describe('Ranking', () => {
       expect(unratedRow.getByText('—')).toBeTruthy();
 
       expect(getByText('Elo')).toBeTruthy();
+    });
+  });
+
+  describe('top four cards', () => {
+    it('renders the rating, the provisional marker and the empty placeholder', async () => {
+      mockFetch({ stats: [...cardDuelists, ...tableDuelists] });
+
+      const { container, findByText } = render(<Ranking />);
+
+      expect(await findByText('#1 RatedCardDuelist')).toBeTruthy();
+
+      const cards = container.querySelectorAll('ul > a');
+      expect(cards).toHaveLength(4);
+
+      const ratedCard = within(cards[0] as HTMLElement);
+      expect(ratedCard.getByText('1720')).toBeTruthy();
+      expect(ratedCard.queryByTitle('Provisional Elo — not enough duels yet')).toBeNull();
+
+      const provisionalCard = within(cards[1] as HTMLElement);
+      expect(provisionalCard.getByText('1106')).toBeTruthy();
+      expect(provisionalCard.getByTitle('Provisional Elo — not enough duels yet')).toBeTruthy();
+
+      const unratedCard = within(cards[2] as HTMLElement);
+      expect(unratedCard.getByLabelText('No Elo on this ladder')).toBeTruthy();
+      expect(unratedCard.getByText('—')).toBeTruthy();
     });
   });
 
