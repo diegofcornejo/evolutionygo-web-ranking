@@ -1,41 +1,77 @@
-import type { News as Props} from '@types';
-import { ReactSVG } from 'react-svg'
+import { useId } from 'react';
+import type { News as Props } from '@types';
 
 export default function Banner({ image, title, description, buttonText, buttonLink }: Readonly<Props>) {
+	const titleId = useId();
+	const hasCta = Boolean(buttonLink && buttonText);
+
 	return (
-		<div
-			className="card bg-base-100 from-base-200 not-prose outline-base-content/5 relative overflow-hidden bg-gradient-to-b font-sans shadow-lg outline -outline-offset-1 md:flex-row-reverse">
-			<picture className="max-md:bg-primary/10 isolate shrink-0 md:w-2/3">
-				<source srcSet={image} type="image/webp" />
-				<img className="pointer-events-none w-full aspect-[3/1] object-cover" alt={title}
-					src={image} />
-			</picture>
+		<article
+			aria-labelledby={titleId}
+			className="card not-prose group relative isolate overflow-hidden border border-white/10 bg-base-300 font-sans shadow-2xl lg:min-h-[32rem]"
+		>
 			<div
-				className="bg-accent -left-1/5 pointer-events-none absolute bottom-[-50%] aspect-square w-3/4 -translate-x-1/2 rounded-full opacity-20 blur-3xl">
+				data-banner-media
+				className="relative aspect-[3/1] w-full shrink-0 overflow-hidden bg-black/30 lg:absolute lg:inset-0 lg:aspect-auto"
+			>
+				<img
+					alt=""
+					aria-hidden="true"
+					className="absolute inset-0 h-full w-full scale-110 object-cover opacity-55 blur-xl"
+					decoding="async"
+					src={image}
+				/>
+				<picture className="absolute inset-0 z-10 lg:left-auto lg:w-[72%]">
+					<source srcSet={image} type="image/webp" />
+					<img
+						alt={title}
+						className="h-full w-full object-contain object-center transition-[filter] duration-500 motion-safe:group-hover:brightness-110 lg:object-right"
+						decoding="async"
+						src={image}
+					/>
+				</picture>
 			</div>
+
 			<div
-				className="bg-primary pointer-events-none absolute bottom-[-120%] left-1/2 aspect-square w-full -translate-x-1/2 rounded-full opacity-20 blur-3xl">
-			</div>
-			{/* <div
-				className="bg-base-100 pointer-events-none absolute -top-3/4 right-1/4 z-[3] aspect-square w-1/2 rounded-full opacity-60 blur-3xl">
-			</div> */}
-			<div className="card-body relative isolate z-[3]">
+				aria-hidden="true"
+				className="pointer-events-none absolute inset-0 z-20 hidden bg-gradient-to-r from-base-300 via-base-300/90 to-transparent lg:block"
+			/>
+			<div
+				aria-hidden="true"
+				className="pointer-events-none absolute inset-x-0 bottom-0 z-20 hidden h-2/3 bg-gradient-to-t from-primary/20 to-transparent mix-blend-screen lg:block"
+			/>
+
+			<div className="relative z-30 flex flex-1 flex-col justify-center bg-gradient-to-br from-base-300 via-base-300 to-primary/10 p-6 sm:p-8 lg:min-h-[32rem] lg:max-w-[58%] lg:bg-none lg:p-14">
+				<div className="mb-4 h-1 w-14 rounded-full bg-primary" />
 				<h2
-					className="card-title text-base-content text-xl contrast-200 [text-wrap:balance] sm:w-[250%] md:w-full sm:text-2xl md:text-2xl lg:text-3xl xl:text-4xl">
-					<span>{title}</span>
+					id={titleId}
+					className="text-2xl font-bold leading-tight text-white [text-wrap:balance] sm:text-3xl lg:text-5xl"
+				>
+					{title}
 				</h2>
-				<div className="grow">
-					<h2 className="card-title text-sm font-light [text-wrap:balance] sm:w-[250%] md:w-full sm:text-lg md:text-lg lg:text-lg xl:text-xl">
-						{description}
-					</h2>
-				</div>
-				{(buttonLink && buttonText) && (
-					<a className="btn btn-block btn-primary group" href={buttonLink}>
-						{buttonText}
-						<ReactSVG src='/icons/right-arrow.svg' className="hidden h-6 w-6 transition-transform duration-300 group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1 md:inline-block" />
-					</a>
+				<p className="mt-4 max-w-xl text-base leading-relaxed text-white/85 [text-wrap:pretty] sm:text-lg">
+					{description}
+				</p>
+
+				{hasCta && (
+					<div className="mt-7">
+						<a
+							className="btn btn-primary group/cta w-full border-0 shadow-lg shadow-primary/20 sm:w-auto"
+							href={buttonLink}
+						>
+							{buttonText}
+							<svg
+								aria-hidden="true"
+								className="h-4 w-4 transition-transform duration-200 group-hover/cta:translate-x-1"
+								fill="none"
+								viewBox="0 0 24 24"
+							>
+								<path d="m9 18 6-6-6-6" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
+							</svg>
+						</a>
+					</div>
 				)}
 			</div>
-		</div>
+		</article>
 	);
 }
