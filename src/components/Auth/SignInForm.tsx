@@ -60,12 +60,6 @@ export function SignInForm({ dialog }: Readonly<{ dialog: string }>) {
 					};
 					updateSession(sessionData);
 
-					const loginSource = sessionStorage.getItem('wrapped-login-source');
-					if (loginSource === 'home-cta') {
-						(window as Window & { umami?: { track: (eventName: string) => void } }).umami?.track('wrapped-cta-login-success');
-						sessionStorage.removeItem('wrapped-login-source');
-					}
-
 					if (data.mustUpgrade) {
 						window.location.href = '/upgrade-password';
 						return;

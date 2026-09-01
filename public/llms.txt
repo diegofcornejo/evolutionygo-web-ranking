@@ -42,5 +42,4 @@ Evolution YGO hosts duels in multiple formats including TCG, OCG, GOAT, and Edis
 
 ## Optional
 
-- [Wrapped](https://evolutionygo.com/wrapped/): Annual summary of your dueling activity and achievements.
 - [Developers](https://evolutionygo.com/developers/): Resources and documentation for developers contributing to Evolution YGO (under construction).
