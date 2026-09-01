@@ -219,10 +219,6 @@ export default function Ranking() {
           ))}
         </div>
       ) : null}
-      <p className='text-center text-sm text-gray-400 pt-4'>
-        <span className='badge badge-sm badge-warning' aria-hidden='true'>?</span> marks a provisional Elo: a rating
-        stays provisional until the player has 10 duels in that ban list.
-      </p>
       <ul
         className='grid grid-cols-1 md:grid-cols-4 gap-6 mt-8 p-0 place-items-stretch'
       >

@@ -323,22 +323,6 @@ describe('Ranking', () => {
     });
   });
 
-  describe('provisional legend', () => {
-    it('explains the marker once, outside the leaderboard table', async () => {
-      mockFetch({ stats: [...cardDuelists, ...tableDuelists] });
-
-      const { container, findAllByText } = render(<Ranking />);
-
-      const legends = await findAllByText(/stays provisional until the player has 10 duels/);
-      expect(legends).toHaveLength(1);
-
-      const legend = legends[0];
-      expect(legend.closest('table')).toBeNull();
-      expect(legend.querySelector('[aria-hidden="true"]')?.textContent).toBe('?');
-      expect(container.querySelectorAll('table').length).toBe(1);
-    });
-  });
-
   describe('sort control', () => {
     it('refetches the leaderboard with sortBy=rating', async () => {
       const fetchMock = mockFetch({ stats: [...cardDuelists, ...tableDuelists] });

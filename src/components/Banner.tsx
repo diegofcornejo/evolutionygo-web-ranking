@@ -41,7 +41,7 @@ export default function Banner({ image, title, description, buttonText, buttonLi
 				className="pointer-events-none absolute inset-x-0 bottom-0 z-20 hidden h-2/3 bg-gradient-to-t from-primary/20 to-transparent mix-blend-screen lg:block"
 			/>
 
-			<div className="relative z-30 flex flex-1 flex-col justify-center bg-gradient-to-br from-base-300 via-base-300 to-primary/10 p-6 sm:p-8 lg:min-h-[32rem] lg:max-w-[58%] lg:bg-none lg:p-14">
+			<div className="relative z-30 flex flex-1 flex-col justify-center bg-gradient-to-br from-base-300 via-base-300 to-primary/10 p-6 sm:p-8 lg:min-h-[32rem] lg:max-w-[58%] lg:bg-none lg:p-14 lg:pl-24">
 				<div className="mb-4 h-1 w-14 rounded-full bg-primary" />
 				<h2
 					id={titleId}
