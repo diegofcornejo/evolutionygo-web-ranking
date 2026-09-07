@@ -36,6 +36,13 @@ const menuItems: MenuItem[] = [
 	// 	trackEvent: 'menu-click-tournaments',
 	// },
 	{
+		name: 'Watch',
+		href: '/watch',
+		badgeLabel: 'NEW',
+		badgeClass: 'text-warning',
+		trackEvent: 'menu-click-watch',
+	},
+	{
 		name: 'Play',
 		href: 'https://evoduel.com',
 		target: '_blank',

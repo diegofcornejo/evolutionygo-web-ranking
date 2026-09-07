@@ -11,3 +11,4 @@ export type { User } from './User';
 export type { Achievement } from './Achievement';
 export type { Command } from './Command';
 export type { Room } from './Room';
+export type { WatchRoom, WatchRoomPlayer } from './WatchRoom';

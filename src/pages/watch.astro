@@ -1,0 +1,36 @@
+---
+import Layout from '@layouts/Layout.astro';
+import Watch from '@sections/Watch.svelte';
+import { RoomsWebSocketListener } from '@components/RoomsWebSocketListener';
+import { isValidRoomId } from '@utils/watchLink';
+
+const requestedRoom = Astro.url.searchParams.get('room');
+const initialRoomId = isValidRoomId(requestedRoom) ? Number(requestedRoom) : null;
+
+const title = 'Watch Live Duels';
+const description =
+	'Watch live Yu-Gi-Oh! duels on Evolution YGO. Spectate public casual rooms in real time from your browser, switch between duels, and embed any duel on your own site.';
+
+const keywords = [
+	'watch Yu-Gi-Oh online',
+	'live YGO duels',
+	'spectate Yu-Gi-Oh',
+	'Evolution YGO live',
+	'YGOPro spectator',
+	'EDOPro watch duel',
+	'embed Yu-Gi-Oh duel',
+	'live duel stream',
+];
+---
+
+<Layout title={title} description={description} keywords={keywords} image="/banners/banner1.webp">
+	<main class="min-h-screen px-4 py-8 text-[white] md:px-8 lg:px-12">
+		<div class="mx-auto max-w-7xl">
+			<h1 class="mb-6 text-center text-4xl font-bold leading-none sm:text-5xl">
+				<span class="text-gradient">{title}</span>
+			</h1>
+			<RoomsWebSocketListener client:only="react" />
+			<Watch initialRoomId={initialRoomId} client:load />
+		</div>
+	</main>
+</Layout>

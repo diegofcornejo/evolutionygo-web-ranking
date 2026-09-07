@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Room } from 'src/types/Room';
 	import { roomsStore } from '@stores/rooms/roomsStore';
+	import { watchableRoomIds } from '@stores/watch/watchRoomsStore';
 
   export let room: Room;
 
@@ -59,6 +60,16 @@
           <span class="text-xs">{room.players[1].score}</span>
         </div>
         <p>{room.turn}</p>
+        {#if $watchableRoomIds.has(room.id)}
+          <a
+            href={`/watch?room=${room.id}`}
+            class="text-[10px] font-semibold uppercase text-error hover:underline"
+            data-umami-event="live-card-click-watch"
+            on:click|stopPropagation
+          >
+            Watch
+          </a>
+        {/if}
       </div>
 
       <div class="flex flex-col flex-1 px-2 gap-1">
@@ -95,6 +106,7 @@
 					<th class='text-center'></th>
 					<th class='text-center'>Player 2</th>
 					<th>Notes</th>
+					<th class='text-center'>Watch</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -127,6 +139,19 @@
 								{/each}
 							</td>
 							<td class="{isRoomRanked(room) ? 'text-gold' : ''}">{room.notes}</td>
+							<td class='text-center'>
+								{#if $watchableRoomIds.has(room.id)}
+									<a
+										href={`/watch?room=${room.id}`}
+										class='btn btn-xs btn-primary'
+										data-umami-event='live-table-click-watch'
+									>
+										Watch
+									</a>
+								{:else}
+									<span class='text-xs opacity-40' title='Private room or spectators refused'>—</span>
+								{/if}
+							</td>
 						</tr>
 					{/each}
 			</tbody>

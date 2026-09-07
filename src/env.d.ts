@@ -6,6 +6,9 @@ interface ImportMetaEnv {
 	readonly PUBLIC_DD_RUM_CLIENT_TOKEN: string;
 	readonly PUBLIC_DD_RUM_APP_ID: string;
 	readonly PUBLIC_DD_RUM_SERVICE: string;
+	// Live duel embedding (watch links)
+	readonly PUBLIC_GAME_CLIENT_URL: string;
+	readonly PUBLIC_ROOMS_API_URL: string;
 	// Feature Flags
 	readonly PUBLIC_FF_SHOW_SNOW_EFFECT: string;
 }
