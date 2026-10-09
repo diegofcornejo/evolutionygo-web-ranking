@@ -30,10 +30,9 @@ const getBadgeClass = (item: MenuItemWithBadge) => item.badgeClass ?? 'text-prim
 		};
 	};
 
-	const applyActiveNav = (path: string) => {
+	const applyActiveNav = (path: string, currentHash = window.location.hash) => {
 		const nav = document.querySelector('nav.navbar');
 		if (!nav) return;
-		const currentHash = window.location.hash;
 
 		nav.querySelectorAll('[data-nav-link]').forEach((link) => {
 			const href = link.getAttribute('href');
@@ -82,8 +81,22 @@ const getBadgeClass = (item: MenuItemWithBadge) => item.badgeClass ?? 'text-prim
 		setNavPath(window.location.pathname);
 	});
 
+	// The path store only notifies when the path changes, so jumping between
+	// sections of the same page (same path, new hash) has to refresh directly.
+	const refreshActiveNav = () => applyActiveNav(window.location.pathname);
+
 	window.addEventListener('popstate', () => {
 		setNavPath(window.location.pathname);
+		refreshActiveNav();
+	});
+
+	window.addEventListener('hashchange', refreshActiveNav);
+
+	document.addEventListener('click', (event) => {
+		const link = (event.target as Element | null)?.closest?.('[data-nav-link]');
+		const linkData = normalizePath(link?.getAttribute('href') ?? null);
+		if (!linkData?.hash || linkData.path !== window.location.pathname) return;
+		applyActiveNav(linkData.path, linkData.hash);
 	});
 </script>
 
