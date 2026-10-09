@@ -46,7 +46,7 @@ for name, args in {
     'C': (29, 1380, 20, 1290, 330),
     # Narrow screens only see roughly x 250-1190: shorter bolts in the margins beside the title.
     'AN': (41, 380, 0, 330, 230),
-    'BN': (53, 1060, 0, 1110, 250),
+    'BN': (53, 990, 0, 1070, 250),
 }.items():
     trunk, *branches = strike(*args)
     print(f'{name}_TRUNK = "{trunk}"')

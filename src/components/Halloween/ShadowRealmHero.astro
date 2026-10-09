@@ -84,13 +84,16 @@ const nightsCaption = (index: number) => (index >= 0 ? `Night ${index + 1} of ${
 							</g>
 						)}
 						<g class="shadow-realm-strike-ground">
-							{PYRAMIDS.map((pyramid, order) => (
-								<g>
-									<polygon points={pyramid.lit} fill={pyramid.litFill} />
-									<polygon points={pyramid.shade} fill={pyramid.shadeFill} />
-									{order === strike.lights && <polygon points={pyramid.lit} class="shadow-realm-lit-face" />}
-								</g>
-							))}
+							{PYRAMIDS.map(
+								(pyramid, order) =>
+									order >= strike.lights && (
+										<g>
+											<polygon points={pyramid.lit} fill={pyramid.litFill} />
+											<polygon points={pyramid.shade} fill={pyramid.shadeFill} />
+											{order === strike.lights && <polygon points={pyramid.lit} class="shadow-realm-lit-face" />}
+										</g>
+									)
+							)}
 						</g>
 					</svg>
 				))
