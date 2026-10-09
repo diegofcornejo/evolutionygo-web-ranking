@@ -70,7 +70,7 @@ export default function NewsSection() {
 		},
 	];
 	return (
-		<section aria-label="Latest news" className="relative mx-4 mb-10">
+		<section aria-label="Latest news" className="relative mx-4 my-10">
 			<Swiper
 				aria-label="Latest news"
 				className="pb-10 [&_.swiper-pagination-bullet]:h-1.5 [&_.swiper-pagination-bullet]:w-6 [&_.swiper-pagination-bullet]:rounded-full [&_.swiper-pagination-bullet]:bg-base-content/40 [&_.swiper-pagination-bullet]:opacity-100 [&_.swiper-pagination-bullet]:transition-all [&_.swiper-pagination-bullet]:duration-300 [&_.swiper-pagination-bullet-active]:w-10 [&_.swiper-pagination-bullet-active]:bg-primary"

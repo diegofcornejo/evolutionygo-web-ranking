@@ -3,9 +3,85 @@
 @plugin "daisyui" {
     themes: 'night', 'dracula'
 }
+@plugin "daisyui/theme" {
+	name: 'shadowrealm';
+	color-scheme: dark;
+	--color-base-100: #120a1c;
+	--color-base-200: #170d24;
+	--color-base-300: #1d112e;
+	--color-base-content: #ece4ff;
+	--color-primary: #9dff6a;
+	--color-primary-content: #0b0612;
+	--color-secondary: #8a5cff;
+	--color-secondary-content: #0b0612;
+	--color-accent: #c9b2ff;
+	--color-accent-content: #0b0612;
+	--color-neutral: #271a3d;
+	--color-neutral-content: #ece4ff;
+	--color-info: #8fb8ff;
+	--color-info-content: #0b0612;
+	--color-success: #9dff6a;
+	--color-success-content: #0b0612;
+	--color-warning: #ffcf5c;
+	--color-warning-content: #0b0612;
+	--color-error: #ff6b8a;
+	--color-error-content: #0b0612;
+	--radius-selector: 1rem;
+	--radius-field: 0.5rem;
+	--radius-box: 1rem;
+	--size-selector: 0.25rem;
+	--size-field: 0.25rem;
+	--border: 1px;
+	--depth: 0;
+	--noise: 0;
+}
 @theme {
 	--color-gold: #FFD700;
 	--color-silver: #C0C0C0;
 	--color-bronze: #CD7F32;
 	--color-transparent: transparent;
+}
+
+html[data-edition='halloween'] {
+	background: var(--color-base-100);
+	accent-color: var(--color-primary);
+	caret-color: var(--color-primary);
+	scrollbar-color: #4a3470 var(--color-base-100);
+
+	::selection {
+		background: var(--color-primary);
+		color: var(--color-primary-content);
+	}
+
+	:focus-visible {
+		outline-color: var(--color-primary);
+	}
+
+	:is(.text-gradient, .bg-clip-text.text-transparent) {
+		background: none;
+		color: var(--color-base-content);
+		-webkit-text-fill-color: currentColor;
+	}
+}
+
+html[data-edition='halloween'] .site-footer {
+	position: relative;
+	isolation: isolate;
+}
+
+html[data-edition='halloween'] .site-footer::before {
+	content: '';
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 100%;
+	height: clamp(6rem, 14vw, 11rem);
+	background: #3d2a63;
+	opacity: 0.5;
+	mask-image: url('/halloween/fog-back.webp'), linear-gradient(transparent, #000 70%);
+	mask-repeat: repeat-x, no-repeat;
+	mask-size: auto 190%, 100% 100%;
+	mask-position: left top, left top;
+	mask-composite: intersect;
+	pointer-events: none;
 }

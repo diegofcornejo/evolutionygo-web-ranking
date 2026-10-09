@@ -1,0 +1,4 @@
+{
+  "prompt": "Procedural, not AI-generated. Horizontally tileable fog band: five octaves of periodic value noise (numpy), white ink with density in alpha, soft band envelope peaking at 0.55 of the height. Script .impeccable/assets/fog.py, seed 31, 2048x512, resized to 1600x400 WebP (cwebp -q 70 -alpha_q 80). Tinted in CSS through mask-image.",
+  "createdAt": "2026-10-09T18:52:09.784Z"
+}

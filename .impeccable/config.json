@@ -1,0 +1,35 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "design-system-color",
+        "value": "#000",
+        "files": [
+          "src/components/Halloween/ShadowRealmHero.astro"
+        ],
+        "createdAt": "2026-10-09T19:27:56.282Z",
+        "reason": "agent: alpha stops inside mask-image gradients, never painted as a color"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "rgb(0 0 0 / 0.55)",
+        "files": [
+          "src/components/Halloween/ShadowRealmHero.astro"
+        ],
+        "createdAt": "2026-10-09T19:27:56.297Z",
+        "reason": "agent: alpha stops inside mask-image gradients, never painted as a color"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#000",
+        "files": [
+          "src/styles/global.css"
+        ],
+        "createdAt": "2026-10-09T19:28:20.616Z",
+        "reason": "agent: alpha stop inside the footer fog mask-image gradient, never painted as a color"
+      }
+    ]
+  }
+}

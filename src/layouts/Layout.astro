@@ -7,6 +7,8 @@ import Footer from '@components/Footer.astro';
 import AnimationFrameSnow from '@components/Random/AnimationFrameSnow.svelte';
 import { isFeatureEnabled } from '@stores/featureFlagsStore';
 import SEO from '@components/SEO.astro';
+import grenzeDisplayFont from '@fontsource/grenze/files/grenze-latin-700-normal.woff2?url';
+import { EDITION_PARAM, getSeasonalEdition } from '@utils/seasonalEdition';
 
 interface Props {
 	title: string;
@@ -34,6 +36,8 @@ const {
 	jsonLd
 } = Astro.props;
 
+const edition = getSeasonalEdition(new Date(), Astro.url.searchParams.get(EDITION_PARAM));
+const baseTheme = edition === 'halloween' ? 'shadowrealm' : 'night';
 const { PUBLIC_ANALYTICS_ID, PUBLIC_ANALYTICS_URL, PUBLIC_DD_RUM_APP_ID, PUBLIC_DD_RUM_CLIENT_TOKEN, PUBLIC_DD_RUM_SERVICE, NODE_ENV } = import.meta.env;
 
 const datadogConfig = {
@@ -46,7 +50,7 @@ const datadogConfig = {
 ---
 
 <!doctype html>
-<html lang="en" data-theme="night">
+<html lang="en" data-theme={baseTheme} data-edition={edition ?? undefined}>
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -80,6 +84,7 @@ const datadogConfig = {
 			})
 		`}></script>
 		
+		{edition === 'halloween' && <link rel="preload" as="font" type="font/woff2" href={grenzeDisplayFont} crossorigin />}
 		<!-- View Transitions -->
 		<ClientRouter/>
 	</head>

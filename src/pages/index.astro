@@ -9,8 +9,11 @@ import Faqs from '@sections/Faqs.astro';
 import Crew from '@sections/Crew.astro';
 import { RoomsWebSocketListener } from '@components/RoomsWebSocketListener';
 import DuelistOfTheWeek from '@components/Cards/DuelistOfTheWeek.astro';
+import ShadowRealmHero from '@components/Halloween/ShadowRealmHero.astro';
+import { EDITION_PARAM, getSeasonalEdition } from '@utils/seasonalEdition';
 
 const currentSeason = import.meta.env.PUBLIC_DEFAULT_SEASON;
+const edition = getSeasonalEdition(new Date(), Astro.url.searchParams.get(EDITION_PARAM));
 const title = `Evolution YGO Season ${currentSeason}`;
 const description = `Play Yu-Gi-Oh! online for free on Evolution YGO Season ${currentSeason}. Compatible with EDOPro, Koishi, and YGO Mobile. Join competitive rankings, participate in tournaments, and duel players worldwide!`;
 
@@ -40,17 +43,19 @@ const keywords = [
 	keywords={keywords}
 	image="/banners/banner1.webp"
 >
-	<!-- <LightsOut client:only='react' /> -->
 	<main class='w-full text-[white] text-xl leading-[1.6] mx-auto'>
-		<h1
-			class='text-4xl sm:text-5xl font-bold leading-none text-center mb-[1em] max-w-sm md:max-w-full pt-[1em]'
-		>
-			<!-- <p class='flex justify-center'><Eyes client:only='react' /></p> -->
-			<span class='text-gradient'> {title} </span> 
-		</h1>
-		<News client:only='react' />
+		{
+			edition === 'halloween' ? (
+				<ShadowRealmHero season={currentSeason} />
+			) : (
+				<h1 class='text-4xl sm:text-5xl font-bold leading-none text-center mb-[1em] max-w-sm md:max-w-full pt-[1em]'>
+					<span class='text-gradient'> {title} </span>
+				</h1>
+			)
+		}
 		<RoomsWebSocketListener client:only='react' />
 		<Live client:only='svelte' />
+		<News client:only='react' />
 		<DuelistOfTheWeek />
 		<Ranking client:load />
 		<Features />

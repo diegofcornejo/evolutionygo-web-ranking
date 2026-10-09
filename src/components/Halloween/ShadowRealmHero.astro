@@ -1,0 +1,650 @@
+---
+import '@fontsource/grenze/latin-700.css';
+import { HALLOWEEN_WINDOW, formatMonthDay, getHalloweenNights, getTonightIndex } from '@utils/seasonalEdition';
+import { HORIZON_VIEWBOX, PYRAMIDS, STRIKES } from './storm';
+
+interface Props {
+	season: string;
+}
+
+const { season } = Astro.props;
+const now = new Date();
+const nights = getHalloweenNights(now.getUTCFullYear());
+const tonight = getTonightIndex(nights, now.getUTCMonth() + 1, now.getUTCDate());
+const windowEnd = formatMonthDay(HALLOWEEN_WINDOW.end);
+const allNightsCaption = `${nights.length} nights, ${formatMonthDay(HALLOWEEN_WINDOW.start)} to ${windowEnd}`;
+const strikeStyle = (cycle: number, delay: number) => `--cycle: ${cycle}s; --delay: ${delay}s`;
+const nightsCaption = (index: number) => (index >= 0 ? `Night ${index + 1} of ${nights.length}` : allNightsCaption);
+---
+
+<section class="shadow-realm" aria-labelledby="shadow-realm-title">
+	<button type="button" class="shadow-realm-still" data-storm-toggle aria-pressed="false" aria-label="Pause the storm" title="Pause the storm">
+		<svg data-icon="pause" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+			<rect x="3.5" y="2.5" width="3" height="11" rx="1" />
+			<rect x="9.5" y="2.5" width="3" height="11" rx="1" />
+		</svg>
+		<svg data-icon="play" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+			<path d="M4.5 2.8v10.4a.8.8 0 0 0 1.2.7l8.3-5.2a.8.8 0 0 0 0-1.4L5.7 2.1a.8.8 0 0 0-1.2.7Z" />
+		</svg>
+	</button>
+	<div class="shadow-realm-stage">
+		<svg class="shadow-realm-sigil" viewBox="0 0 64 40" aria-hidden="true" focusable="false">
+			<path d="M2 20C12 6 52 6 62 20C52 34 12 34 2 20Z" fill="none" stroke="currentColor" stroke-width="2" />
+			<circle cx="32" cy="20" r="10" fill="none" stroke="currentColor" stroke-width="2" />
+			<path class="shadow-realm-pupil" d="M32 12C35 16 35 24 32 28C29 24 29 16 32 12Z" />
+			<path d="M22 31L20 38M32 33V39M42 31L44 38" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+		</svg>
+		<div class="shadow-realm-horizon" aria-hidden="true">
+			<svg class="shadow-realm-pyramids" viewBox={HORIZON_VIEWBOX} preserveAspectRatio="xMidYMax meet" focusable="false">
+				{
+					PYRAMIDS.map((pyramid) => (
+						<g>
+							<polygon points={pyramid.lit} fill={pyramid.litFill} />
+							<polygon points={pyramid.shade} fill={pyramid.shadeFill} />
+						</g>
+					))
+				}
+			</svg>
+			{
+				STRIKES.map((strike, index) => (
+					<svg
+						class="shadow-realm-strike"
+						viewBox={HORIZON_VIEWBOX}
+						preserveAspectRatio="xMidYMax meet"
+						focusable="false"
+						style={strikeStyle(strike.cycle, strike.delay)}
+					>
+						<filter id={`shadow-realm-sheet-${index}`} x="-50%" y="-50%" width="200%" height="200%">
+							<feGaussianBlur stdDeviation="45" />
+						</filter>
+						<ellipse
+							cx={strike.sheet[0]}
+							cy={strike.sheet[1]}
+							rx={strike.sheet[2]}
+							ry={strike.sheet[3]}
+							class="shadow-realm-sheet"
+							filter={`url(#shadow-realm-sheet-${index})`}
+						/>
+						<g class="shadow-realm-bolts-wide">
+							{strike.paths.map((d) => (
+								<path d={d} class="shadow-realm-bolt-glow" />
+							))}
+							{strike.paths.map((d, part) => (
+								<path d={d} class:list={['shadow-realm-bolt', { 'shadow-realm-bolt-branch': part > 0 }]} />
+							))}
+						</g>
+						{strike.narrowPaths && (
+							<g class="shadow-realm-bolts-narrow">
+								{strike.narrowPaths.map((d) => (
+									<path d={d} class="shadow-realm-bolt-glow" />
+								))}
+								{strike.narrowPaths.map((d, part) => (
+									<path d={d} class:list={['shadow-realm-bolt', { 'shadow-realm-bolt-branch': part > 0 }]} />
+								))}
+							</g>
+						)}
+						<g class="shadow-realm-strike-ground">
+							{PYRAMIDS.map((pyramid, order) => (
+								<g>
+									<polygon points={pyramid.lit} fill={pyramid.litFill} />
+									<polygon points={pyramid.shade} fill={pyramid.shadeFill} />
+									{order === strike.lights && <polygon points={pyramid.lit} class="shadow-realm-lit-face" />}
+								</g>
+							))}
+						</g>
+					</svg>
+				))
+			}
+		</div>
+		<div class="shadow-realm-fog shadow-realm-fog-back" aria-hidden="true"></div>
+		<div class="shadow-realm-lockup">
+			<h1 id="shadow-realm-title" class="shadow-realm-title">
+				<span class="shadow-realm-brand">Evolution YGO</span>
+				<span class="shadow-realm-season">Season {season}</span>
+			</h1>
+			<div class="shadow-realm-fog shadow-realm-fog-front" aria-hidden="true"></div>
+		</div>
+	</div>
+	<div class="shadow-realm-fog shadow-realm-fog-trail" aria-hidden="true"></div>
+
+	<div class="shadow-realm-body">
+		<p class="shadow-realm-lede">
+			Season {season} has been sent to the Shadow Realm. Until {windowEnd} every ranked duel is a Shadow Game, and
+			your points count just the same.
+		</p>
+
+		<div class="shadow-realm-nights">
+			<ol aria-label="Nights in the Shadow Realm" data-nights>
+				{
+					nights.map((night, index) => (
+						<li
+							data-month={night.month}
+							data-day={night.day}
+							data-state={tonight < 0 || index > tonight ? 'ahead' : index === tonight ? 'tonight' : 'past'}
+							data-halloween={night.isHalloween ? '' : undefined}
+							aria-current={index === tonight ? 'date' : undefined}
+						>
+							<span class="sr-only">
+								{formatMonthDay(night)}
+								{night.isHalloween ? ', Halloween' : ''}
+							</span>
+							<span class="shadow-realm-night-mark" aria-hidden="true" />
+							{night.isHalloween && (
+								<span class="shadow-realm-night-label" aria-hidden="true">
+									31
+								</span>
+							)}
+						</li>
+					))
+				}
+			</ol>
+			<p class="shadow-realm-nights-caption" data-nights-caption data-all-nights={allNightsCaption} aria-live="polite">{nightsCaption(tonight)}</p>
+		</div>
+
+		<div class="shadow-realm-actions">
+			<a
+				class="btn btn-primary btn-lg"
+				href="https://evoduel.com"
+				target="_blank"
+				rel="noopener"
+				data-umami-event="halloween-click-play"
+			>
+				Duel in the dark
+			</a>
+			<a class="btn btn-outline btn-lg" href="#section-ranking" data-umami-event="halloween-click-ranking">
+				See the rankings
+			</a>
+		</div>
+	</div>
+</section>
+
+<script is:inline>
+	(() => {
+		const hero = document.querySelector('.shadow-realm');
+		const toggle = hero?.querySelector('[data-storm-toggle]');
+		if (!hero || !toggle) return;
+		const STILL_KEY = 'shadow-realm-still';
+		const setStill = (still) => {
+			hero.classList.toggle('is-still', still);
+			const label = still ? 'Resume the storm' : 'Pause the storm';
+			toggle.setAttribute('aria-pressed', String(still));
+			toggle.setAttribute('aria-label', label);
+			toggle.setAttribute('title', label);
+		};
+		let stored = false;
+		try {
+			stored = localStorage.getItem(STILL_KEY) === '1';
+		} catch {}
+		setStill(stored);
+		toggle.addEventListener('click', () => {
+			const still = !hero.classList.contains('is-still');
+			setStill(still);
+			try {
+				if (still) localStorage.setItem(STILL_KEY, '1');
+				else localStorage.removeItem(STILL_KEY);
+			} catch {}
+		});
+		if ('IntersectionObserver' in window) {
+			const observer = new IntersectionObserver(([entry]) => hero.classList.toggle('is-offscreen', !entry.isIntersecting));
+			observer.observe(hero);
+			document.addEventListener('astro:before-swap', () => observer.disconnect(), { once: true });
+		}
+	})();
+
+	(() => {
+		const list = document.querySelector('[data-nights]');
+		const caption = document.querySelector('[data-nights-caption]');
+		if (!list || !caption) return;
+		const today = new Date();
+		const items = [...list.children];
+		const tonight = items.findIndex(
+			(item) => Number(item.dataset.month) === today.getMonth() + 1 && Number(item.dataset.day) === today.getDate()
+		);
+		items.forEach((item, index) => {
+			item.dataset.state = tonight < 0 || index > tonight ? 'ahead' : index === tonight ? 'tonight' : 'past';
+			if (index === tonight) item.setAttribute('aria-current', 'date');
+			else item.removeAttribute('aria-current');
+		});
+		caption.textContent =
+			tonight >= 0
+				? `Night ${tonight + 1} of ${items.length}`
+				: caption.dataset.allNights;
+	})();
+</script>
+
+<style>
+	.shadow-realm {
+		--void: #0b0612;
+		--fog-deep: #4b3277;
+		--fog-pale: #b9a3e6;
+		--ecto: var(--color-primary, #9dff6a);
+		position: relative;
+		isolation: isolate;
+		overflow: hidden;
+		margin-top: -1px;
+		padding-bottom: clamp(2.5rem, 6vw, 4.5rem);
+		background: linear-gradient(180deg, var(--void) 0%, #140a20 55%, var(--color-base-100, #120a1c) 100%);
+		color: var(--color-base-content, #ece4ff);
+		text-align: center;
+	}
+
+	.shadow-realm-stage {
+		position: relative;
+		padding: clamp(2.5rem, 7vh, 4.5rem) 0 0;
+	}
+
+	.shadow-realm-horizon {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: 50%;
+		z-index: 0;
+		width: max(100%, 600px);
+		transform: translateX(-50%);
+		pointer-events: none;
+	}
+
+	.shadow-realm-horizon svg {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+	}
+
+	/* Faint sky glow rising from the fog, so the pyramids read as silhouettes against it. */
+	.shadow-realm-horizon::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(
+			to top,
+			transparent 2%,
+			rgb(75 50 119 / 0.45) 22%,
+			rgb(60 38 98 / 0.2) 48%,
+			transparent 66%
+		);
+	}
+
+	.shadow-realm-strike {
+		opacity: 0;
+		will-change: opacity;
+	}
+
+	.shadow-realm-bolts-narrow {
+		display: none;
+	}
+
+	.shadow-realm-sheet {
+		fill: #8a5cff;
+		fill-opacity: 0.22;
+	}
+
+	.shadow-realm-bolt-glow,
+	.shadow-realm-bolt {
+		fill: none;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+	}
+
+	.shadow-realm-bolt-glow {
+		stroke: #a58cf0;
+		stroke-opacity: 0.3;
+		stroke-width: 9;
+	}
+
+	.shadow-realm-bolt {
+		stroke: #f3edff;
+		stroke-width: 2.5;
+	}
+
+	.shadow-realm-bolt-branch {
+		stroke-width: 1.5;
+	}
+
+	.shadow-realm-lit-face {
+		fill: #9d84d6;
+		fill-opacity: 0.36;
+	}
+
+	/* The pyramids sink into the fog instead of standing on a hard ground line. */
+	.shadow-realm-pyramids,
+	.shadow-realm-strike {
+		mask-image: linear-gradient(to bottom, #000 76%, transparent 97%);
+	}
+
+	.shadow-realm-still {
+		position: absolute;
+		top: 1rem;
+		right: 1rem;
+		z-index: 4;
+		display: grid;
+		place-items: center;
+		width: 2.5rem;
+		height: 2.5rem;
+		border: 1px solid rgb(201 178 255 / 0.35);
+		border-radius: 999px;
+		background: rgb(11 6 18 / 0.55);
+		color: #c9b2ff;
+		cursor: pointer;
+		transition:
+			border-color 0.2s ease-out,
+			color 0.2s ease-out;
+	}
+
+	.shadow-realm-still:hover {
+		border-color: #c9b2ff;
+		color: var(--color-base-content, #ece4ff);
+	}
+
+	.shadow-realm-still:focus-visible {
+		outline: 2px solid #c9b2ff;
+		outline-offset: 2px;
+	}
+
+	.shadow-realm-still svg {
+		width: 1rem;
+		height: 1rem;
+		fill: currentColor;
+	}
+
+	.shadow-realm-still [data-icon='play'],
+	.shadow-realm-still[aria-pressed='true'] [data-icon='pause'] {
+		display: none;
+	}
+
+	.shadow-realm-still[aria-pressed='true'] [data-icon='play'] {
+		display: block;
+	}
+
+	.shadow-realm.is-still .shadow-realm-strike {
+		animation: none;
+		opacity: 0;
+	}
+
+	.shadow-realm.is-still .shadow-realm-fog,
+	.shadow-realm.is-offscreen :is(.shadow-realm-fog, .shadow-realm-strike) {
+		animation-play-state: paused;
+	}
+
+	.shadow-realm-sigil {
+		display: block;
+		width: clamp(4rem, 7vw, 6rem);
+		margin: 0 auto 1.25rem;
+		color: #8a5cff;
+	}
+
+	.shadow-realm-pupil {
+		fill: var(--ecto);
+	}
+
+	.shadow-realm-lockup {
+		position: relative;
+	}
+
+	.shadow-realm-title {
+		position: relative;
+		z-index: 1;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		margin: 0;
+		line-height: 1;
+	}
+
+	.shadow-realm-brand {
+		font-family: 'Grenze', 'Plus Jakarta Sans Variable', serif;
+		font-size: clamp(1.6rem, 3.2vw, 2.6rem);
+		font-weight: 700;
+		line-height: 1;
+		color: #c9b2ff;
+	}
+
+	.shadow-realm-season {
+		font-family: 'Grenze', 'Plus Jakarta Sans Variable', serif;
+		font-weight: 700;
+		font-size: clamp(3.6rem, 13.5vw, 12.5rem);
+		line-height: 0.82;
+		letter-spacing: -0.01em;
+		text-transform: uppercase;
+		margin-top: 0.08em;
+		white-space: nowrap;
+		mask-image: linear-gradient(to bottom, #000 38%, rgb(0 0 0 / 0.55) 68%, rgb(0 0 0 / 0.12) 100%);
+	}
+
+	.shadow-realm-fog {
+		position: absolute;
+		left: 0;
+		width: 200%;
+		pointer-events: none;
+		mask-image: url('/halloween/fog-back.webp');
+		mask-repeat: repeat-x;
+		mask-size: 50% 100%;
+		mask-position: left bottom;
+		will-change: transform;
+	}
+
+	.shadow-realm-fog-back {
+		z-index: 0;
+		top: 8%;
+		height: 85%;
+		background: var(--fog-deep);
+		opacity: 0.8;
+		animation: shadow-realm-drift 140s linear infinite;
+	}
+
+	.shadow-realm-fog-front {
+		z-index: 2;
+		top: 38%;
+		height: 95%;
+		mask-image: url('/halloween/fog-front.webp');
+		background: var(--fog-pale);
+		opacity: 0.8;
+		animation: shadow-realm-drift 80s linear infinite reverse;
+	}
+
+	.shadow-realm-fog-trail {
+		z-index: 0;
+		bottom: 0;
+		height: 42%;
+		mask-image: url('/halloween/fog-back.webp'), linear-gradient(#000 55%, transparent);
+		mask-repeat: repeat-x, no-repeat;
+		mask-size: 50% 100%, 100% 100%;
+		mask-composite: intersect;
+		background: var(--fog-deep);
+		opacity: 0.55;
+		animation: shadow-realm-drift 110s linear infinite;
+	}
+
+	.shadow-realm-body {
+		position: relative;
+		z-index: 3;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 1.75rem;
+		padding: 0 1rem;
+		margin-top: clamp(2.5rem, 5vw, 4rem);
+	}
+
+	.shadow-realm-lede {
+		max-width: 38ch;
+		margin: 0;
+		font-size: clamp(1.05rem, 1.6vw, 1.25rem);
+		line-height: 1.55;
+		color: rgb(236 228 255 / 0.82);
+		text-wrap: pretty;
+	}
+
+	.shadow-realm-nights ol {
+		display: flex;
+		align-items: flex-end;
+		justify-content: center;
+		gap: clamp(0.3rem, 1vw, 0.6rem);
+		height: 2.75rem;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.shadow-realm-nights li {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	.shadow-realm-night-mark {
+		display: block;
+		width: 0.3rem;
+		height: 1.1rem;
+		border-radius: 999px;
+		background: #6a52a0;
+	}
+
+	.shadow-realm-nights li[data-state='past'] .shadow-realm-night-mark {
+		background: #b39ae8;
+	}
+
+	.shadow-realm-nights li[data-halloween] .shadow-realm-night-mark {
+		height: 1.75rem;
+		background: transparent;
+		box-shadow: inset 0 0 0 2px var(--ecto);
+	}
+
+	.shadow-realm-nights li[data-state='tonight'] .shadow-realm-night-mark {
+		width: 0.45rem;
+		height: 2.25rem;
+		background: var(--ecto);
+		box-shadow: none;
+	}
+
+	.shadow-realm-night-label {
+		position: absolute;
+		top: 100%;
+		margin-top: 0.3rem;
+		font-size: 0.85rem;
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
+		color: var(--ecto);
+	}
+
+	.shadow-realm-nights-caption {
+		margin: 1.4rem 0 0;
+		font-size: 0.85rem;
+		font-weight: 600;
+		letter-spacing: 0.04em;
+		color: #c9b2ff;
+		font-variant-numeric: tabular-nums;
+	}
+
+	.shadow-realm-actions {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 0.75rem;
+	}
+
+	.shadow-realm-actions .btn-outline {
+		border-color: rgb(236 228 255 / 0.35);
+		color: var(--color-base-content, #ece4ff);
+	}
+
+	.shadow-realm-actions .btn-outline:hover {
+		border-color: var(--color-base-content, #ece4ff);
+		background: rgb(236 228 255 / 0.08);
+	}
+
+	@keyframes shadow-realm-drift {
+		from {
+			transform: translateX(0);
+		}
+		to {
+			transform: translateX(-50%);
+		}
+	}
+
+	/* Two flickers per strike, then dark for the rest of the cycle: well under three flashes a second. */
+	@keyframes shadow-realm-strike {
+		0%,
+		100% {
+			opacity: 0;
+		}
+		0.6% {
+			opacity: 1;
+		}
+		1.6% {
+			opacity: 0.15;
+		}
+		2.4% {
+			opacity: 0.85;
+		}
+		5% {
+			opacity: 0;
+		}
+	}
+
+	@keyframes shadow-realm-surface {
+		from {
+			transform: translateY(0.18em);
+			filter: blur(10px);
+			opacity: 0.35;
+		}
+	}
+
+	@media (prefers-reduced-motion: no-preference) {
+		.shadow-realm-season {
+			animation: shadow-realm-surface 1.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+		}
+
+		.shadow-realm-strike {
+			animation: shadow-realm-strike var(--cycle) var(--delay) linear infinite;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.shadow-realm-fog {
+			animation: none;
+		}
+
+		.shadow-realm-still {
+			display: none;
+		}
+	}
+
+	@media (max-width: 640px) {
+		.shadow-realm-fog {
+			mask-size: 100% 100%;
+		}
+
+		.shadow-realm-fog-trail {
+			mask-size: 100% 100%, 100% 100%;
+		}
+
+		.shadow-realm-fog-front {
+			top: 30%;
+			height: 110%;
+		}
+
+		.shadow-realm-nights ol {
+			gap: 0.28rem;
+		}
+
+		.shadow-realm-horizon::before {
+			background: linear-gradient(
+				to top,
+				transparent 2%,
+				rgb(75 50 119 / 0.45) 14%,
+				rgb(60 38 98 / 0.2) 32%,
+				transparent 46%
+			);
+		}
+
+		.shadow-realm-bolts-wide {
+			display: none;
+		}
+
+		.shadow-realm-bolts-narrow {
+			display: inline;
+		}
+	}
+</style>

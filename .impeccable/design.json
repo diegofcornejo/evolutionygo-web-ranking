@@ -1,0 +1,676 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-09T19:02:17.418897+00:00",
+  "title": "Design System: Evolution YGO",
+  "extensions": {
+    "colorMeta": {
+      "night-base-100": {
+        "role": "neutral",
+        "displayName": "Night Slate 100",
+        "canonical": "oklch(20.768% 0.039 265.754)",
+        "tonalRamp": [
+          "oklch(15% 0.039 265.8)",
+          "oklch(25% 0.039 265.8)",
+          "oklch(35% 0.039 265.8)",
+          "oklch(48% 0.039 265.8)",
+          "oklch(60% 0.039 265.8)",
+          "oklch(72% 0.039 265.8)",
+          "oklch(84% 0.039 265.8)",
+          "oklch(95% 0.039 265.8)"
+        ],
+        "source": "DaisyUI 5 night preset (not authored in repo)"
+      },
+      "night-base-200": {
+        "role": "neutral",
+        "displayName": "Night Slate 200",
+        "canonical": "oklch(19.314% 0.037 265.754)",
+        "tonalRamp": [
+          "oklch(15% 0.037 265.8)",
+          "oklch(25% 0.037 265.8)",
+          "oklch(35% 0.037 265.8)",
+          "oklch(48% 0.037 265.8)",
+          "oklch(60% 0.037 265.8)",
+          "oklch(72% 0.037 265.8)",
+          "oklch(84% 0.037 265.8)",
+          "oklch(95% 0.037 265.8)"
+        ],
+        "source": "DaisyUI 5 night preset (not authored in repo)"
+      },
+      "night-base-300": {
+        "role": "neutral",
+        "displayName": "Night Slate 300",
+        "canonical": "oklch(17.86% 0.034 265.754)",
+        "tonalRamp": [
+          "oklch(15% 0.034 265.8)",
+          "oklch(25% 0.034 265.8)",
+          "oklch(35% 0.034 265.8)",
+          "oklch(48% 0.034 265.8)",
+          "oklch(60% 0.034 265.8)",
+          "oklch(72% 0.034 265.8)",
+          "oklch(84% 0.034 265.8)",
+          "oklch(95% 0.034 265.8)"
+        ],
+        "source": "DaisyUI 5 night preset (not authored in repo)"
+      },
+      "night-base-content": {
+        "role": "neutral",
+        "displayName": "Night Text",
+        "canonical": "oklch(84.153% 0.007 265.754)",
+        "tonalRamp": [
+          "oklch(15% 0.007 265.8)",
+          "oklch(25% 0.007 265.8)",
+          "oklch(35% 0.007 265.8)",
+          "oklch(48% 0.007 265.8)",
+          "oklch(60% 0.007 265.8)",
+          "oklch(72% 0.007 265.8)",
+          "oklch(84% 0.007 265.8)",
+          "oklch(95% 0.007 265.8)"
+        ],
+        "source": "DaisyUI 5 night preset (not authored in repo)"
+      },
+      "night-primary": {
+        "role": "primary",
+        "displayName": "Night Sky Blue",
+        "canonical": "oklch(75.351% 0.138 232.661)",
+        "tonalRamp": [
+          "oklch(15% 0.138 232.7)",
+          "oklch(25% 0.138 232.7)",
+          "oklch(35% 0.138 232.7)",
+          "oklch(48% 0.138 232.7)",
+          "oklch(60% 0.138 232.7)",
+          "oklch(72% 0.138 232.7)",
+          "oklch(84% 0.138 232.7)",
+          "oklch(95% 0.138 232.7)"
+        ],
+        "source": "DaisyUI 5 night preset (not authored in repo)"
+      },
+      "night-secondary": {
+        "role": "secondary",
+        "displayName": "Night Violet",
+        "canonical": "oklch(68.011% 0.158 276.934)",
+        "tonalRamp": [
+          "oklch(15% 0.158 276.9)",
+          "oklch(25% 0.158 276.9)",
+          "oklch(35% 0.158 276.9)",
+          "oklch(48% 0.158 276.9)",
+          "oklch(60% 0.158 276.9)",
+          "oklch(72% 0.158 276.9)",
+          "oklch(84% 0.158 276.9)",
+          "oklch(95% 0.158 276.9)"
+        ],
+        "source": "DaisyUI 5 night preset (not authored in repo)"
+      },
+      "night-accent": {
+        "role": "tertiary",
+        "displayName": "Night Rose",
+        "canonical": "oklch(72.36% 0.176 350.048)",
+        "tonalRamp": [
+          "oklch(15% 0.176 350.0)",
+          "oklch(25% 0.176 350.0)",
+          "oklch(35% 0.176 350.0)",
+          "oklch(48% 0.176 350.0)",
+          "oklch(60% 0.176 350.0)",
+          "oklch(72% 0.176 350.0)",
+          "oklch(84% 0.176 350.0)",
+          "oklch(95% 0.176 350.0)"
+        ],
+        "source": "DaisyUI 5 night preset (not authored in repo)"
+      },
+      "night-neutral": {
+        "role": "neutral",
+        "displayName": "Night Neutral",
+        "canonical": "oklch(27.949% 0.036 260.03)",
+        "tonalRamp": [
+          "oklch(15% 0.036 260.0)",
+          "oklch(25% 0.036 260.0)",
+          "oklch(35% 0.036 260.0)",
+          "oklch(48% 0.036 260.0)",
+          "oklch(60% 0.036 260.0)",
+          "oklch(72% 0.036 260.0)",
+          "oklch(84% 0.036 260.0)",
+          "oklch(95% 0.036 260.0)"
+        ],
+        "source": "DaisyUI 5 night preset (not authored in repo)"
+      },
+      "page-ground": {
+        "role": "neutral",
+        "displayName": "Page Ground",
+        "canonical": "oklch(19.6% 0.011 268.1)",
+        "tonalRamp": [
+          "oklch(15% 0.011 268.1)",
+          "oklch(25% 0.011 268.1)",
+          "oklch(35% 0.011 268.1)",
+          "oklch(48% 0.011 268.1)",
+          "oklch(60% 0.011 268.1)",
+          "oklch(72% 0.011 268.1)",
+          "oklch(84% 0.011 268.1)",
+          "oklch(95% 0.011 268.1)"
+        ]
+      },
+      "rank-gold": {
+        "role": "tertiary",
+        "displayName": "Rank Gold",
+        "canonical": "oklch(88.7% 0.182 95.3)",
+        "tonalRamp": [
+          "oklch(15% 0.182 95.3)",
+          "oklch(25% 0.182 95.3)",
+          "oklch(35% 0.182 95.3)",
+          "oklch(48% 0.182 95.3)",
+          "oklch(60% 0.182 95.3)",
+          "oklch(72% 0.182 95.3)",
+          "oklch(84% 0.182 95.3)",
+          "oklch(95% 0.182 95.3)"
+        ]
+      },
+      "rank-silver": {
+        "role": "tertiary",
+        "displayName": "Rank Silver",
+        "canonical": "oklch(80.8% 0.000 89.9)",
+        "tonalRamp": [
+          "oklch(15% 0.000 89.9)",
+          "oklch(25% 0.000 89.9)",
+          "oklch(35% 0.000 89.9)",
+          "oklch(48% 0.000 89.9)",
+          "oklch(60% 0.000 89.9)",
+          "oklch(72% 0.000 89.9)",
+          "oklch(84% 0.000 89.9)",
+          "oklch(95% 0.000 89.9)"
+        ]
+      },
+      "rank-bronze": {
+        "role": "tertiary",
+        "displayName": "Rank Bronze",
+        "canonical": "oklch(66.6% 0.132 61.3)",
+        "tonalRamp": [
+          "oklch(15% 0.132 61.3)",
+          "oklch(25% 0.132 61.3)",
+          "oklch(35% 0.132 61.3)",
+          "oklch(48% 0.132 61.3)",
+          "oklch(60% 0.132 61.3)",
+          "oklch(72% 0.132 61.3)",
+          "oklch(84% 0.132 61.3)",
+          "oklch(95% 0.132 61.3)"
+        ]
+      },
+      "shadowrealm-void": {
+        "role": "neutral",
+        "displayName": "Void",
+        "canonical": "oklch(13.8% 0.028 303.4)",
+        "tonalRamp": [
+          "oklch(15% 0.028 303.4)",
+          "oklch(25% 0.028 303.4)",
+          "oklch(35% 0.028 303.4)",
+          "oklch(48% 0.028 303.4)",
+          "oklch(60% 0.028 303.4)",
+          "oklch(72% 0.028 303.4)",
+          "oklch(84% 0.028 303.4)",
+          "oklch(95% 0.028 303.4)"
+        ],
+        "scope": "html[data-edition='halloween'] only"
+      },
+      "shadowrealm-base-100": {
+        "role": "neutral",
+        "displayName": "Shadowrealm Base 100",
+        "canonical": "oklch(16.6% 0.038 303.0)",
+        "tonalRamp": [
+          "oklch(15% 0.038 303.0)",
+          "oklch(25% 0.038 303.0)",
+          "oklch(35% 0.038 303.0)",
+          "oklch(48% 0.038 303.0)",
+          "oklch(60% 0.038 303.0)",
+          "oklch(72% 0.038 303.0)",
+          "oklch(84% 0.038 303.0)",
+          "oklch(95% 0.038 303.0)"
+        ],
+        "scope": "html[data-edition='halloween'] only"
+      },
+      "shadowrealm-base-200": {
+        "role": "neutral",
+        "displayName": "Shadowrealm Base 200",
+        "canonical": "oklch(18.6% 0.047 302.1)",
+        "tonalRamp": [
+          "oklch(15% 0.047 302.1)",
+          "oklch(25% 0.047 302.1)",
+          "oklch(35% 0.047 302.1)",
+          "oklch(48% 0.047 302.1)",
+          "oklch(60% 0.047 302.1)",
+          "oklch(72% 0.047 302.1)",
+          "oklch(84% 0.047 302.1)",
+          "oklch(95% 0.047 302.1)"
+        ],
+        "scope": "html[data-edition='halloween'] only"
+      },
+      "shadowrealm-base-300": {
+        "role": "neutral",
+        "displayName": "Shadowrealm Base 300",
+        "canonical": "oklch(21.1% 0.057 300.8)",
+        "tonalRamp": [
+          "oklch(15% 0.057 300.8)",
+          "oklch(25% 0.057 300.8)",
+          "oklch(35% 0.057 300.8)",
+          "oklch(48% 0.057 300.8)",
+          "oklch(60% 0.057 300.8)",
+          "oklch(72% 0.057 300.8)",
+          "oklch(84% 0.057 300.8)",
+          "oklch(95% 0.057 300.8)"
+        ],
+        "scope": "html[data-edition='halloween'] only"
+      },
+      "shadowrealm-neutral": {
+        "role": "neutral",
+        "displayName": "Shadowrealm Neutral",
+        "canonical": "oklch(25.3% 0.065 298.8)",
+        "tonalRamp": [
+          "oklch(15% 0.065 298.8)",
+          "oklch(25% 0.065 298.8)",
+          "oklch(35% 0.065 298.8)",
+          "oklch(48% 0.065 298.8)",
+          "oklch(60% 0.065 298.8)",
+          "oklch(72% 0.065 298.8)",
+          "oklch(84% 0.065 298.8)",
+          "oklch(95% 0.065 298.8)"
+        ],
+        "scope": "html[data-edition='halloween'] only"
+      },
+      "shadowrealm-ink": {
+        "role": "neutral",
+        "displayName": "Shadowrealm Ink",
+        "canonical": "oklch(93.3% 0.037 299.2)",
+        "tonalRamp": [
+          "oklch(15% 0.037 299.2)",
+          "oklch(25% 0.037 299.2)",
+          "oklch(35% 0.037 299.2)",
+          "oklch(48% 0.037 299.2)",
+          "oklch(60% 0.037 299.2)",
+          "oklch(72% 0.037 299.2)",
+          "oklch(84% 0.037 299.2)",
+          "oklch(95% 0.037 299.2)"
+        ],
+        "scope": "html[data-edition='halloween'] only"
+      },
+      "shadowrealm-ecto": {
+        "role": "primary",
+        "displayName": "Ectoplasm Green",
+        "canonical": "oklch(90.9% 0.206 136.3)",
+        "tonalRamp": [
+          "oklch(15% 0.200 136.3)",
+          "oklch(25% 0.200 136.3)",
+          "oklch(35% 0.200 136.3)",
+          "oklch(48% 0.200 136.3)",
+          "oklch(60% 0.200 136.3)",
+          "oklch(72% 0.200 136.3)",
+          "oklch(84% 0.200 136.3)",
+          "oklch(95% 0.200 136.3)"
+        ],
+        "scope": "html[data-edition='halloween'] only"
+      },
+      "shadowrealm-violet": {
+        "role": "secondary",
+        "displayName": "Sigil Violet",
+        "canonical": "oklch(61.1% 0.229 291.0)",
+        "tonalRamp": [
+          "oklch(15% 0.200 291.0)",
+          "oklch(25% 0.200 291.0)",
+          "oklch(35% 0.200 291.0)",
+          "oklch(48% 0.200 291.0)",
+          "oklch(60% 0.200 291.0)",
+          "oklch(72% 0.200 291.0)",
+          "oklch(84% 0.200 291.0)",
+          "oklch(95% 0.200 291.0)"
+        ],
+        "scope": "html[data-edition='halloween'] only"
+      },
+      "shadowrealm-lilac": {
+        "role": "secondary",
+        "displayName": "Lilac",
+        "canonical": "oklch(81.1% 0.109 297.6)",
+        "tonalRamp": [
+          "oklch(15% 0.109 297.6)",
+          "oklch(25% 0.109 297.6)",
+          "oklch(35% 0.109 297.6)",
+          "oklch(48% 0.109 297.6)",
+          "oklch(60% 0.109 297.6)",
+          "oklch(72% 0.109 297.6)",
+          "oklch(84% 0.109 297.6)",
+          "oklch(95% 0.109 297.6)"
+        ],
+        "scope": "html[data-edition='halloween'] only"
+      },
+      "shadowrealm-fog-deep": {
+        "role": "neutral",
+        "displayName": "Fog Deep",
+        "canonical": "oklch(38.3% 0.114 297.5)",
+        "tonalRamp": [
+          "oklch(15% 0.114 297.5)",
+          "oklch(25% 0.114 297.5)",
+          "oklch(35% 0.114 297.5)",
+          "oklch(48% 0.114 297.5)",
+          "oklch(60% 0.114 297.5)",
+          "oklch(72% 0.114 297.5)",
+          "oklch(84% 0.114 297.5)",
+          "oklch(95% 0.114 297.5)"
+        ],
+        "scope": "html[data-edition='halloween'] only"
+      },
+      "shadowrealm-fog-pale": {
+        "role": "neutral",
+        "displayName": "Fog Pale",
+        "canonical": "oklch(75.8% 0.097 299.1)",
+        "tonalRamp": [
+          "oklch(15% 0.097 299.1)",
+          "oklch(25% 0.097 299.1)",
+          "oklch(35% 0.097 299.1)",
+          "oklch(48% 0.097 299.1)",
+          "oklch(60% 0.097 299.1)",
+          "oklch(72% 0.097 299.1)",
+          "oklch(84% 0.097 299.1)",
+          "oklch(95% 0.097 299.1)"
+        ],
+        "scope": "html[data-edition='halloween'] only"
+      },
+      "shadowrealm-fog-floor": {
+        "role": "neutral",
+        "displayName": "Fog Floor",
+        "canonical": "oklch(33.8% 0.097 296.2)",
+        "tonalRamp": [
+          "oklch(15% 0.097 296.2)",
+          "oklch(25% 0.097 296.2)",
+          "oklch(35% 0.097 296.2)",
+          "oklch(48% 0.097 296.2)",
+          "oklch(60% 0.097 296.2)",
+          "oklch(72% 0.097 296.2)",
+          "oklch(84% 0.097 296.2)",
+          "oklch(95% 0.097 296.2)"
+        ],
+        "scope": "html[data-edition='halloween'] only"
+      },
+      "shadowrealm-warning": {
+        "role": "tertiary",
+        "displayName": "Shadowrealm Warning",
+        "canonical": "oklch(87.5% 0.142 86.3)",
+        "tonalRamp": [
+          "oklch(15% 0.142 86.3)",
+          "oklch(25% 0.142 86.3)",
+          "oklch(35% 0.142 86.3)",
+          "oklch(48% 0.142 86.3)",
+          "oklch(60% 0.142 86.3)",
+          "oklch(72% 0.142 86.3)",
+          "oklch(84% 0.142 86.3)",
+          "oklch(95% 0.142 86.3)"
+        ],
+        "scope": "html[data-edition='halloween'] only"
+      },
+      "shadowrealm-error": {
+        "role": "tertiary",
+        "displayName": "Shadowrealm Error",
+        "canonical": "oklch(71.8% 0.181 10.0)",
+        "tonalRamp": [
+          "oklch(15% 0.181 10.0)",
+          "oklch(25% 0.181 10.0)",
+          "oklch(35% 0.181 10.0)",
+          "oklch(48% 0.181 10.0)",
+          "oklch(60% 0.181 10.0)",
+          "oklch(72% 0.181 10.0)",
+          "oklch(84% 0.181 10.0)",
+          "oklch(95% 0.181 10.0)"
+        ],
+        "scope": "html[data-edition='halloween'] only"
+      },
+      "shadowrealm-info": {
+        "role": "tertiary",
+        "displayName": "Shadowrealm Info",
+        "canonical": "oklch(78.1% 0.111 261.1)",
+        "tonalRamp": [
+          "oklch(15% 0.111 261.1)",
+          "oklch(25% 0.111 261.1)",
+          "oklch(35% 0.111 261.1)",
+          "oklch(48% 0.111 261.1)",
+          "oklch(60% 0.111 261.1)",
+          "oklch(72% 0.111 261.1)",
+          "oklch(84% 0.111 261.1)",
+          "oklch(95% 0.111 261.1)"
+        ],
+        "scope": "html[data-edition='halloween'] only"
+      }
+    },
+    "typographyMeta": {
+      "body": {
+        "displayName": "Body",
+        "purpose": "All reading and UI text in every world; Plus Jakarta Sans Variable."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section and page h1/h2 in the everyday world."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Card titles, profile headers, sub-sections."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Captions and counters with tabular numerals, e.g. 'Night 9 of 17'."
+      },
+      "edition-display": {
+        "displayName": "Edition Display",
+        "purpose": "Grenze 700 caps 'Season N' in the Halloween hero only; lower half masked into fog."
+      },
+      "edition-brand": {
+        "displayName": "Edition Brand",
+        "purpose": "Small Grenze 'Evolution YGO' line above the display word, lilac."
+      },
+      "edition-lede": {
+        "displayName": "Edition Lede",
+        "purpose": "Hero lede under the edition, ink at 82%, max 38ch, text-wrap pretty."
+      }
+    },
+    "shadows": [
+      {
+        "name": "card-ambient",
+        "value": "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)",
+        "purpose": "Tailwind shadow-xl on duelist and ranking cards."
+      },
+      {
+        "name": "banner-ambient",
+        "value": "0 25px 50px -12px rgb(0 0 0 / 0.25)",
+        "purpose": "Tailwind shadow-2xl on news banners."
+      },
+      {
+        "name": "primary-cta-glow",
+        "value": "0 10px 15px -3px color-mix(in oklab, var(--color-primary) 20%, transparent)",
+        "purpose": "Banner primary CTA only."
+      },
+      {
+        "name": "night-mark-halloween",
+        "value": "inset 0 0 0 2px var(--color-primary)",
+        "purpose": "Hollow ecto outline on the Oct 31 night mark (edition only)."
+      }
+    ],
+    "motion": [
+      {
+        "name": "fog-drift-back",
+        "value": "140s linear infinite translateX(0 -> -50%)",
+        "purpose": "Back fog layer behind the display word; transform only; off under reduced motion."
+      },
+      {
+        "name": "fog-drift-front",
+        "value": "80s linear infinite reverse",
+        "purpose": "Front fog layer in front of the display word, opposite direction for parallax."
+      },
+      {
+        "name": "fog-drift-trail",
+        "value": "110s linear infinite",
+        "purpose": "Trailing fog thinning the hero into the next section."
+      },
+      {
+        "name": "season-surface",
+        "value": "1.6s cubic-bezier(0.16, 1, 0.3, 1) both",
+        "purpose": "Display word rises out of blur once on load; only under prefers-reduced-motion: no-preference."
+      },
+      {
+        "name": "card-hover",
+        "value": "200ms ease-in-out",
+        "purpose": "Duelist card background to neutral on hover."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      }
+    ],
+    "editions": [
+      {
+        "name": "halloween",
+        "title": "Sent to the Shadow Realm",
+        "window": "Oct 1 to Nov 2 inclusive, UTC",
+        "daisyTheme": "shadowrealm",
+        "scope": "html[data-edition='halloween']",
+        "preview": "?edition=halloween",
+        "suppress": "?edition=off",
+        "displayFont": "Grenze 700 latin woff2, preloaded only when active",
+        "atmosphere": [
+          "/halloween/fog-back.webp",
+          "/halloween/fog-front.webp"
+        ]
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button (everyday)",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "DaisyUI btn-primary on the night theme; the everyday main action.",
+      "html": "<a class=\"ds-btn-primary\" href=\"#\">Download EvoDuel</a>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; gap: 0.5rem; height: 3rem; padding: 0 1rem; border-radius: 0.5rem; background: oklch(75.351% 0.138 232.661); color: oklch(15.07% 0.027 232.661); font-family: 'Plus Jakarta Sans Variable', system-ui, sans-serif; font-weight: 600; font-size: 0.875rem; text-decoration: none; box-shadow: 0 10px 15px -3px oklch(75.351% 0.138 232.661 / 0.2); transition: background 0.2s; } .ds-btn-primary:hover { background: oklch(68% 0.138 232.661); } .ds-btn-primary:focus-visible { outline: 2px solid oklch(75.351% 0.138 232.661); outline-offset: 2px; }"
+    },
+    {
+      "name": "Edition Primary Button",
+      "kind": "button",
+      "refersTo": "edition-button-primary",
+      "description": "Ecto-green primary CTA under the Halloween edition ('Duel in the dark').",
+      "html": "<a class=\"ds-ed-btn-primary\" href=\"#\">Duel in the dark</a>",
+      "css": ".ds-ed-btn-primary { display: inline-flex; align-items: center; height: 3.5rem; padding: 0 1.5rem; border-radius: 0.5rem; background: #9dff6a; color: #0b0612; font-family: 'Plus Jakarta Sans Variable', system-ui, sans-serif; font-weight: 600; font-size: 1.125rem; text-decoration: none; transition: background 0.2s; } .ds-ed-btn-primary:hover { background: #8be85a; } .ds-ed-btn-primary:focus-visible { outline: 2px solid #9dff6a; outline-offset: 2px; }"
+    },
+    {
+      "name": "Edition Outline Button",
+      "kind": "button",
+      "refersTo": "edition-button-outline",
+      "description": "Secondary CTA under the edition ('See the rankings'); ink outline, never green.",
+      "html": "<a class=\"ds-ed-btn-outline\" href=\"#\">See the rankings</a>",
+      "css": ".ds-ed-btn-outline { display: inline-flex; align-items: center; height: 3.5rem; padding: 0 1.5rem; border-radius: 0.5rem; background: transparent; border: 1px solid rgb(236 228 255 / 0.35); color: #ece4ff; font-family: 'Plus Jakarta Sans Variable', system-ui, sans-serif; font-weight: 600; font-size: 1.125rem; text-decoration: none; transition: border-color 0.2s, background 0.2s; } .ds-ed-btn-outline:hover { border-color: #ece4ff; background: rgb(236 228 255 / 0.08); } .ds-ed-btn-outline:focus-visible { outline: 2px solid #9dff6a; outline-offset: 2px; }"
+    },
+    {
+      "name": "Duelist Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Ranking card on base-300; top three carry a 2px rank-metal border.",
+      "html": "<a class=\"ds-card ds-card-gold\" href=\"#\"><span class=\"ds-card-pos\">#1</span><span class=\"ds-card-name\">Duelist</span><span class=\"ds-card-meta\">1,240 pts · 68% win rate</span></a>",
+      "css": ".ds-card { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; max-width: 24rem; padding: 2rem; border-radius: 1rem; background: oklch(17.86% 0.034 265.754); color: oklch(84.153% 0.007 265.754); border: 2px solid transparent; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); font-family: 'Plus Jakarta Sans Variable', system-ui, sans-serif; text-decoration: none; transition: background 0.2s ease-in-out; } .ds-card:hover { background: oklch(27.949% 0.036 260.03); } .ds-card:focus-visible { outline: 2px solid oklch(75.351% 0.138 232.661); outline-offset: 2px; } .ds-card-gold { border-color: #FFD700; } .ds-card-pos { color: #FFD700; font-weight: 700; font-variant-numeric: tabular-nums; } .ds-card-name { font-size: 1.25rem; font-weight: 700; } .ds-card-meta { font-size: 0.875rem; font-variant-numeric: tabular-nums; opacity: 0.8; }"
+    },
+    {
+      "name": "News Banner",
+      "kind": "card",
+      "description": "Signature banner: blurred image backdrop, scrim, primary pill bar, bold balanced title, primary CTA.",
+      "html": "<article class=\"ds-banner\"><div class=\"ds-banner-bar\"></div><h2 class=\"ds-banner-title\">Season 7 is live</h2><p class=\"ds-banner-desc\">New banlist, fresh ladder, same points.</p><a class=\"ds-banner-cta\" href=\"#\">Read more</a></article>",
+      "css": ".ds-banner { position: relative; overflow: hidden; padding: 2rem; border-radius: 1rem; border: 1px solid rgb(255 255 255 / 0.1); background: linear-gradient(to bottom right, oklch(17.86% 0.034 265.754), oklch(17.86% 0.034 265.754), oklch(75.351% 0.138 232.661 / 0.1)); box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25); font-family: 'Plus Jakarta Sans Variable', system-ui, sans-serif; color: #fff; } .ds-banner-bar { width: 3.5rem; height: 0.25rem; border-radius: 999px; background: oklch(75.351% 0.138 232.661); margin-bottom: 1rem; } .ds-banner-title { margin: 0; font-size: 1.875rem; font-weight: 700; line-height: 1.25; text-wrap: balance; } .ds-banner-desc { margin: 1rem 0 0; max-width: 36rem; font-size: 1.125rem; line-height: 1.625; color: rgb(255 255 255 / 0.85); text-wrap: pretty; } .ds-banner-cta { display: inline-flex; margin-top: 1.75rem; height: 3rem; align-items: center; padding: 0 1rem; border-radius: 0.5rem; background: oklch(75.351% 0.138 232.661); color: oklch(15.07% 0.027 232.661); font-weight: 600; text-decoration: none; } .ds-banner-cta:hover { background: oklch(68% 0.138 232.661); } .ds-banner-cta:focus-visible { outline: 2px solid oklch(75.351% 0.138 232.661); outline-offset: 2px; }"
+    },
+    {
+      "name": "Navbar",
+      "kind": "nav",
+      "description": "DaisyUI navbar: horizontal menu with primary active chip, theme toggle, auth buttons.",
+      "html": "<nav class=\"ds-nav\"><ul class=\"ds-nav-menu\"><li><a class=\"ds-nav-active\" href=\"#\">Home</a></li><li><a href=\"#\">Ranking</a></li><li><a href=\"#\">Watch</a></li><li><a href=\"#\">Stats</a></li></ul><a class=\"ds-nav-auth\" href=\"#\">Login</a></nav>",
+      "css": ".ds-nav { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.5rem 1rem; background: oklch(20.768% 0.039 265.754); font-family: 'Plus Jakarta Sans Variable', system-ui, sans-serif; } .ds-nav-menu { display: flex; gap: 0.25rem; list-style: none; margin: 0; padding: 0; } .ds-nav-menu a { display: block; padding: 0.375rem 0.75rem; border-radius: 0.5rem; color: oklch(84.153% 0.007 265.754); text-decoration: none; font-size: 0.875rem; } .ds-nav-menu a:hover { background: oklch(84.153% 0.007 265.754 / 0.1); } .ds-nav-menu a:focus-visible, .ds-nav-auth:focus-visible { outline: 2px solid oklch(75.351% 0.138 232.661); outline-offset: 2px; } .ds-nav-active { color: oklch(75.351% 0.138 232.661) !important; background: oklch(17.86% 0.034 265.754); font-weight: 600; } .ds-nav-auth { padding: 0.375rem 0.75rem; border: 1px solid currentColor; border-radius: 0.5rem; color: oklch(84.153% 0.007 265.754); font-size: 0.8125rem; font-weight: 600; text-decoration: none; } .ds-nav-auth:hover { background: oklch(84.153% 0.007 265.754 / 0.1); }"
+    },
+    {
+      "name": "Nights Row",
+      "kind": "custom",
+      "refersTo": "edition-night-mark",
+      "description": "Halloween edition: one pill mark per night; states ahead, past, halloween (hollow ecto), tonight (solid ecto).",
+      "html": "<div class=\"ds-nights\"><ol><li data-state=\"past\"><span></span></li><li data-state=\"past\"><span></span></li><li data-state=\"tonight\"><span></span></li><li><span></span></li><li data-halloween><span></span><b>31</b></li><li><span></span></li></ol><p>Night 3 of 17</p></div>",
+      "css": ".ds-nights { padding: 1.5rem; background: #120a1c; text-align: center; font-family: 'Plus Jakarta Sans Variable', system-ui, sans-serif; } .ds-nights ol { display: flex; align-items: flex-end; justify-content: center; gap: 0.6rem; height: 2.75rem; margin: 0; padding: 0; list-style: none; } .ds-nights li { position: relative; display: flex; flex-direction: column; align-items: center; } .ds-nights span { display: block; width: 0.3rem; height: 1.1rem; border-radius: 999px; background: #6a52a0; } .ds-nights li[data-state='past'] span { background: #b39ae8; } .ds-nights li[data-halloween] span { height: 1.75rem; background: transparent; box-shadow: inset 0 0 0 2px #9dff6a; } .ds-nights li[data-state='tonight'] span { width: 0.45rem; height: 2.25rem; background: #9dff6a; } .ds-nights b { position: absolute; top: 100%; margin-top: 0.3rem; font-size: 0.75rem; color: #9dff6a; font-variant-numeric: tabular-nums; } .ds-nights p { margin: 1.4rem 0 0; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.04em; color: #c9b2ff; font-variant-numeric: tabular-nums; }"
+    },
+    {
+      "name": "Shadow Realm Lockup",
+      "kind": "custom",
+      "description": "Edition hero lockup: violet eye sigil with ecto pupil, small Grenze brand line, giant Grenze 'Season N' masked into fog.",
+      "html": "<div class=\"ds-realm\"><svg class=\"ds-realm-sigil\" viewBox=\"0 0 64 40\" aria-hidden=\"true\"><path d=\"M2 20C12 6 52 6 62 20C52 34 12 34 2 20Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/><circle cx=\"32\" cy=\"20\" r=\"10\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/><path d=\"M32 12C35 16 35 24 32 28C29 24 29 16 32 12Z\" fill=\"#9dff6a\"/><path d=\"M22 31L20 38M32 33V39M42 31L44 38\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"/></svg><h1><span class=\"ds-realm-brand\">Evolution YGO</span><span class=\"ds-realm-season\">Season 7</span></h1></div>",
+      "css": ".ds-realm { padding: 2.5rem 1rem; text-align: center; background: linear-gradient(180deg, #0b0612 0%, #140a20 55%, #120a1c 100%); color: #ece4ff; } .ds-realm-sigil { display: block; width: 5rem; margin: 0 auto 1.25rem; color: #8a5cff; } .ds-realm h1 { display: flex; flex-direction: column; align-items: center; margin: 0; line-height: 1; } .ds-realm-brand { font-family: 'Grenze', 'Plus Jakarta Sans Variable', serif; font-weight: 700; font-size: 2rem; color: #c9b2ff; } .ds-realm-season { font-family: 'Grenze', 'Plus Jakarta Sans Variable', serif; font-weight: 700; font-size: 5rem; line-height: 0.82; letter-spacing: -0.01em; text-transform: uppercase; margin-top: 0.08em; white-space: nowrap; -webkit-mask-image: linear-gradient(to bottom, #000 38%, rgb(0 0 0 / 0.55) 68%, rgb(0 0 0 / 0.12) 100%); mask-image: linear-gradient(to bottom, #000 38%, rgb(0 0 0 / 0.55) 68%, rgb(0 0 0 / 0.12) 100%); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Arena After Dark",
+    "overview": "Evolution YGO is a dark-ground competitive site: a ranked ladder, live duel rooms, player stats and downloads, all set on DaisyUI's `night` theme with Plus Jakarta Sans throughout. The everyday world is quiet and utilitarian: deep blue-slate surfaces stacked by tone, rounded DaisyUI cards and buttons, sky-blue primary actions, and three metal colors (gold, silver, bronze) that belong only to ranking position. A navbar toggle swaps to DaisyUI's `dracula` theme as the reader's opt-out.\n\nOn top of that world the site runs **seasonal editions**: date-activated skins that take over the whole site for a fixed window each year with no deploy to start or end them. The first is the Halloween edition, \"Sent to the Shadow Realm\" (October 1 to November 2, UTC): a violet-black void ground, drifting procedural violet fog, ectoplasm green as the only emitted light besides rank gold, an original eye sigil, and Grenze display caps against the incumbent sans. The edition repaints; it never re-lays-out the data. The ladder, live rooms and stats read exactly as they do every other day.\n\nThis document records two layers and keeps them separate: **The Everyday World** (always on) and **The Seasonal Edition System** (scoped, temporary, opt-out-able). Anything prefixed `night-`, `page-` or `rank-` belongs to the everyday world; anything prefixed `shadowrealm-` or `edition-` exists only under `html[data-edition='halloween']`.",
+    "keyCharacteristics": [
+      "Dark-only: both everyday themes (`night`, `dracula`) and the edition theme (`shadowrealm`) are `color-scheme: dark`.",
+      "Depth by tonal layering (base-100 / 200 / 300), not by shadow systems.",
+      "Rank metals are semantic, not decorative: gold, silver, bronze mean 1st, 2nd, 3rd.",
+      "Editions activate by date in UTC, are previewable with `?edition=halloween`, suppressible with `?edition=off`, and are always CSS-scoped under `html[data-edition]`.",
+      "Edition atmosphere (fog) lives at the edges of the page (hero, footer), never over data."
+    ],
+    "rules": [
+      {
+        "name": "The Light Discipline Rule",
+        "body": "Under the Halloween edition only two things emit: ectoplasm green and rank gold. Every other edition color is violet, lilac or ink and reads as lit-by, never as a light source. A new green or glowing element must be the single most important action or state on its screen.",
+        "section": "colors"
+      },
+      {
+        "name": "The Metal Means Rank Rule",
+        "body": "Gold, silver and bronze are reserved for ranking position 1, 2, 3. Never use them as general accents, in either world.",
+        "section": "colors"
+      },
+      {
+        "name": "The Same Roles Rule",
+        "body": "An edition theme re-maps DaisyUI's existing roles (base, primary, secondary, accent, neutral, status). It does not add parallel class names, so every everyday component re-tints for free.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Display Face Rule",
+        "body": "A seasonal edition may bring one display face for its hero, loaded only when the edition is active (preloaded as a single woff2 weight in the layout). Body, UI, tables and data stay in Plus Jakarta Sans in every edition.",
+        "section": "typography"
+      },
+      {
+        "name": "The Solid Heading Rule",
+        "body": "Under an edition, headings are solid ink. The edition neutralizes every incumbent gradient-text heading to `shadowrealm-ink`; new edition work never introduces gradient text.",
+        "section": "typography"
+      },
+      {
+        "name": "The Fog Depth Axis Rule",
+        "body": "Fog is thickest at the hero and footer edges and thins to nothing before data. Never place fog over the ladder, live rooms, stats, tables or any text the reader must read.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Transform-Only Drift Rule",
+        "body": "Fog moves only by `transform: translateX` on a double-width layer (80s to 140s linear loops, opposite directions for parallax), and every drift stops under `prefers-reduced-motion: reduce`. No animated masks, filters or background-position on large layers.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do scope every edition rule under `html[data-edition='<name>']` or inside an edition-only component, so the everyday site is byte-for-byte unaffected outside the window.",
+      "Do build each edition as a DaisyUI theme on the standard roles, keeping the 0.5rem field, 1rem box and 1rem selector radii.",
+      "Do re-tint the browser surfaces with the edition: `::selection`, `caret-color`, `accent-color`, `scrollbar-color` and the `:focus-visible` outline.",
+      "Do keep only ectoplasm green and rank gold emitting under the Halloween edition (The Light Discipline Rule).",
+      "Do make atmosphere from authored, tileable procedural textures used as masks and tinted by color, with a provenance sidecar next to each raster.",
+      "Do stop all edition motion under `prefers-reduced-motion: reduce`, and move large layers by transform only.",
+      "Do reserve gold, silver and bronze for ranking positions 1 to 3.",
+      "Do use tabular numerals for counters, dates and ranks."
+    ],
+    "donts": [
+      "Don't use seasonal clip art (pumpkins, bats, cartoon ghosts, stock snowflakes as images); editions are made from ground, light, fog and one original mark.",
+      "Don't let fog or any atmospheric layer cover the ladder, live rooms, stats or any readable text.",
+      "Don't add new gradient-text headings in either world; under an edition, headings are solid ink.",
+      "Don't introduce a second emitted color in the Halloween edition, or use green for anything that is not the primary action or \"tonight\".",
+      "Don't change layout, data density or component structure for an edition; an edition repaints, it never re-arranges the data.",
+      "Don't remove the dracula toggle's ability to override the edition theme.",
+      "Don't load an edition's display font outside its window."
+    ]
+  }
+}
