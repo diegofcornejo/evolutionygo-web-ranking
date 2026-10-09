@@ -1,90 +1,81 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { mount, unmount } from 'svelte';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { flushSync, mount, unmount } from 'svelte';
+import type { Room, WatchRoom } from '@types';
 import MatchCard from '@components/Cards/MatchCard.svelte';
-import type { Room } from '@types';
+import { watchRoomsStore } from '@stores/watch/watchRoomsStore';
 
-// Mock the roomsStore
-vi.mock('@stores/rooms/roomsStore', () => {
-  return {
-    roomsStore: {
-      subscribe: (run: any) => {
-        run([mockRoom]);
-        return () => {};
-      },
-      set: () => {},
-      get: () => [mockRoom],
-    },
-  };
-});
-
-// Create a mock room object
 const mockRoom: Room = {
   id: 1,
   turn: 3,
   bestOf: 3,
-  notes: 'Test match',
+  notes: '(Ranked) - SD Max: 15',
   banList: { name: 'TCG' },
   players: [
-    {
-      position: 0,
-      username: 'Alice',
-      lps: 8000,
-      score: 1,
-      team: 0,
-    },
-    {
-      position: 1,
-      username: 'Bob',
-      lps: 7500,
-      score: 2,
-      team: 1,
-    },
+    { position: 0, userId: 'a1', username: 'Alice', lps: 8000, score: 1, team: 0 },
+    { position: 1, userId: 'b2', username: 'Bob', lps: 1500, score: 2, team: 1 },
   ],
 };
 
 describe('MatchCard.svelte', () => {
   let target: HTMLElement;
+  let instance: ReturnType<typeof mount> | undefined;
 
   beforeEach(() => {
     target = document.createElement('div');
     document.body.appendChild(target);
+    watchRoomsStore.set([]);
   });
 
-  it('renders player usernames and scores', () => {
-    const instance = mount(MatchCard as any, {
-      target,
-      props: { room: mockRoom },
-    });
-    expect(target.innerHTML).toContain('Alice');
-    expect(target.innerHTML).toContain('Bob');
-    expect(target.innerHTML).toContain('8000');
-    expect(target.innerHTML).toContain('7500');
-    expect(target.innerHTML).toContain('vs');
-    // The 'Test match' text is only visible in the dialog, not in the initial render
-    // expect(target.innerHTML).toContain('Test match');
-    unmount(instance);
+  afterEach(() => {
+    if (instance) unmount(instance);
+    instance = undefined;
+    target.remove();
+    document.getElementById('match-card-dialog')?.remove();
   });
 
-  it('opens and closes the dialog when button is clicked', async () => {
-    const instance = mount(MatchCard as any, {
-      target,
-      props: { room: mockRoom },
-    });
-    const button = target.querySelector('button');
-    expect(button).toBeTruthy();
-    // Mock dialog methods before clicking
-    const dialog = document.getElementById('match-card-dialog') as HTMLDialogElement;
-    expect(dialog).toBeTruthy();
-    // JSDOM does not implement showModal/close, so we mock them
-    
-    dialog.showModal = () => { Object.defineProperty(dialog, 'open', { value: true, configurable: true }); };
-    dialog.close = () => { Object.defineProperty(dialog, 'open', { value: false, configurable: true }); };
-    button?.click();
-    expect(dialog.open).toBe(true);
-    // Simulate close
-    const closeBtn = dialog.querySelector('button.btn-primary') as HTMLButtonElement;
-    closeBtn?.click();
-    expect(dialog.open).toBe(false);
-    unmount(instance);
+  it('renders players, life points, score and turn', () => {
+    instance = mount(MatchCard, { target, props: { room: mockRoom } });
+    const text = target.textContent ?? '';
+    expect(text).toContain('Alice');
+    expect(text).toContain('Bob');
+    expect(text).toContain('8000');
+    expect(text).toContain('1500');
+    expect(text).toContain('1–2');
+    expect(text).toContain('T3');
+    expect(text).toContain('Bo3 · TCG');
+  });
+
+  it('flags ranked rooms', () => {
+    instance = mount(MatchCard, { target, props: { room: mockRoom } });
+    expect(target.textContent).toContain('Ranked');
+  });
+
+  it('links each player to their duelist profile', () => {
+    instance = mount(MatchCard, { target, props: { room: mockRoom } });
+    const link = target.querySelector('a[title="Alice"]') as HTMLAnchorElement;
+    expect(link.getAttribute('href')).toContain('/duelists/a1/TCG?username=Alice');
+  });
+
+  it('opens the shared live rooms dialog without rendering its own', () => {
+    const dialog = document.createElement('dialog');
+    dialog.id = 'match-card-dialog';
+    let opened = false;
+    dialog.showModal = () => { opened = true; };
+    document.body.appendChild(dialog);
+
+    instance = mount(MatchCard, { target, props: { room: mockRoom } });
+    expect(target.querySelector('dialog')).toBeNull();
+
+    (target.querySelector('button[aria-label="Show all live rooms"]') as HTMLButtonElement).click();
+    expect(opened).toBe(true);
+  });
+
+  it('shows the watch link only for spectatable rooms', () => {
+    instance = mount(MatchCard, { target, props: { room: mockRoom } });
+    expect(target.querySelector('a[href="/watch?room=1"]')).toBeNull();
+
+    watchRoomsStore.set([{ id: 1 } as WatchRoom]);
+    flushSync();
+    expect(target.querySelector('a[href="/watch?room=1"]')).not.toBeNull();
   });
 });

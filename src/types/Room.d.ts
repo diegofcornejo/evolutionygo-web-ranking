@@ -1,5 +1,6 @@
 type Player = {
 	position: number;
+	userId?: string;
 	username: string;
 	lps: number;
 	score: number;

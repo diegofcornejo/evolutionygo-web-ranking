@@ -2,6 +2,7 @@
   import { onDestroy, onMount } from 'svelte';
   import Marquee from 'svelte-fast-marquee';
   import MatchCard from '@components/Cards/MatchCard.svelte';
+  import LiveRoomsDialog from '@components/LiveRoomsDialog.svelte';
   import { roomsStore } from '../stores/rooms/roomsStore';
   import { startWatchRoomsPolling } from '@stores/watch/watch-actions';
 
@@ -25,9 +26,11 @@
   speed=50
   pauseOnHover
 >
-  <div class="flex gap-2">
+  <div class="flex gap-3 py-3 pr-3">
     {#each $roomsStore as room (room.id)}
       <MatchCard {room} />
     {/each}
   </div>
 </Marquee>
+
+<LiveRoomsDialog />

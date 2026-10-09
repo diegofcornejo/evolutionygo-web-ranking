@@ -1,163 +1,68 @@
 <script lang="ts">
-  import type { Room } from 'src/types/Room';
-	import { roomsStore } from '@stores/rooms/roomsStore';
+	import type { Room } from '@types';
 	import { watchableRoomIds } from '@stores/watch/watchRoomsStore';
+	import { isRoomRanked, lpBaseline, teamLp, teamPlayers, teamScore } from '@utils/liveRoom';
+	import LpSide from '@components/Cards/LpSide.svelte';
 
-  export let room: Room;
+	export let room: Room;
 
-  let team0 = [];
-  let team1 = [];
+	$: ranked = isRoomRanked(room);
+	$: baseline = lpBaseline(room);
 
-	const isRoomRanked = (room: Room) => {
-		return room.notes.includes('(Ranked)');
-	}
-	
-  $: team0 = room.players.filter((p) => p.team === 0);
-  $: team1 = room.players.filter((p) => p.team === 1);
-
-	$: uniqueUsersOnlineCount = new Set($roomsStore.flatMap(room => room.players.map(p => p.username))).size;
-
-  const openLiveRoomTable = () => {
-    const dialog = document.getElementById('match-card-dialog') as HTMLDialogElement;
-    dialog?.showModal();
-  };
-
-  const closeDialog = () => {
-    const dialog = document.getElementById('match-card-dialog') as HTMLDialogElement;
-    dialog?.close();
-  };
-
-  const defaultSeason = import.meta.env.PUBLIC_DEFAULT_SEASON;
+	const openLiveRoomTable = () => {
+		const dialog = document.getElementById('match-card-dialog') as HTMLDialogElement | null;
+		dialog?.showModal();
+	};
 </script>
 
-<button
-  class="card w-full max-w-sm transition-all duration-200 ease-in-out cursor-pointer border-1 {isRoomRanked(room) ? 'border-gold hover:bg-gold/25' : 'border-transparent hover:bg-neutral'}"
-  on:click={openLiveRoomTable}
+<div
+	class="group relative w-80 shrink-0 rounded-box border bg-base-200 p-3 transition-colors duration-200 {ranked
+		? 'border-gold/50 hover:bg-gold/10'
+		: 'border-base-content/10 hover:border-primary/40 hover:bg-base-300'}"
 >
-  <div class="flex flex-col items-center gap-2 m-4 text-sm">
+	<button
+		type="button"
+		class="absolute inset-0 cursor-pointer rounded-box focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+		aria-label="Show all live rooms"
+		on:click={openLiveRoomTable}
+	></button>
 
-    <div class="flex flex-row justify-between w-full text-center">
-      <div class="flex flex-col flex-1 px-2 gap-1">
-        {#each team0 as player}
-          <a
-            href={`/duelists/${player.userId}/${room.banList.name}?username=${player.username}&season=${defaultSeason}`}
-            class="whitespace-nowrap overflow-hidden text-ellipsis w-full text-center hover:underline"
-            title={player.username}
-            on:click|stopPropagation
-          >
-            {player.username}
-          </a>
-        {/each}
-        {#if team0.length > 0}
-          <p class="text-center font-semibold mt-1">{team0[0].lps}</p>
-        {/if}
-      </div>
+	<div class="pointer-events-none relative flex flex-col gap-2.5">
+		<div class="flex items-center justify-between gap-2 text-[11px] font-semibold uppercase tracking-wide">
+			<span class="min-w-0 truncate">
+				{#if ranked}
+					<span class="text-gold">Ranked</span>
+					<span class="opacity-40"> · </span>
+				{/if}
+				<span class="opacity-60">Bo{room.bestOf} · {room.banList.name}</span>
+			</span>
+			{#if $watchableRoomIds.has(room.id)}
+				<a
+					href={`/watch?room=${room.id}`}
+					class="pointer-events-auto relative z-10 flex shrink-0 items-center gap-1.5 rounded-full px-1.5 text-error hover:bg-error/15"
+					data-umami-event="live-card-click-watch"
+					on:click|stopPropagation
+				>
+					<span class="size-1.5 rounded-full bg-error motion-safe:animate-pulse"></span>
+					Watch
+				</a>
+			{/if}
+		</div>
 
-      <div class="w-16 flex flex-col items-center justify-center">
-        <div class="flex flex-row items-center gap-1">
-          <span class="text-xs">{room.players[0].score}</span>
-          <p class="font-semibold">vs</p>
-          <span class="text-xs">{room.players[1].score}</span>
-        </div>
-        <p>{room.turn}</p>
-        {#if $watchableRoomIds.has(room.id)}
-          <a
-            href={`/watch?room=${room.id}`}
-            class="text-[10px] font-semibold uppercase text-error hover:underline"
-            data-umami-event="live-card-click-watch"
-            on:click|stopPropagation
-          >
-            Watch
-          </a>
-        {/if}
-      </div>
-
-      <div class="flex flex-col flex-1 px-2 gap-1">
-        {#each team1 as player}
-          <a
-            href={`/duelists/${player.userId}/${room.banList.name}?username=${player.username}&season=${defaultSeason}`}
-            class="whitespace-nowrap overflow-hidden text-ellipsis w-full text-center hover:underline"
-            title={player.username}
-            on:click|stopPropagation
-          >
-            {player.username}
-          </a>
-        {/each}
-        {#if team1.length > 0}
-          <p class="text-center font-semibold mt-1">{team1[0].lps}</p>
-        {/if}
-      </div>
-    </div>
-  </div>
-</button>
-
-<!-- TODO: Move to a separate component -->
-<dialog id="match-card-dialog" class="modal">
-	<div class='overflow-x-auto mt-2 w-full max-w-6xl bg-base-300 border-2 border-base-100 overflow-y-auto max-h-[90vh]'>
-		<h3 class="font-bold text-lg bg-base-300 p-4">Live Rooms ({$roomsStore.length}) · Players Online ({uniqueUsersOnlineCount})</h3>
-		<table class='table table-zebra bg-base-300'>
-			<thead class="sticky top-0 bg-base-300">
-				<tr>
-					<th class='max-w-[75px]'>Best of</th>
-					<th class='min-w-[75px]'>Banlist</th>
-					<th class='text-center'>Player 1</th>
-					<th class='text-center'></th>
-					<th class='text-center'>VS</th>
-					<th class='text-center'></th>
-					<th class='text-center'>Player 2</th>
-					<th>Notes</th>
-					<th class='text-center'>Watch</th>
-				</tr>
-			</thead>
-			<tbody>
-					{#each $roomsStore as room (room.id)}
-						<tr>
-							<td class='text-center'>{room.bestOf}</td>
-							<td>{room.banList.name}</td>
-							<td class='text-center'>
-								{#each room.players.filter((player) => player.team === 0) as player, index}
-									<a href={`/duelists/${player.userId}/${room.banList.name}?username=${player.username}&season=${defaultSeason}`} class="hover:underline">
-										{player.username}
-									</a>{index < room.players.filter((player) => player.team === 0).length - 1 ? ', ' : ''}
-								{/each}
-							</td>
-							<td class='text-center text-lg'>
-								{room.players.find((p) => p.team === 0)?.lps}
-							</td>
-							<td class='text-center min-w-[75px] {isRoomRanked(room) ? 'text-gold' : ''}'>
-								<p class="text-sm mt-1">{room.players.find((p) => p.team === 0)?.score} - {room.players.find((p) => p.team === 1)?.score}</p>
-								<p class="text-xs mt-1">{room.turn}</p>
-							</td>
-							<td class='text-center text-lg'>
-								{room.players.find((p) => p.team === 1)?.lps}
-							</td>
-							<td class='text-center'>
-								{#each room.players.filter((player) => player.team === 1) as player, index}
-									<a href={`/duelists/${player.userId}/${room.banList.name}?username=${player.username}&season=${defaultSeason}`} class="hover:underline">
-										{player.username}
-									</a>{index < room.players.filter((player) => player.team === 1).length - 1 ? ', ' : ''}
-								{/each}
-							</td>
-							<td class="{isRoomRanked(room) ? 'text-gold' : ''}">{room.notes}</td>
-							<td class='text-center'>
-								{#if $watchableRoomIds.has(room.id)}
-									<a
-										href={`/watch?room=${room.id}`}
-										class='btn btn-xs btn-primary'
-										data-umami-event='live-table-click-watch'
-									>
-										Watch
-									</a>
-								{:else}
-									<span class='text-xs opacity-40' title='Private room or spectators refused'>—</span>
-								{/if}
-							</td>
-						</tr>
-					{/each}
-			</tbody>
-		</table>
-		<div class="flex justify-center my-4 sticky bottom-0 bg-base-300">
-			<button class="btn btn-sm btn-primary" on:click={closeDialog}>Close</button>
+		<div class="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3">
+			<LpSide players={teamPlayers(room, 0)} lp={teamLp(room, 0)} {baseline} banListName={room.banList.name} compact />
+			<div class="flex flex-col items-center leading-tight">
+				<span class="text-base font-bold tabular-nums">{teamScore(room, 0)}–{teamScore(room, 1)}</span>
+				<span class="text-[11px] tabular-nums opacity-60">T{room.turn}</span>
+			</div>
+			<LpSide
+				players={teamPlayers(room, 1)}
+				lp={teamLp(room, 1)}
+				{baseline}
+				banListName={room.banList.name}
+				side="right"
+				compact
+			/>
 		</div>
 	</div>
-</dialog>
+</div>
