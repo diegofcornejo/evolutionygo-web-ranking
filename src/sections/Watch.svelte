@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onDestroy, onMount, untrack } from 'svelte';
-	import type { WatchRoom } from '@types';
+	import type { Room, WatchRoom } from '@types';
 	import { watchRoomsStatus, watchRoomsStore } from '@stores/watch/watchRoomsStore';
 	import { fetchWatchRooms, startWatchRoomsPolling } from '@stores/watch/watch-actions';
 	import { roomsStore } from '@stores/rooms/roomsStore';
@@ -13,6 +13,8 @@
 		roomMatchup,
 		type BoardRenderer,
 	} from '@utils/watchLink';
+	import { lpBaseline, teamLp, teamPlayers, teamScore } from '@utils/liveRoom';
+	import LpSide from '@components/Cards/LpSide.svelte';
 
 	/**
 	 * Joining a room replays the whole duel to the spectator, so frames are kept
@@ -23,6 +25,18 @@
 
 	/** Rows the list shows before it scrolls, so its height tracks the board. */
 	const VISIBLE_ROOMS = 5;
+
+	/** Material Design Icons paths, inlined: astro-icon only renders in .astro. */
+	const ICONS = {
+		search:
+			'M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5',
+		eye: 'M12 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0 8a5 5 0 0 1-5-5 5 5 0 0 1 5-5 5 5 0 0 1 5 5 5 5 0 0 1-5 5m0-12.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5',
+		link: 'M10.59 13.41c.41.39.41 1.03 0 1.42-.39.39-1.03.39-1.42 0a5.003 5.003 0 0 1 0-7.07l3.54-3.54a5.003 5.003 0 0 1 7.07 0 5.003 5.003 0 0 1 0 7.07l-1.49 1.49c.01-.82-.12-1.64-.4-2.42l.47-.48a2.98 2.98 0 0 0 0-4.24 2.98 2.98 0 0 0-4.24 0l-3.53 3.53a2.98 2.98 0 0 0 0 4.24m2.82-4.24c.39-.39 1.03-.39 1.42 0a5.003 5.003 0 0 1 0 7.07l-3.54 3.54a5.003 5.003 0 0 1-7.07 0 5.003 5.003 0 0 1 0-7.07l1.49-1.49c-.01.82.12 1.64.4 2.43l-.47.47a2.98 2.98 0 0 0 0 4.24 2.98 2.98 0 0 0 4.24 0l3.53-3.53a2.98 2.98 0 0 0 0-4.24.973.973 0 0 1 0-1.42',
+		code: 'M14.6 16.6 19.2 12l-4.6-4.6L16 6l6 6-6 6zm-5.2 0L4.8 12l4.6-4.6L8 6l-6 6 6 6z',
+		openInNew:
+			'M14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3m-2 16H5V5h7V3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7h-2z',
+		fullscreen: 'M5 5h5v2H7v3H5zm9 0h5v5h-2V7h-3zm3 9h2v5h-5v-2h3zm-7 3v2H5v-5h2v3z',
+	};
 
 	type WatchFrame = {
 		key: string;
@@ -57,6 +71,7 @@
 	let visibleRooms = $derived(filterRooms(rooms, search));
 	let activeRoom = $derived(rooms.find((room) => room.id === activeRoomId) ?? null);
 	let activeKey = $derived(activeRoomId === null ? null : frameKey(activeRoomId, board));
+	let activeLive = $derived(activeRoomId === null ? null : liveRoomFor(activeRoomId));
 	let activeIsListed = $derived(activeRoomId !== null && activeRoom !== null);
 	let shareUrl = $derived(activeRoomId === null ? '' : buildShareUrl(activeRoomId));
 	let embedSnippet = $derived(activeRoomId === null ? '' : buildEmbedSnippet(activeRoomId, { board }));
@@ -148,15 +163,11 @@
 		listMaxHeight = height > 0 ? `${height}px` : null;
 	};
 
-	const liveScore = (roomId: number) => {
+	const liveRoomFor = (roomId: number) => {
 		const live = liveById.get(roomId);
 		if (!live) return null;
-
-		const team0 = live.players.find((player) => player.team === 0);
-		const team1 = live.players.find((player) => player.team === 1);
-		if (!team0 || !team1) return null;
-
-		return { turn: live.turn, lps: `${team0.lps} - ${team1.lps}`, score: `${team0.score} - ${team1.score}` };
+		const hasBothTeams = [0, 1].every((team) => live.players.some((player) => player.team === team));
+		return hasBothTeams ? live : null;
 	};
 
 	const statusLabel = (room: WatchRoom) => (isRoomLive(room) ? 'LIVE' : 'WAITING');
@@ -209,40 +220,72 @@
 	});
 </script>
 
-<section class="w-full text-base">
-	<header class="mb-4 flex flex-wrap items-center justify-between gap-2">
-		<h2 class="text-2xl font-bold">
-			Watch live duels
-			{#if status === 'ready'}
-				<span class="text-base font-normal opacity-60">({rooms.length})</span>
-			{/if}
-		</h2>
-		<p class="text-sm opacity-60">
-			Public casual duels only. You are joined as a spectator, never as a player.
-		</p>
-	</header>
+{#snippet icon(path: string, size = 'size-4')}
+	<svg viewBox="0 0 24 24" class="{size} shrink-0" fill="currentColor" aria-hidden="true"><path d={path} /></svg>
+{/snippet}
 
-	<div class="flex flex-col gap-4 lg:grid lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] lg:items-start">
+{#snippet scoreline(live: Room, startLp: number | undefined)}
+	<span class="grid w-full grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3">
+		<LpSide
+			players={teamPlayers(live, 0)}
+			lp={teamLp(live, 0)}
+			baseline={lpBaseline(live, startLp)}
+			banListName={live.banList.name}
+			compact
+			linked={false}
+		/>
+		<span class="flex flex-col items-center leading-tight">
+			<span class="text-base font-bold tabular-nums">{teamScore(live, 0)}–{teamScore(live, 1)}</span>
+			<span class="text-[11px] tabular-nums opacity-60">T{live.turn}</span>
+		</span>
+		<LpSide
+			players={teamPlayers(live, 1)}
+			lp={teamLp(live, 1)}
+			baseline={lpBaseline(live, startLp)}
+			banListName={live.banList.name}
+			side="right"
+			compact
+			linked={false}
+		/>
+	</span>
+{/snippet}
+
+{#snippet roomStatus(room: WatchRoom)}
+	<span class="flex min-w-0 items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide">
+		<span
+			class="size-1.5 shrink-0 rounded-full {isRoomLive(room)
+				? 'bg-error motion-safe:animate-pulse'
+				: 'bg-base-content/40'}"
+		></span>
+		<span class={isRoomLive(room) ? 'text-error' : 'opacity-60'}>{statusLabel(room)}</span>
+		<span class="truncate opacity-60">· #{room.id} · Bo{room.bestOf} · {room.banlist}</span>
+	</span>
+{/snippet}
+
+<section class="w-full text-base">
+	<div class="flex flex-col gap-5 lg:grid lg:grid-cols-[minmax(0,21rem)_minmax(0,1fr)] lg:items-start">
 		<aside
-			class="order-2 lg:order-1 card bg-base-300 border border-base-100 p-2 lg:sticky lg:top-20"
+			class="order-2 flex flex-col gap-3 rounded-box border border-base-content/10 bg-base-200 p-3 lg:order-1 lg:sticky lg:top-20"
 		>
+			<header class="flex items-baseline justify-between gap-2 px-1">
+				<h2 class="font-semibold">Live duels</h2>
+				{#if rooms.length > 0}
+					<span class="text-xs tabular-nums opacity-60">{visibleRooms.length} of {rooms.length} duels</span>
+				{/if}
+			</header>
+
 			{#if rooms.length > 0}
-				<div class="p-1 pb-2">
-					<label class="input input-sm input-bordered flex w-full items-center gap-2">
-						<span class="opacity-50">🔎</span>
-						<input
-							type="search"
-							class="grow"
-							placeholder="Search duelist, room, banlist"
-							aria-label="Search duels"
-							data-umami-event="watch-search"
-							bind:value={search}
-						/>
-					</label>
-					<p class="mt-2 px-1 text-xs opacity-50">
-						{visibleRooms.length} of {rooms.length} duels
-					</p>
-				</div>
+				<label class="input input-sm flex w-full items-center gap-2 bg-base-100">
+					<span class="opacity-50">{@render icon(ICONS.search)}</span>
+					<input
+						type="search"
+						class="grow"
+						placeholder="Search duelist, room, banlist"
+						aria-label="Search duels"
+						data-umami-event="watch-search"
+						bind:value={search}
+					/>
+				</label>
 			{/if}
 
 			{#if rooms.length === 0 && (status === 'idle' || status === 'loading')}
@@ -276,45 +319,35 @@
 				-->
 				<ul
 					bind:this={listEl}
-					class="flex w-full list-none flex-col flex-nowrap gap-1 overflow-y-auto overflow-x-hidden overscroll-contain px-1 py-0 max-h-[70vh]"
+					class="flex w-full list-none flex-col flex-nowrap gap-2 overflow-y-auto overflow-x-hidden overscroll-contain p-0 max-h-[70vh]"
 					style={listMaxHeight ? `max-height: ${listMaxHeight}` : undefined}
 				>
 					{#each visibleRooms as room (room.id)}
-						{@const live = liveScore(room.id)}
+						{@const live = liveRoomFor(room.id)}
 						<li>
 							<button
 								type="button"
-								class="flex w-full flex-col items-start gap-1 rounded-box border p-3 text-left transition-colors duration-200 {room.id ===
+								class="flex w-full flex-col gap-2.5 rounded-box border p-3 text-left transition-colors duration-200 {room.id ===
 								activeRoomId
-									? 'border-primary bg-base-200'
-									: 'border-transparent hover:bg-neutral'}"
+									? 'border-primary bg-primary/10'
+									: 'border-base-content/10 bg-base-100/40 hover:border-primary/40 hover:bg-base-300'}"
 								aria-current={room.id === activeRoomId ? 'true' : undefined}
 								data-umami-event="watch-select-room"
 								onclick={() => selectRoom(room.id)}
 							>
 								<span class="flex w-full items-center justify-between gap-2">
-									<span class="flex items-center gap-2">
-										<span
-											class="badge badge-xs {isRoomLive(room) ? 'badge-error' : 'badge-neutral'}"
-										></span>
-										<span class="text-xs font-semibold tracking-wide opacity-70">
-											{statusLabel(room)} · #{room.id}
-										</span>
+									{@render roomStatus(room)}
+									<span class="flex shrink-0 items-center gap-1 text-xs tabular-nums opacity-60" title="Spectators">
+										{@render icon(ICONS.eye, 'size-3.5')}
+										{room.spectators ?? 0}
 									</span>
-									<span class="text-xs opacity-60">👁 {room.spectators ?? 0}</span>
-								</span>
-
-								<span class="w-full truncate font-semibold" title={roomMatchup(room)}>
-									{roomMatchup(room)}
-								</span>
-
-								<span class="w-full truncate text-xs opacity-60">
-									{room.banlist} · {room.rule} · Bo{room.bestOf}
 								</span>
 
 								{#if live}
-									<span class="text-xs opacity-70">
-										LP {live.lps} · Score {live.score} · Turn {live.turn}
+									{@render scoreline(live, room.startLp)}
+								{:else}
+									<span class="w-full truncate text-sm font-medium" title={roomMatchup(room)}>
+										{roomMatchup(room)}
 									</span>
 								{/if}
 							</button>
@@ -324,144 +357,171 @@
 			{/if}
 
 			{#if rooms.length > 0 && status === 'error'}
-				<p class="p-2 text-center text-xs opacity-50">
+				<p class="px-1 text-center text-xs opacity-50">
 					The rooms listing is unreachable — showing the last duels we saw.
 				</p>
 			{/if}
+
+			<p class="px-1 text-xs opacity-50">
+				Public casual duels only. You are joined as a spectator, never as a player.
+			</p>
 		</aside>
 
-		<div class="order-1 lg:order-2 flex flex-col gap-3">
-			<div class="flex flex-wrap items-center justify-between gap-2">
-				{#if activeRoom}
+		<div class="order-1 flex min-w-0 flex-col gap-3 lg:order-2">
+			<div class="overflow-hidden rounded-box border border-base-content/10 bg-base-200">
+				<div
+					class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-base-content/10 px-4 py-2.5"
+				>
 					<div class="min-w-0">
-						<p class="truncate text-lg font-semibold" title={roomMatchup(activeRoom)}>
-							{roomMatchup(activeRoom)}
-						</p>
-						<p class="text-xs opacity-60">
-							#{activeRoom.id} · {activeRoom.banlist} · {activeRoom.rule} · Bo{activeRoom.bestOf} ·
-							{activeRoom.startLp} LP
-						</p>
-					</div>
-				{:else if activeRoomId !== null}
-					<div class="min-w-0">
-						<p class="text-lg font-semibold">Room #{activeRoomId}</p>
-						<p class="text-xs opacity-60">Not in the current listing — the duel may have ended.</p>
-					</div>
-				{/if}
-			</div>
-
-			<div
-				bind:this={stageEl}
-				class="relative aspect-[16/10] w-full overflow-hidden rounded-box border border-base-100 bg-base-300"
-			>
-				{#each frames as frame (frame.key)}
-					<iframe
-						title={`Live duel ${frame.roomId} on Evolution`}
-						src={frame.src}
-						allow="fullscreen"
-						class="absolute inset-0 h-full w-full border-0 {frame.key === activeKey
-							? ''
-							: 'watch-frame-idle'}"
-					></iframe>
-				{/each}
-
-				{#if frames.length === 0}
-					<div class="absolute inset-0 flex flex-col items-center justify-center gap-2 p-6 text-center">
-						<p class="text-lg font-semibold">Nothing selected</p>
-						<p class="text-sm opacity-60">Pick a duel from the list to start watching.</p>
-					</div>
-				{/if}
-			</div>
-
-			{#if activeRoomId !== null}
-				<div class="flex flex-wrap items-center gap-2">
-					<div class="join" role="group" aria-label="Board renderer">
-						<button
-							type="button"
-							class="btn btn-sm join-item {board === '2d' ? 'btn-primary' : 'btn-neutral'}"
-							data-umami-event="watch-board-2d"
-							onclick={() => (board = '2d')}
-						>
-							2D
-						</button>
-						<button
-							type="button"
-							class="btn btn-sm join-item {board === '3d' ? 'btn-primary' : 'btn-neutral'}"
-							data-umami-event="watch-board-3d"
-							onclick={() => (board = '3d')}
-						>
-							3D
-						</button>
+						{#if activeRoom}
+							<p class="truncate font-semibold" title={roomMatchup(activeRoom)}>
+								{roomMatchup(activeRoom)}
+								{#if activeLive}
+									<span class="ml-1.5 tabular-nums text-primary">
+										{teamScore(activeLive, 0)}–{teamScore(activeLive, 1)}
+									</span>
+								{/if}
+							</p>
+							<p class="mt-0.5 text-[11px] font-semibold uppercase tracking-wide">
+								<span
+									class="mr-1 inline-block size-1.5 rounded-full align-middle {isRoomLive(activeRoom)
+										? 'bg-error motion-safe:animate-pulse'
+										: 'bg-base-content/40'}"
+								></span>
+								<span class={isRoomLive(activeRoom) ? 'text-error' : 'opacity-60'}>{statusLabel(activeRoom)}</span>
+								<span class="opacity-60">
+									· #{activeRoom.id} · Bo{activeRoom.bestOf} · {activeRoom.banlist} · {activeRoom.rule} ·
+									{activeRoom.startLp}&nbsp;LP{activeLive ? ` · Turn\u00a0${activeLive.turn}` : ''}
+								</span>
+							</p>
+						{:else if activeRoomId !== null}
+							<p class="text-sm font-semibold">Room #{activeRoomId}</p>
+							<p class="text-xs opacity-60">Not in the current listing — the duel may have ended.</p>
+						{:else}
+							<p class="text-sm opacity-60">No duel selected</p>
+						{/if}
 					</div>
 
-					<button
-						type="button"
-						class="btn btn-sm btn-neutral"
-						data-umami-event="watch-copy-link"
-						onclick={() => copy('link', shareUrl)}
-					>
-						{copied === 'link' ? 'Copied!' : 'Copy link'}
-					</button>
+					{#if activeRoomId !== null}
+						<div class="flex flex-wrap items-center gap-1">
+							<div
+								class="tooltip tooltip-bottom"
+								data-tip="The 3D board downloads a WebGL engine (~2.5 MB) and needs a GPU. The renderer is fixed per duel, so switching it reloads the board."
+							>
+								<div class="join" role="group" aria-label="Board renderer">
+									<button
+										type="button"
+										class="btn btn-sm join-item {board === '2d' ? 'btn-primary' : 'btn-neutral'}"
+										data-umami-event="watch-board-2d"
+										onclick={() => (board = '2d')}
+									>
+										2D
+									</button>
+									<button
+										type="button"
+										class="btn btn-sm join-item {board === '3d' ? 'btn-primary' : 'btn-neutral'}"
+										data-umami-event="watch-board-3d"
+										onclick={() => (board = '3d')}
+									>
+										3D
+									</button>
+								</div>
+							</div>
 
-					<button
-						type="button"
-						class="btn btn-sm btn-neutral"
-						data-umami-event="watch-toggle-embed"
-						onclick={() => (showSnippet = !showSnippet)}
-					>
-						{showSnippet ? 'Hide embed code' : 'Embed code'}
-					</button>
-
-					<button
-						type="button"
-						class="btn btn-sm btn-neutral"
-						data-umami-event="watch-fullscreen"
-						onclick={goFullscreen}
-					>
-						Fullscreen
-					</button>
-
-					<a
-						class="btn btn-sm btn-ghost"
-						href={shareUrl}
-						target="_blank"
-						rel="noopener"
-						data-umami-event="watch-open-client"
-					>
-						Open in the client
-					</a>
-				</div>
-
-				<p class="text-xs opacity-50">
-					The 3D board downloads a WebGL engine (~2.5 MB) and needs a GPU. The renderer is fixed per
-					duel, so switching it reloads the board.
-				</p>
-
-				{#if showSnippet}
-					<div class="card bg-base-300 border border-base-100 p-3">
-						<div class="mb-2 flex items-center justify-between gap-2">
-							<p class="text-sm font-semibold">Embed this duel on your site</p>
 							<button
 								type="button"
-								class="btn btn-xs btn-primary"
-								data-umami-event="watch-copy-embed"
-								onclick={() => copy('embed', embedSnippet)}
+								class="btn btn-sm btn-ghost max-sm:btn-square"
+								data-umami-event="watch-copy-link"
+								onclick={() => copy('link', shareUrl)}
 							>
-								{copied === 'embed' ? 'Copied!' : 'Copy'}
+								{@render icon(ICONS.link)}
+								<span class="max-sm:sr-only">{copied === 'link' ? 'Copied!' : 'Copy link'}</span>
+							</button>
+
+							<button
+								type="button"
+								class="btn btn-sm btn-ghost max-sm:btn-square {showSnippet ? 'btn-active' : ''}"
+								aria-expanded={showSnippet}
+								data-umami-event="watch-toggle-embed"
+								onclick={() => (showSnippet = !showSnippet)}
+							>
+								{@render icon(ICONS.code)}
+								<span class="max-sm:sr-only">{showSnippet ? 'Hide embed code' : 'Embed code'}</span>
+							</button>
+
+							<a
+								class="btn btn-sm btn-ghost max-sm:btn-square"
+								href={shareUrl}
+								target="_blank"
+								rel="noopener"
+								data-umami-event="watch-open-client"
+							>
+								{@render icon(ICONS.openInNew)}
+								<span class="max-sm:sr-only">Open in the client</span>
+							</a>
+
+							<button
+								type="button"
+								class="btn btn-sm btn-ghost btn-square"
+								aria-label="Fullscreen"
+								title="Fullscreen"
+								data-umami-event="watch-fullscreen"
+								onclick={goFullscreen}
+							>
+								{@render icon(ICONS.fullscreen, 'size-5')}
 							</button>
 						</div>
-						<textarea
-							class="textarea textarea-bordered h-40 w-full font-mono text-xs"
-							readonly
-							aria-label="Embed code"
-							value={embedSnippet}
-						></textarea>
-						<p class="mt-2 text-xs opacity-50">
-							No account, API key or build step is needed. Drop <code>embed=1</code> to turn the
-							same URL into a normal link.
-						</p>
+					{/if}
+				</div>
+
+				<div
+					bind:this={stageEl}
+					class="relative aspect-[16/10] max-h-[calc(100dvh-9rem)] min-h-64 w-full overflow-hidden bg-base-300"
+				>
+					{#each frames as frame (frame.key)}
+						<iframe
+							title={`Live duel ${frame.roomId} on Evolution`}
+							src={frame.src}
+							allow="fullscreen"
+							class="absolute inset-0 h-full w-full border-0 {frame.key === activeKey
+								? ''
+								: 'watch-frame-idle'}"
+						></iframe>
+					{/each}
+
+					{#if frames.length === 0}
+						<div class="absolute inset-0 flex flex-col items-center justify-center gap-2 p-6 text-center">
+							<p class="text-lg font-semibold">Nothing selected</p>
+							<p class="text-sm opacity-60">Pick a duel from the list to start watching.</p>
+						</div>
+					{/if}
+				</div>
+			</div>
+
+			{#if activeRoomId !== null && showSnippet}
+				<div class="rounded-box border border-base-content/10 bg-base-200 p-4">
+					<div class="mb-3 flex items-center justify-between gap-2">
+						<p class="text-sm font-semibold">Embed this duel on your site</p>
+						<button
+							type="button"
+							class="btn btn-xs btn-primary"
+							data-umami-event="watch-copy-embed"
+							onclick={() => copy('embed', embedSnippet)}
+						>
+							{copied === 'embed' ? 'Copied!' : 'Copy'}
+						</button>
 					</div>
-				{/if}
+					<textarea
+						class="textarea h-40 w-full bg-base-100 font-mono text-xs"
+						readonly
+						aria-label="Embed code"
+						value={embedSnippet}
+					></textarea>
+					<p class="mt-2 text-xs opacity-50">
+						No account, API key or build step is needed. Drop <code>embed=1</code> to turn the
+						same URL into a normal link.
+					</p>
+				</div>
 			{/if}
 
 			{#if activeRoomId !== null && !activeIsListed && status === 'ready'}

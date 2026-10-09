@@ -229,8 +229,17 @@ describe('WatchSection', () => {
     const instance = mount(WatchSection as any, { target });
     await vi.waitFor(() => expect(roomButtons(target)).toHaveLength(1));
 
-    expect(target.innerHTML).toContain('3600 - 6800');
-    expect(target.innerHTML).toContain('Turn 4');
+    const row = roomButtons(target)[0];
+    const rowText = row.textContent?.replace(/\s+/g, ' ') ?? '';
+    expect(rowText).toContain('DATCEL 3600');
+    expect(rowText).toContain('Javier 6800');
+    expect(rowText).toContain('1–0');
+    expect(rowText).toContain('T4');
+    expect(row.querySelectorAll('[role="meter"]')).toHaveLength(2);
+    expect(row.querySelector('a')).toBeNull();
+
+    const header = target.textContent?.replace(/\s+/g, ' ') ?? '';
+    expect(header).toContain('Turn 4');
 
     unmount(instance);
   });
