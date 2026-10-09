@@ -4,6 +4,8 @@ import type { GameClient } from '@types';
 // import CommandTable from '@components/CommandTable.astro';
 import CommandTable from '@components/CommandTable';
 
+const evoDuelVersion = '1.2.0';
+
 const title = 'Ready to duel?';
 const subtitle = "It's simple";
 const description =
@@ -29,7 +31,7 @@ const clients: GameClient[] = [
 		// icon: { name: 'mdi:rocket-launch', classes: 'text-primary text-xl' },
 		platforms: ['web', 'windows', 'apple', 'linux'],
 		trackEvent: 'download-click-evoduel',
-		badge: 'Open Beta',
+		badge: evoDuelVersion,
 		spotlight: true,
 	},
 	{
