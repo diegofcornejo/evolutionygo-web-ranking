@@ -2,7 +2,6 @@
 import '@fontsource/grenze/latin-700.css';
 import { HALLOWEEN_WINDOW, formatMonthDay, getHalloweenNights, getTonightIndex } from '@utils/seasonalEdition';
 import { HORIZON_VIEWBOX, PYRAMIDS, STRIKES } from './storm';
-import { VORTEX_VIEWBOX, spiralArms } from './vortex';
 
 interface Props {
 	season: string;
@@ -15,7 +14,6 @@ const tonight = getTonightIndex(nights, now.getUTCMonth() + 1, now.getUTCDate())
 const windowEnd = formatMonthDay(HALLOWEEN_WINDOW.end);
 const allNightsCaption = `${nights.length} nights, ${formatMonthDay(HALLOWEEN_WINDOW.start)} to ${windowEnd}`;
 const strikeStyle = (cycle: number, delay: number) => `--cycle: ${cycle}s; --delay: ${delay}s`;
-const vortexArms = spiralArms();
 const nightsCaption = (index: number) => (index >= 0 ? `Night ${index + 1} of ${nights.length}` : allNightsCaption);
 ---
 
@@ -171,15 +169,13 @@ const nightsCaption = (index: number) => (index >= 0 ? `Night ${index + 1} of ${
 		</div>
 	</div>
 	<div class="shadow-realm-vortex" data-vortex aria-hidden="true">
-		<div class="shadow-realm-vortex-swirl" data-vortex-swirl>
-			<div class="shadow-realm-vortex-bands" data-vortex-bands></div>
-			<svg viewBox={VORTEX_VIEWBOX} focusable="false">
-				{vortexArms.map((d) => <path d={d} class="shadow-realm-vortex-arm-glow" />)}
-				{vortexArms.map((d, arm) => <path d={d} class:list={['shadow-realm-vortex-arm', { 'is-ecto': arm % 2 === 0 }]} />)}
-			</svg>
-		</div>
-		<div class="shadow-realm-vortex-core" data-vortex-core></div>
-		<div class="shadow-realm-vortex-void" data-vortex-void></div>
+		<svg class="shadow-realm-swirl-defs" width="0" height="0" aria-hidden="true" focusable="false">
+			<filter id="shadow-realm-swirl" data-vortex-filter filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+				<feImage preserveAspectRatio="none" result="swirl"></feImage>
+				<feDisplacementMap in="SourceGraphic" in2="swirl" scale="0" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap>
+			</filter>
+		</svg>
+		<canvas class="shadow-realm-vortex-canvas"></canvas>
 	</div>
 </section>
 
@@ -279,14 +275,15 @@ const nightsCaption = (index: number) => (index >= 0 ? `Night ${index + 1} of ${
 
 		const link = hero.querySelector<HTMLAnchorElement>('[data-vortex-link]');
 		const overlay = hero.querySelector<HTMLElement>('[data-vortex]');
+		const filter = hero.querySelector<SVGFilterElement>('[data-vortex-filter]');
 		let reset: (() => void) | undefined;
 		link?.addEventListener('click', (event) => {
 			const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 			if (!overlay || reset || !shouldFall(event, reducedMotion)) return;
 			event.preventDefault();
 			sound.whoosh(VORTEX_MS / 1000);
-			setTimeout(() => sound.thunder(0), VORTEX_MS * 0.75);
-			reset = fallIntoVortex(overlay, () => location.assign(link.href));
+			setTimeout(() => sound.thunder(0), VORTEX_MS * 0.85);
+			reset = fallIntoVortex(overlay, filter, () => location.assign(link.href));
 		});
 		const restore = (event: PageTransitionEvent) => {
 			if (!event.persisted || !reset) return;
@@ -689,86 +686,33 @@ const nightsCaption = (index: number) => (index >= 0 ? `Night ${index + 1} of ${
 		background: rgb(236 228 255 / 0.08);
 	}
 
-	/* Moved to <body> when it plays, so it sits above the page that twists into it. */
+	/* Moved to <body> when it plays, so it sits above the page. */
 	.shadow-realm-vortex {
 		position: fixed;
 		inset: 0;
 		z-index: 2147483000;
 		display: none;
 		overflow: hidden;
-		background: radial-gradient(circle, #1c1130 0%, #0b0612 70%);
-		opacity: 0;
+		pointer-events: none;
+	}
+
+	/* Kept in the vortex, outside the page it twists, so changing it never repaints the page unfiltered. */
+	.shadow-realm-swirl-defs {
+		position: absolute;
+		width: 0;
+		height: 0;
+		overflow: hidden;
 	}
 
 	.shadow-realm-vortex.is-falling {
 		display: block;
 	}
 
-	/* Centred with margins because transform belongs to the animation. */
-	.shadow-realm-vortex-swirl,
-	.shadow-realm-vortex-core {
-		position: absolute;
-		top: 50%;
-		left: 50%;
-	}
-
-	.shadow-realm-vortex-swirl {
-		width: 160vmax;
-		height: 160vmax;
-		margin: -80vmax 0 0 -80vmax;
-	}
-
-	.shadow-realm-vortex-swirl svg,
-	.shadow-realm-vortex-bands {
+	.shadow-realm-vortex-canvas {
 		position: absolute;
 		inset: 0;
 		width: 100%;
 		height: 100%;
-	}
-
-	.shadow-realm-vortex-bands {
-		border-radius: 50%;
-		background: repeating-conic-gradient(from 0deg, #0b0612 0deg 10deg, #3a2260 17deg, #0b0612 26deg);
-		mask-image: radial-gradient(circle, #000 0, #000 45%, transparent 70%);
-	}
-
-	.shadow-realm-vortex-arm-glow,
-	.shadow-realm-vortex-arm {
-		fill: none;
-		stroke-linecap: round;
-	}
-
-	.shadow-realm-vortex-arm-glow {
-		stroke: #4b3277;
-		stroke-opacity: 0.55;
-		stroke-width: 7;
-	}
-
-	.shadow-realm-vortex-arm {
-		stroke: #b9a3e6;
-		stroke-opacity: 0.7;
-		stroke-width: 1.2;
-	}
-
-	.shadow-realm-vortex-arm.is-ecto {
-		stroke: #9dff6a;
-		stroke-opacity: 0.55;
-	}
-
-	.shadow-realm-vortex-core {
-		width: 30vmin;
-		height: 30vmin;
-		margin: -15vmin 0 0 -15vmin;
-		border-radius: 50%;
-		background: radial-gradient(circle, #9dff6a 0%, rgb(157 255 106 / 0.35) 30%, transparent 70%);
-		transform: scale(0);
-	}
-
-	.shadow-realm-vortex-void {
-		position: absolute;
-		inset: 0;
-		background: #000;
-		opacity: 0;
 	}
 
 	@keyframes shadow-realm-drift {

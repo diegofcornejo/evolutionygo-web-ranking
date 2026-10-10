@@ -97,7 +97,8 @@ describe('index.astro page', () => {
 
     expect(link).toContain('href="https://evoduel.com"');
     expect(link).not.toContain('target=');
-    expect(result).toContain('data-vortex-swirl');
+    expect(result).toContain('shadow-realm-vortex-canvas');
+    expect(result).toMatch(/<filter[^>]*data-vortex-filter/);
   });
 
   it('shows the live marquee right after the title, before the news', async () => {
