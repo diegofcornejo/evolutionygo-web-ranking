@@ -95,6 +95,19 @@ describe('createShadowRealmSound', () => {
     expect(fake.sources.length - ambience).toBe(2);
   });
 
+  it('whooshes only while sound is on', () => {
+    const fake = fakeContext();
+    const sound = createShadowRealmSound(() => fake.context);
+
+    sound.whoosh(3);
+    sound.setOn(true);
+    const ambience = fake.sources.length;
+    sound.whoosh(3);
+
+    expect(fake.sources.length - ambience).toBe(1);
+    expect(fake.sources.at(-1)!.stop).toHaveBeenCalledWith(3.5);
+  });
+
   it('builds the context even when turned on while hushed, then stays quiet', () => {
     const fake = fakeContext();
     const create = vi.fn(() => fake.context);

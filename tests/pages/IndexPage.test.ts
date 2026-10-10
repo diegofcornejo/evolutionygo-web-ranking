@@ -91,6 +91,15 @@ describe('index.astro page', () => {
     expect(result).toMatch(/class="shadow-realm-strike[^"]*"[^>]*data-distance="0.5"/);
   });
 
+  it('keeps Duel in the dark in the same tab so the vortex can play first', async () => {
+    const result = await renderIndex('http://localhost/?edition=halloween');
+    const link = result.match(/<a[^>]*data-vortex-link[^>]*>/)?.[0] ?? '';
+
+    expect(link).toContain('href="https://evoduel.com"');
+    expect(link).not.toContain('target=');
+    expect(result).toContain('data-vortex-swirl');
+  });
+
   it('shows the live marquee right after the title, before the news', async () => {
     for (const edition of ['off', 'halloween']) {
       const result = await renderIndex(`http://localhost/?edition=${edition}`);

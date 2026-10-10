@@ -13,6 +13,8 @@ export type ShadowRealmSound = {
 	setHushed(hushed: boolean): void;
 	/** 0 is the nearest pyramid, 1 the farthest: farther thunder arrives later, softer and duller. */
 	thunder(distance: number): void;
+	/** Wind rising over `seconds`, for the fall into the vortex. */
+	whoosh(seconds: number): void;
 	close(): void;
 };
 
@@ -184,7 +186,7 @@ export function createShadowRealmSound(
 			apply();
 		},
 		thunder(distance) {
-			if (!ctx || !on || hushed || ctx.state !== 'running') return;
+			if (!ctx || !on || hushed) return;
 			const near = 1 - distance;
 			const t = ctx.currentTime + 0.25 + distance * 1.4;
 			const length = rand(3.5, 4.5) + distance * 2;
@@ -206,6 +208,20 @@ export function createShadowRealmSound(
 			body.connect(tone).connect(level).connect(storm);
 			body.start(t, rand(0, 2));
 			body.stop(at + 0.3 + length);
+		},
+		whoosh(seconds) {
+			if (!ctx || !on || hushed) return;
+			const t = ctx.currentTime;
+			const wind = loop(ctx, hiss);
+			const tone = filter(ctx, 'bandpass', 200, 1.2);
+			tone.frequency.setValueAtTime(200, t);
+			tone.frequency.exponentialRampToValueAtTime(2400, t + seconds);
+			const level = gain(ctx, 0);
+			level.gain.setValueAtTime(0.0001, t);
+			level.gain.exponentialRampToValueAtTime(0.5, t + seconds);
+			wind.connect(tone).connect(level).connect(storm);
+			wind.start(t, rand(0, 2));
+			wind.stop(t + seconds + 0.5);
 		},
 		close() {
 			clearTimeout(melody);
