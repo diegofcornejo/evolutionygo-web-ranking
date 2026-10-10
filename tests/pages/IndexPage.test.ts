@@ -83,6 +83,14 @@ describe('index.astro page', () => {
     expect(result).toContain('component-url="@sections/Live.svelte"');
   });
 
+  it('renders the Shadow Realm sound armed, with a mute control', async () => {
+    const result = await renderIndex('http://localhost/?edition=halloween');
+
+    expect(result).toMatch(/data-sound-toggle[^>]*aria-pressed="true"[^>]*aria-label="Mute sound"/);
+    expect(result).toMatch(/class="shadow-realm-strike[^"]*"[^>]*data-distance="0"/);
+    expect(result).toMatch(/class="shadow-realm-strike[^"]*"[^>]*data-distance="0.5"/);
+  });
+
   it('shows the live marquee right after the title, before the news', async () => {
     for (const edition of ['off', 'halloween']) {
       const result = await renderIndex(`http://localhost/?edition=${edition}`);

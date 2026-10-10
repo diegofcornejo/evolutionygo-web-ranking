@@ -18,15 +18,24 @@ const nightsCaption = (index: number) => (index >= 0 ? `Night ${index + 1} of ${
 ---
 
 <section class="shadow-realm" aria-labelledby="shadow-realm-title">
-	<button type="button" class="shadow-realm-still" data-storm-toggle aria-pressed="false" aria-label="Pause the storm" title="Pause the storm">
-		<svg data-icon="pause" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-			<rect x="3.5" y="2.5" width="3" height="11" rx="1" />
-			<rect x="9.5" y="2.5" width="3" height="11" rx="1" />
-		</svg>
-		<svg data-icon="play" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-			<path d="M4.5 2.8v10.4a.8.8 0 0 0 1.2.7l8.3-5.2a.8.8 0 0 0 0-1.4L5.7 2.1a.8.8 0 0 0-1.2.7Z" />
-		</svg>
-	</button>
+	<div class="shadow-realm-controls">
+		<button type="button" class="shadow-realm-control shadow-realm-still" data-storm-toggle aria-pressed="false" aria-label="Pause the storm" title="Pause the storm">
+			<svg data-icon="pause" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+				<rect x="3.5" y="2.5" width="3" height="11" rx="1" />
+				<rect x="9.5" y="2.5" width="3" height="11" rx="1" />
+			</svg>
+			<svg data-icon="play" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+				<path d="M4.5 2.8v10.4a.8.8 0 0 0 1.2.7l8.3-5.2a.8.8 0 0 0 0-1.4L5.7 2.1a.8.8 0 0 0-1.2.7Z" />
+			</svg>
+		</button>
+		<button type="button" class="shadow-realm-control shadow-realm-sound" data-sound-toggle aria-pressed="true" aria-label="Mute sound" title="Mute sound">
+			<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+				<path d="M1.5 6h2.6L7.5 3v10L4.1 10H1.5Z" />
+				<path data-icon="muted" d="M10.5 6l4 4M14.5 6l-4 4" />
+				<path data-icon="sounding" d="M10 5.5a3.5 3.5 0 0 1 0 5M12 3.5a6.3 6.3 0 0 1 0 9" />
+			</svg>
+		</button>
+	</div>
 	<div class="shadow-realm-stage">
 		<svg class="shadow-realm-sigil" viewBox="0 0 64 40" aria-hidden="true" focusable="false">
 			<path d="M2 20C12 6 52 6 62 20C52 34 12 34 2 20Z" fill="none" stroke="currentColor" stroke-width="2" />
@@ -53,6 +62,7 @@ const nightsCaption = (index: number) => (index >= 0 ? `Night ${index + 1} of ${
 						preserveAspectRatio="xMidYMax meet"
 						focusable="false"
 						style={strikeStyle(strike.cycle, strike.delay)}
+						data-distance={(PYRAMIDS.length - 1 - strike.lights) / (PYRAMIDS.length - 1)}
 					>
 						<filter id={`shadow-realm-sheet-${index}`} x="-50%" y="-50%" width="200%" height="200%">
 							<feGaussianBlur stdDeviation="45" />
@@ -215,6 +225,74 @@ const nightsCaption = (index: number) => (index >= 0 ? `Night ${index + 1} of ${
 	})();
 </script>
 
+<script>
+	import { createShadowRealmSound } from './sound';
+
+	document.addEventListener('astro:page-load', () => {
+		const hero = document.querySelector<HTMLElement>('.shadow-realm');
+		const toggle = hero?.querySelector<HTMLButtonElement>('[data-sound-toggle]');
+		if (!hero || !toggle) return;
+		const MUTED_KEY = 'shadow-realm-muted';
+		const sound = createShadowRealmSound();
+		const hush = () => sound.setHushed(hero.classList.contains('is-still') || document.hidden);
+		const strike = (event: AnimationEvent) => {
+			const distance = (event.target as HTMLElement).dataset?.distance;
+			if (distance !== undefined) sound.thunder(Number(distance));
+		};
+
+		// Sound is armed unless the visitor muted it before; browsers only let it start on a gesture.
+		let wanted = true;
+		try {
+			wanted = localStorage.getItem(MUTED_KEY) !== '1';
+		} catch {}
+		const render = () => {
+			const label = wanted ? 'Mute sound' : 'Play sound';
+			toggle.setAttribute('aria-pressed', String(wanted));
+			toggle.setAttribute('aria-label', label);
+			toggle.setAttribute('title', label);
+		};
+		const arm = (event: Event) => {
+			if (toggle.contains(event.target as Node)) return;
+			disarm();
+			if (wanted) sound.setOn(true);
+		};
+		const disarm = () => {
+			document.removeEventListener('click', arm, true);
+			document.removeEventListener('keydown', arm, true);
+		};
+		render();
+		document.addEventListener('click', arm, true);
+		document.addEventListener('keydown', arm, true);
+
+		toggle.addEventListener('click', () => {
+			disarm();
+			wanted = !wanted;
+			sound.setOn(wanted);
+			render();
+			try {
+				if (wanted) localStorage.removeItem(MUTED_KEY);
+				else localStorage.setItem(MUTED_KEY, '1');
+			} catch {}
+		});
+		hero.addEventListener('animationstart', strike);
+		hero.addEventListener('animationiteration', strike);
+		const observer = new MutationObserver(hush);
+		observer.observe(hero, { attributes: true, attributeFilter: ['class'] });
+		document.addEventListener('visibilitychange', hush);
+		hush();
+		document.addEventListener(
+			'astro:before-swap',
+			() => {
+				observer.disconnect();
+				disarm();
+				document.removeEventListener('visibilitychange', hush);
+				sound.close();
+			},
+			{ once: true }
+		);
+	});
+</script>
+
 <style>
 	.shadow-realm {
 		--void: #0b0612;
@@ -315,11 +393,17 @@ const nightsCaption = (index: number) => (index >= 0 ? `Night ${index + 1} of ${
 		mask-image: linear-gradient(to bottom, #000 76%, transparent 97%);
 	}
 
-	.shadow-realm-still {
+	.shadow-realm-controls {
 		position: absolute;
 		top: 1rem;
 		right: 1rem;
 		z-index: 4;
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.shadow-realm-control {
 		display: grid;
 		place-items: center;
 		width: 2.5rem;
@@ -334,20 +418,36 @@ const nightsCaption = (index: number) => (index >= 0 ? `Night ${index + 1} of ${
 			color 0.2s ease-out;
 	}
 
-	.shadow-realm-still:hover {
+	.shadow-realm-control:hover {
 		border-color: #c9b2ff;
 		color: var(--color-base-content, #ece4ff);
 	}
 
-	.shadow-realm-still:focus-visible {
+	.shadow-realm-control:focus-visible {
 		outline: 2px solid #c9b2ff;
 		outline-offset: 2px;
 	}
 
-	.shadow-realm-still svg {
+	.shadow-realm-control svg {
 		width: 1rem;
 		height: 1rem;
 		fill: currentColor;
+	}
+
+	.shadow-realm-sound [data-icon] {
+		fill: none;
+		stroke: currentColor;
+		stroke-width: 1.5;
+		stroke-linecap: round;
+	}
+
+	.shadow-realm-sound [data-icon='sounding'],
+	.shadow-realm-sound[aria-pressed='true'] [data-icon='muted'] {
+		display: none;
+	}
+
+	.shadow-realm-sound[aria-pressed='true'] [data-icon='sounding'] {
+		display: inline;
 	}
 
 	.shadow-realm-still [data-icon='play'],
