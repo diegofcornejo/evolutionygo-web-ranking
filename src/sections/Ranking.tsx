@@ -249,10 +249,10 @@ export default function Ranking() {
           </thead>
           <tbody>
             {getDisplayDuelists().map((duelist: Duelist) => (
-              <tr key={duelist.userId}>
+              <tr key={duelist.userId} className='relative cursor-pointer hover:bg-secondary transition-colors'>
                 <th scope="row" className='max-w-[75px] text-center'>{duelist.position}</th>
-                <td className='min-w-[200px] hover:bg-secondary'>
-                  <a href={`/duelists/${duelist.userId}/${banList}?username=${duelist.username}&season=${season}`}>
+                <td className='min-w-[200px]'>
+                  <a className='after:absolute after:inset-0' href={`/duelists/${duelist.userId}/${banList}?username=${duelist.username}&season=${season}`}>
                     <div className='flex items-center gap-3'>
                       <img
                         src={`https://ui-avatars.com/api/?name=${duelist.username}&background=random&size=128`}
@@ -276,7 +276,7 @@ export default function Ranking() {
                     <span className='flex items-center gap-2'>
                       <span className='font-bold text-lg text-info'>{Math.round(duelist.rating)}</span>
                       {duelist.provisional ? (
-                        <span className='badge badge-sm badge-warning' title='Provisional Elo — not enough duels yet'>?</span>
+                        <span className='badge badge-sm badge-warning relative z-10' title='Provisional Elo — not enough duels yet'>?</span>
                       ) : null}
                     </span>
                   )}
