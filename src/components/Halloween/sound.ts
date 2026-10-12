@@ -9,7 +9,7 @@ export type ShadowRealmSound = {
 	readonly on: boolean;
 	/** Call from the click that turns sound on: browsers only start audio on a gesture. */
 	setOn(on: boolean): void;
-	/** Quiet while the storm is paused or the tab is hidden, without forgetting `on`. */
+	/** Quiet while the tab is hidden, without forgetting `on`. */
 	setHushed(hushed: boolean): void;
 	/** 0 is the nearest pyramid, 1 the farthest: farther thunder arrives later, softer and duller. */
 	thunder(distance: number): void;

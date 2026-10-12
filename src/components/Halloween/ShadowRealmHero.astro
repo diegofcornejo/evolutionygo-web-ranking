@@ -19,15 +19,6 @@ const nightsCaption = (index: number) => (index >= 0 ? `Night ${index + 1} of ${
 
 <section class="shadow-realm" aria-labelledby="shadow-realm-title">
 	<div class="shadow-realm-controls">
-		<button type="button" class="shadow-realm-control shadow-realm-still" data-storm-toggle aria-pressed="false" aria-label="Pause the storm" title="Pause the storm">
-			<svg data-icon="pause" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-				<rect x="3.5" y="2.5" width="3" height="11" rx="1" />
-				<rect x="9.5" y="2.5" width="3" height="11" rx="1" />
-			</svg>
-			<svg data-icon="play" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-				<path d="M4.5 2.8v10.4a.8.8 0 0 0 1.2.7l8.3-5.2a.8.8 0 0 0 0-1.4L5.7 2.1a.8.8 0 0 0-1.2.7Z" />
-			</svg>
-		</button>
 		<button type="button" class="shadow-realm-control shadow-realm-sound" data-sound-toggle aria-pressed="true" aria-label="Mute sound" title="Mute sound">
 			<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
 				<path d="M1.5 6h2.6L7.5 3v10L4.1 10H1.5Z" />
@@ -182,34 +173,10 @@ const nightsCaption = (index: number) => (index >= 0 ? `Night ${index + 1} of ${
 <script is:inline>
 	(() => {
 		const hero = document.querySelector('.shadow-realm');
-		const toggle = hero?.querySelector('[data-storm-toggle]');
-		if (!hero || !toggle) return;
-		const STILL_KEY = 'shadow-realm-still';
-		const setStill = (still) => {
-			hero.classList.toggle('is-still', still);
-			const label = still ? 'Resume the storm' : 'Pause the storm';
-			toggle.setAttribute('aria-pressed', String(still));
-			toggle.setAttribute('aria-label', label);
-			toggle.setAttribute('title', label);
-		};
-		let stored = false;
-		try {
-			stored = localStorage.getItem(STILL_KEY) === '1';
-		} catch {}
-		setStill(stored);
-		toggle.addEventListener('click', () => {
-			const still = !hero.classList.contains('is-still');
-			setStill(still);
-			try {
-				if (still) localStorage.setItem(STILL_KEY, '1');
-				else localStorage.removeItem(STILL_KEY);
-			} catch {}
-		});
-		if ('IntersectionObserver' in window) {
-			const observer = new IntersectionObserver(([entry]) => hero.classList.toggle('is-offscreen', !entry.isIntersecting));
-			observer.observe(hero);
-			document.addEventListener('astro:before-swap', () => observer.disconnect(), { once: true });
-		}
+		if (!hero || !('IntersectionObserver' in window)) return;
+		const observer = new IntersectionObserver(([entry]) => hero.classList.toggle('is-offscreen', !entry.isIntersecting));
+		observer.observe(hero);
+		document.addEventListener('astro:before-swap', () => observer.disconnect(), { once: true });
 	})();
 
 	(() => {
@@ -243,7 +210,7 @@ const nightsCaption = (index: number) => (index >= 0 ? `Night ${index + 1} of ${
 		if (!hero || !toggle) return;
 		const MUTED_KEY = 'shadow-realm-muted';
 		const sound = createShadowRealmSound();
-		const hush = () => sound.setHushed(hero.classList.contains('is-still') || document.hidden);
+		const hush = () => sound.setHushed(document.hidden);
 		const strike = (event: AnimationEvent) => {
 			const distance = (event.target as HTMLElement).dataset?.distance;
 			if (distance !== undefined) sound.thunder(Number(distance));
@@ -304,14 +271,11 @@ const nightsCaption = (index: number) => (index >= 0 ? `Night ${index + 1} of ${
 		});
 		hero.addEventListener('animationstart', strike);
 		hero.addEventListener('animationiteration', strike);
-		const observer = new MutationObserver(hush);
-		observer.observe(hero, { attributes: true, attributeFilter: ['class'] });
 		document.addEventListener('visibilitychange', hush);
 		hush();
 		document.addEventListener(
 			'astro:before-swap',
 			() => {
-				observer.disconnect();
 				disarm();
 				removeEventListener('pageshow', restore);
 				document.removeEventListener('visibilitychange', hush);
@@ -479,21 +443,6 @@ const nightsCaption = (index: number) => (index >= 0 ? `Night ${index + 1} of ${
 		display: inline;
 	}
 
-	.shadow-realm-still [data-icon='play'],
-	.shadow-realm-still[aria-pressed='true'] [data-icon='pause'] {
-		display: none;
-	}
-
-	.shadow-realm-still[aria-pressed='true'] [data-icon='play'] {
-		display: block;
-	}
-
-	.shadow-realm.is-still .shadow-realm-strike {
-		animation: none;
-		opacity: 0;
-	}
-
-	.shadow-realm.is-still .shadow-realm-fog,
 	.shadow-realm.is-offscreen :is(.shadow-realm-fog, .shadow-realm-strike) {
 		animation-play-state: paused;
 	}
@@ -765,10 +714,6 @@ const nightsCaption = (index: number) => (index >= 0 ? `Night ${index + 1} of ${
 	@media (prefers-reduced-motion: reduce) {
 		.shadow-realm-fog {
 			animation: none;
-		}
-
-		.shadow-realm-still {
-			display: none;
 		}
 	}
 
