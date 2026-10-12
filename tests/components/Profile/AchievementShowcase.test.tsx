@@ -112,15 +112,30 @@ describe('AchievementShowcase', () => {
 		});
 	});
 
-	it('shows only three achievements and opens modal', () => {
-		const { getByText, container } = render(<AchievementShowcase achievements={achievements} />);
+	it('features the latest unlock above the next three', () => {
+		const extra: Achievement = {
+			...achievements[0],
+			awardId: 'award-5',
+			id: 1002,
+			code: 'wins_10',
+			name: 'Veteran I',
+			unlockedAt: '2026-08-01T10:00:00.000Z',
+		};
+		const { getByText, container } = render(<AchievementShowcase achievements={[...achievements, extra]} />);
+
+		expect(getByText('Latest unlock').parentElement).toHaveTextContent('Tournament Victor');
 
 		const grids = container.querySelectorAll('.grid');
 		const previewGrid = grids[0];
 		expect(previewGrid).toBeTruthy();
 
 		const previewHeadings = within(previewGrid as HTMLElement).getAllByRole('heading');
-		expect(previewHeadings.length).toBe(3);
+		expect(previewHeadings.map((heading) => heading.textContent)).toEqual([
+			'First victory in TCG',
+			'On a roll',
+			'First victory',
+		]);
+		expect(getByText('Showing 4 of 5')).toBeInTheDocument();
 
 		const viewAllButton = getByText('View all');
 		fireEvent.click(viewAllButton);
@@ -142,7 +157,7 @@ describe('AchievementShowcase', () => {
 
 		expect(screen.queryByText('+0 pts')).not.toBeInTheDocument();
 		expect(screen.getAllByText('+300 pts').length).toBeGreaterThan(0);
-		expect(screen.getByText('Achievement Points')).toBeInTheDocument();
+		expect(screen.getByText('300 achievement points')).toBeInTheDocument();
 	});
 
 	it('shows catalog achievements to unlock when the player has none', () => {

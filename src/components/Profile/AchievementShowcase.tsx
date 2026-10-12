@@ -48,10 +48,17 @@ export default function AchievementShowcase({
 			.sort((a, b) => completion(b) - completion(a));
 	}, [achievements, catalog, progress]);
 
+	const sortedAchievements = useMemo(
+		() => [...achievements].sort((a, b) => Date.parse(b.unlockedAt) - Date.parse(a.unlockedAt)),
+		[achievements],
+	);
+
 	const totalPoints = achievements.reduce((sum, a) => sum + a.earnedPoints, 0);
 	const totalAvailable = achievements.length + locked.length;
-	const visibleAchievements = achievements.slice(0, PREVIEW_LIMIT);
-	const hasMore = achievements.length > PREVIEW_LIMIT || locked.length > 0;
+	const [latestAchievement, ...olderAchievements] = sortedAchievements;
+	const visibleAchievements = olderAchievements.slice(0, PREVIEW_LIMIT);
+	const shownCount = visibleAchievements.length + 1;
+	const hasMore = achievements.length > shownCount || locked.length > 0;
 
 	if (achievements.length === 0) {
 		return (
@@ -79,8 +86,8 @@ export default function AchievementShowcase({
 	return (
 		<div className="space-y-6">
 			{/* Summary */}
-			<div className="flex items-center justify-between p-4 bg-gradient-to-r from-warning/10 to-transparent rounded-xl border border-warning/20">
-				<div>
+			<div className="flex flex-col sm:flex-row sm:items-center gap-4 p-4 bg-gradient-to-r from-warning/10 to-transparent rounded-xl border border-warning/20">
+				<div className="shrink-0">
 					<span className="text-base-content/60 text-sm">Unlocked</span>
 					<div className="text-2xl font-bold text-warning">
 						{achievements.length}
@@ -88,13 +95,11 @@ export default function AchievementShowcase({
 							<span className="text-base font-medium text-base-content/50"> / {totalAvailable}</span>
 						)}
 					</div>
+					{totalPoints > 0 && (
+						<span className="text-xs text-base-content/60">{totalPoints.toLocaleString()} achievement points</span>
+					)}
 				</div>
-				{totalPoints > 0 && (
-					<div className="text-right">
-						<span className="text-base-content/60 text-sm">Achievement Points</span>
-						<div className="text-2xl font-bold">{totalPoints.toLocaleString()}</div>
-					</div>
-				)}
+				<LatestAchievement achievement={latestAchievement} />
 			</div>
 
 			{/* Achievement Grid */}
@@ -107,7 +112,7 @@ export default function AchievementShowcase({
 			{hasMore && (
 				<div className="mt-4 flex items-center justify-between">
 					<span className="text-sm text-base-content/50">
-						Showing {visibleAchievements.length} of {totalAvailable}
+						Showing {shownCount} of {totalAvailable}
 					</span>
 					<button
 						type="button"
@@ -124,7 +129,7 @@ export default function AchievementShowcase({
 					<h3 className="text-2xl font-bold mb-4">All Achievements</h3>
 					<div className="max-h-[70vh] overflow-y-auto pr-1 space-y-6">
 						<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-							{achievements.map((achievement, index) => (
+							{sortedAchievements.map((achievement, index) => (
 								<AchievementCard
 									key={`modal-${achievement.awardId ?? `${achievement.id}-${index}`}`}
 									achievement={achievement}
@@ -169,12 +174,31 @@ function AchievementIcon({ icon, muted = false }: Readonly<{ icon: string; muted
 	);
 }
 
-function AchievementCard({ achievement }: Readonly<{ achievement: Achievement }>) {
-	const unlockedDate = new Date(achievement.unlockedAt).toLocaleDateString('en-US', {
+function formatUnlockedDate(unlockedAt: string) {
+	return new Date(unlockedAt).toLocaleDateString('en-US', {
 		month: 'short',
 		day: 'numeric',
 		year: 'numeric',
 	});
+}
+
+function LatestAchievement({ achievement }: Readonly<{ achievement: Achievement }>) {
+	return (
+		<div className="flex items-center gap-4 min-w-0 sm:pl-6 sm:border-l border-t sm:border-t-0 pt-4 sm:pt-0 border-warning/20">
+			<AchievementIcon icon={achievement.icon} />
+			<div className="min-w-0">
+				<span className="text-xs uppercase tracking-wide text-warning/80">Latest unlock</span>
+				<h3 className="font-bold leading-tight truncate">{achievement.name}</h3>
+				<p className="text-xs text-base-content/50 truncate">
+					{achievement.description} · {formatUnlockedDate(achievement.unlockedAt)}
+				</p>
+			</div>
+		</div>
+	);
+}
+
+function AchievementCard({ achievement }: Readonly<{ achievement: Achievement }>) {
+	const unlockedDate = formatUnlockedDate(achievement.unlockedAt);
 
 	return (
 		<div className="group relative overflow-hidden rounded-2xl bg-base-200/80 border border-base-300 hover:border-warning/30 transition-all duration-300 hover:shadow-lg hover:shadow-warning/5">
