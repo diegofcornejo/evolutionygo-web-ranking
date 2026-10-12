@@ -126,7 +126,19 @@ export default function AchievementShowcase({
 
 			<dialog ref={dialogRef} className="modal">
 				<div className="modal-box max-w-4xl bg-[#13151a] border border-white/30 shadow-2xl">
-					<h3 className="text-2xl font-bold mb-4">All Achievements</h3>
+					<header className="flex items-center justify-between gap-4 mb-4">
+						<h3 className="text-2xl font-bold">All Achievements</h3>
+						<button
+							type="button"
+							className="btn btn-sm btn-circle btn-ghost"
+							aria-label="Close"
+							onClick={() => dialogRef.current?.close()}
+						>
+							<svg viewBox="0 0 24 24" className="size-5" fill="currentColor" aria-hidden="true">
+								<path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+							</svg>
+						</button>
+					</header>
 					<div className="max-h-[70vh] overflow-y-auto pr-1 space-y-6">
 						<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
 							{sortedAchievements.map((achievement, index) => (
@@ -146,11 +158,6 @@ export default function AchievementShowcase({
 								</div>
 							</div>
 						)}
-					</div>
-					<div className="modal-action">
-						<button type="button" className="btn" onClick={() => dialogRef.current?.close()}>
-							Close
-						</button>
 					</div>
 				</div>
 				<form method="dialog" className="modal-backdrop">
