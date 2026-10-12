@@ -5,7 +5,7 @@ import StatsOverview from '@components/Profile/StatsOverview';
 import MatchHistory from '@components/Profile/MatchHistory';
 import AchievementShowcase from '@components/Profile/AchievementShowcase';
 import SeasonSelector from '@components/Profile/SeasonSelector.astro';
-import type { Match } from '@types';
+import type { Achievement, AchievementCatalog, AchievementRecord, Match } from '@types';
 
 let { id, banlist = 'Global' } = Astro.params;
 const username = Astro.url.searchParams.get('username') || '';
@@ -37,6 +37,22 @@ if (!duelistResponse.ok) {
 } else {
 	duelist = await duelistResponse.json();
 }
+
+const fetchJson = async <T,>(url: string): Promise<T | null> => {
+	try {
+		const response = await fetch(url);
+		if (!response.ok) return null;
+		return (await response.json()) as T;
+	} catch {
+		return null;
+	}
+};
+
+const [achievementCatalog, achievementRecord] = await Promise.all([
+	fetchJson<AchievementCatalog>(`${API_URL}/achievements/`),
+	fetchJson<AchievementRecord>(`${API_URL}/users/${id}/achievements`),
+]);
+const achievements: Achievement[] = achievementRecord?.achievements ?? duelist.achievements ?? [];
 
 const createMockMatches = (name: string): Match[] => [
 	{
@@ -246,7 +262,12 @@ const seasonStats = await Promise.all(
 				/>
 
 				<div>
-					<AchievementShowcase achievements={duelist.achievements} client:load />
+					<AchievementShowcase
+						achievements={achievements}
+						catalog={achievementCatalog?.items ?? []}
+						progress={achievementRecord?.progress ?? null}
+						client:load
+					/>
 				</div>
 			</div>
 		</div>

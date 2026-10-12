@@ -8,7 +8,15 @@ export type { GameClient } from './GameClient';
 export type { Faq } from './Faq';
 export type { Feature } from './Feature';
 export type { User } from './User';
-export type { Achievement } from './Achievement';
+export type {
+	Achievement,
+	AchievementCatalog,
+	AchievementCatalogItem,
+	AchievementMetric,
+	AchievementProgress,
+	AchievementRecord,
+	AchievementRequirement,
+} from './Achievement';
 export type { Command } from './Command';
 export type { Room } from './Room';
 export type { WatchRoom, WatchRoomPlayer } from './WatchRoom';
