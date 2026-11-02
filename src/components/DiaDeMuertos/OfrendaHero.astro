@@ -1,0 +1,653 @@
+---
+import '@fontsource/grenze/latin-700.css';
+import { MUERTOS_WINDOW, formatMonthDay, getMuertosNights, getTonightIndex } from '@utils/seasonalEdition';
+import {
+	ALTAR_BASE,
+	ALTAR_VIEWBOX,
+	CANDLES,
+	FLAG_SCALE,
+	FLAGS,
+	GARLAND_VIEWBOX,
+	MARIGOLDS,
+	PETALS,
+	STRING_PATH,
+} from './ofrenda';
+
+interface Props {
+	season: string;
+}
+
+const { season } = Astro.props;
+const now = new Date();
+const nights = getMuertosNights(now.getUTCFullYear());
+const tonight = getTonightIndex(nights, now.getUTCMonth() + 1, now.getUTCDate());
+const windowEnd = formatMonthDay(MUERTOS_WINDOW.end);
+const allNightsCaption = `${formatMonthDay(MUERTOS_WINDOW.start)} and ${windowEnd}`;
+const nightsCaption = (index: number) => `Día de Muertos · ${index >= 0 ? `Night ${index + 1} of ${nights.length}` : allNightsCaption}`;
+const nightState = (index: number) => (tonight < 0 || index > tonight ? 'ahead' : index === tonight ? 'tonight' : 'past');
+---
+
+<section class="ofrenda" aria-labelledby="ofrenda-title">
+	<svg class="ofrenda-garland" viewBox={GARLAND_VIEWBOX} preserveAspectRatio="xMidYMin slice" aria-hidden="true" focusable="false">
+		<path d={STRING_PATH} class="ofrenda-string" />
+		{
+			FLAGS.map((flag) => (
+				<g transform={`translate(${flag.x} ${flag.y}) scale(${FLAG_SCALE})`}>
+					<path class="ofrenda-flag" d={flag.d} fill={flag.fill} style={`--delay: ${flag.delay}s`} />
+				</g>
+			))
+		}
+	</svg>
+
+	<div class="ofrenda-stage">
+		<div class="ofrenda-petals" aria-hidden="true">
+			{
+				PETALS.map((petal) => (
+					<span
+						class="ofrenda-petal"
+						style={`--left: ${petal.left}%; --size: ${petal.size}px; --duration: ${petal.duration}s; --delay: ${petal.delay}s; --drift: ${petal.drift}px`}
+					/>
+				))
+			}
+		</div>
+		<svg class="ofrenda-sigil" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+			<path
+				d="M32 4C16 4 6 15 6 29c0 9 5 15 11 18v8c0 3 2 5 5 5h20c3 0 5-2 5-5v-8c6-3 11-9 11-18C58 15 48 4 32 4Z"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+			/>
+			<circle cx="22" cy="30" r="7" fill="none" stroke="currentColor" stroke-width="2" />
+			<circle cx="42" cy="30" r="7" fill="none" stroke="currentColor" stroke-width="2" />
+			<circle class="ofrenda-sigil-eye" cx="22" cy="30" r="3" />
+			<circle class="ofrenda-sigil-eye" cx="42" cy="30" r="3" />
+			<path class="ofrenda-sigil-eye" d="M32 45l-3-4.5a2 2 0 0 1 3-2a2 2 0 0 1 3 2Z" />
+			<path d="M22 52h20M26 49v6M30 49v6M34 49v6M38 49v6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+			<g class="ofrenda-sigil-flower">
+				<circle cx="32" cy="11" r="2.2" />
+				<circle cx="36.2" cy="14" r="2.2" />
+				<circle cx="34.6" cy="18.8" r="2.2" />
+				<circle cx="29.4" cy="18.8" r="2.2" />
+				<circle cx="27.8" cy="14" r="2.2" />
+			</g>
+			<circle cx="32" cy="15.2" r="1.6" class="ofrenda-sigil-eye" />
+		</svg>
+
+		<div class="ofrenda-altar" aria-hidden="true">
+			<svg viewBox={ALTAR_VIEWBOX} preserveAspectRatio="xMidYMax meet" focusable="false">
+				<defs>
+					<radialGradient id="ofrenda-glow">
+						<stop offset="0" stop-color="#ffcf5c" stop-opacity="0.55" />
+						<stop offset="0.45" stop-color="#ff9f1c" stop-opacity="0.18" />
+						<stop offset="1" stop-color="#ff9f1c" stop-opacity="0" />
+					</radialGradient>
+				</defs>
+				{
+					CANDLES.map((candle) => {
+						const top = ALTAR_BASE - candle.height;
+						const mid = candle.x + candle.width / 2;
+						return (
+							<g style={`--flicker: ${candle.flicker}s; --delay: ${candle.delay}s`}>
+								<circle class="ofrenda-candle-glow" cx={mid} cy={top - 14} r={candle.width * 3.2} fill="url(#ofrenda-glow)" />
+								<rect class="ofrenda-candle" x={candle.x} y={top} width={candle.width} height={candle.height} rx="3" />
+								<rect class="ofrenda-candle-lip" x={candle.x} y={top} width={candle.width} height="5" rx="2" />
+								<path class="ofrenda-wick" d={`M${mid} ${top}v-6`} />
+								<path
+									class="ofrenda-flame"
+									d={`M${mid} ${top - 30}c5 8 8 13 8 18a8 8 0 0 1-16 0c0-5 3-10 8-18Z`}
+								/>
+								<path class="ofrenda-flame-core" d={`M${mid} ${top - 18}c2 4 3.5 6 3.5 8a3.5 3.5 0 0 1-7 0c0-2 1.5-4 3.5-8Z`} />
+							</g>
+						);
+					})
+				}
+				{MARIGOLDS.map((flower) => (
+					<g class="ofrenda-marigold">
+						<circle cx={flower.cx} cy={flower.cy} r={flower.r} />
+						<circle cx={flower.cx} cy={flower.cy} r={flower.r * 0.55} class="ofrenda-marigold-heart" />
+					</g>
+				))}
+			</svg>
+		</div>
+		<div class="ofrenda-smoke ofrenda-smoke-back" aria-hidden="true"></div>
+		<div class="ofrenda-lockup">
+			<h1 id="ofrenda-title" class="ofrenda-title">
+				<span class="ofrenda-brand">Evolution YGO</span>
+				<span class="ofrenda-season">Season {season}</span>
+			</h1>
+			<div class="ofrenda-smoke ofrenda-smoke-front" aria-hidden="true"></div>
+		</div>
+	</div>
+	<div class="ofrenda-smoke ofrenda-smoke-trail" aria-hidden="true"></div>
+
+	<div class="ofrenda-body">
+		<p class="ofrenda-lede">
+			The Graveyard is open and every card in it is remembered. Through {windowEnd} Season {season} plays on under the
+			marigolds, and your points count just the same.
+		</p>
+
+		<div class="ofrenda-nights">
+			<ol aria-label="Nights of Día de Muertos" data-nights>
+				{
+					nights.map((night, index) => (
+						<li
+							data-month={night.month}
+							data-day={night.day}
+							data-state={nightState(index)}
+							aria-current={index === tonight ? 'date' : undefined}
+						>
+							<svg class="ofrenda-night-candle" viewBox="0 0 20 40" aria-hidden="true" focusable="false">
+								<path class="ofrenda-night-flame" d="M10 2c3 5 5 8 5 11a5 5 0 0 1-10 0c0-3 2-6 5-11Z" />
+								<rect x="5" y="19" width="10" height="20" rx="2" />
+							</svg>
+							<span class="ofrenda-night-label">{formatMonthDay(night).replace('November', 'Nov')}</span>
+						</li>
+					))
+				}
+			</ol>
+			<p class="ofrenda-nights-caption" data-nights-caption data-all-nights={allNightsCaption} aria-live="polite">{nightsCaption(tonight)}</p>
+		</div>
+
+		<div class="ofrenda-actions">
+			<a class="btn btn-primary btn-lg" href="https://evoduel.com" data-umami-event="muertos-click-play">
+				Rise and duel
+			</a>
+			<a class="btn btn-outline btn-lg" href="#section-ranking" data-umami-event="muertos-click-ranking">
+				See the rankings
+			</a>
+		</div>
+	</div>
+</section>
+
+<script is:inline>
+	(() => {
+		const hero = document.querySelector('.ofrenda');
+		if (!hero || !('IntersectionObserver' in window)) return;
+		const observer = new IntersectionObserver(([entry]) => hero.classList.toggle('is-offscreen', !entry.isIntersecting));
+		observer.observe(hero);
+		document.addEventListener('astro:before-swap', () => observer.disconnect(), { once: true });
+	})();
+
+	(() => {
+		const list = document.querySelector('.ofrenda [data-nights]');
+		const caption = document.querySelector('.ofrenda [data-nights-caption]');
+		if (!list || !caption) return;
+		const today = new Date();
+		const items = [...list.children];
+		const tonight = items.findIndex(
+			(item) => Number(item.dataset.month) === today.getMonth() + 1 && Number(item.dataset.day) === today.getDate()
+		);
+		items.forEach((item, index) => {
+			item.dataset.state = tonight < 0 || index > tonight ? 'ahead' : index === tonight ? 'tonight' : 'past';
+			if (index === tonight) item.setAttribute('aria-current', 'date');
+			else item.removeAttribute('aria-current');
+		});
+		caption.textContent = `Día de Muertos · ${tonight >= 0 ? `Night ${tonight + 1} of ${items.length}` : caption.dataset.allNights}`;
+	})();
+</script>
+
+<style>
+	.ofrenda {
+		--night: #0f060e;
+		--smoke-deep: #5a2347;
+		--smoke-pale: #f0c7b4;
+		--cempasuchil: var(--color-primary, #ff9f1c);
+		--rosa: var(--color-secondary, #e4007c);
+		position: relative;
+		isolation: isolate;
+		overflow: hidden;
+		margin-top: -1px;
+		padding-bottom: clamp(2.5rem, 6vw, 4.5rem);
+		background: linear-gradient(180deg, var(--night) 0%, #1a0a17 55%, var(--color-base-100, #150914) 100%);
+		color: var(--color-base-content, #fff0e6);
+		text-align: center;
+	}
+
+	.ofrenda-garland {
+		position: absolute;
+		top: 0;
+		left: 50%;
+		z-index: 2;
+		width: max(100%, 720px);
+		height: auto;
+		transform: translateX(-50%);
+		pointer-events: none;
+	}
+
+	.ofrenda-string {
+		fill: none;
+		stroke: #f0c7b4;
+		stroke-opacity: 0.45;
+		stroke-width: 1.5;
+	}
+
+	.ofrenda-flag {
+		fill-rule: evenodd;
+		opacity: 0.88;
+		transform-box: fill-box;
+		transform-origin: 50% 0;
+	}
+
+	/* Petals stay above the lede so they never cross text the visitor is reading. */
+	.ofrenda-petals {
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+		overflow: hidden;
+		container-type: size;
+		pointer-events: none;
+	}
+
+	.ofrenda-petal {
+		position: absolute;
+		top: -2rem;
+		left: var(--left);
+		width: var(--size);
+		height: calc(var(--size) * 1.4);
+		border-radius: 50% 50% 50% 0;
+		background: var(--cempasuchil);
+		opacity: 0;
+		will-change: transform;
+	}
+
+	.ofrenda-stage {
+		position: relative;
+		padding: clamp(2.5rem, 7vh, 4.5rem) 0 0;
+	}
+
+	.ofrenda-altar {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: 50%;
+		z-index: 0;
+		width: max(100%, 600px);
+		transform: translateX(-50%);
+		pointer-events: none;
+	}
+
+	.ofrenda-altar svg {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		mask-image: linear-gradient(to bottom, #000 76%, transparent 97%);
+	}
+
+	/* Warm candlelight rising from the altar, so the candles read against it. */
+	.ofrenda-altar::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(
+			to top,
+			transparent 2%,
+			rgb(140 52 70 / 0.4) 20%,
+			rgb(90 35 71 / 0.18) 46%,
+			transparent 66%
+		);
+	}
+
+	.ofrenda-candle {
+		fill: #3a1b2c;
+	}
+
+	.ofrenda-candle-lip {
+		fill: #f0c7b4;
+		fill-opacity: 0.35;
+	}
+
+	.ofrenda-wick {
+		stroke: #1a0a17;
+		stroke-width: 2;
+	}
+
+	.ofrenda-flame {
+		fill: #ffb43a;
+		transform-box: fill-box;
+		transform-origin: 50% 100%;
+	}
+
+	.ofrenda-flame-core {
+		fill: #fff2c4;
+		transform-box: fill-box;
+		transform-origin: 50% 100%;
+	}
+
+	.ofrenda-marigold {
+		fill: #d9730d;
+	}
+
+	.ofrenda-marigold-heart {
+		fill: #ffae3d;
+	}
+
+	.ofrenda.is-offscreen :is(.ofrenda-smoke, .ofrenda-flag, .ofrenda-petal, .ofrenda-flame, .ofrenda-flame-core, .ofrenda-candle-glow) {
+		animation-play-state: paused;
+	}
+
+	.ofrenda-sigil {
+		position: relative;
+		z-index: 1;
+		display: block;
+		width: clamp(2.75rem, 4.5vw, 3.75rem);
+		margin: 1.875rem auto 0.75rem;
+		color: var(--cempasuchil);
+	}
+
+	.ofrenda-sigil-eye {
+		fill: var(--rosa);
+	}
+
+	.ofrenda-sigil-flower {
+		fill: none;
+		stroke: currentColor;
+		stroke-width: 1.2;
+	}
+
+	.ofrenda-lockup {
+		position: relative;
+	}
+
+	.ofrenda-title {
+		position: relative;
+		z-index: 1;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		margin: 0;
+		line-height: 1;
+	}
+
+	.ofrenda-brand {
+		font-family: 'Grenze', 'Plus Jakarta Sans Variable', serif;
+		font-size: clamp(1.6rem, 3.2vw, 2.6rem);
+		font-weight: 700;
+		line-height: 1;
+		color: #f0c7b4;
+	}
+
+	.ofrenda-season {
+		font-family: 'Grenze', 'Plus Jakarta Sans Variable', serif;
+		font-weight: 700;
+		font-size: clamp(3.6rem, 13.5vw, 12.5rem);
+		line-height: 0.82;
+		letter-spacing: -0.01em;
+		text-transform: uppercase;
+		margin-top: 0.08em;
+		white-space: nowrap;
+		mask-image: linear-gradient(to bottom, #000 38%, rgb(0 0 0 / 0.55) 68%, rgb(0 0 0 / 0.12) 100%);
+	}
+
+	/* Copal smoke: the Halloween fog masks, tinted warm. */
+	.ofrenda-smoke {
+		position: absolute;
+		left: 0;
+		width: 200%;
+		pointer-events: none;
+		mask-image: url('/halloween/fog-back.webp');
+		mask-repeat: repeat-x;
+		mask-size: 50% 100%;
+		mask-position: left bottom;
+		will-change: transform;
+	}
+
+	.ofrenda-smoke-back {
+		z-index: 0;
+		top: 8%;
+		height: 85%;
+		background: var(--smoke-deep);
+		opacity: 0.7;
+		animation: ofrenda-drift 150s linear infinite;
+	}
+
+	.ofrenda-smoke-front {
+		z-index: 2;
+		top: 38%;
+		height: 95%;
+		mask-image: url('/halloween/fog-front.webp');
+		background: var(--smoke-pale);
+		opacity: 0.55;
+		animation: ofrenda-drift 90s linear infinite reverse;
+	}
+
+	.ofrenda-smoke-trail {
+		z-index: 0;
+		bottom: 0;
+		height: 42%;
+		mask-image: url('/halloween/fog-back.webp'), linear-gradient(#000 55%, transparent);
+		mask-repeat: repeat-x, no-repeat;
+		mask-size: 50% 100%, 100% 100%;
+		mask-composite: intersect;
+		background: var(--smoke-deep);
+		opacity: 0.5;
+		animation: ofrenda-drift 120s linear infinite;
+	}
+
+	.ofrenda-body {
+		position: relative;
+		z-index: 3;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 1.75rem;
+		padding: 0 1rem;
+		margin-top: clamp(2.5rem, 5vw, 4rem);
+	}
+
+	.ofrenda-lede {
+		max-width: 38ch;
+		margin: 0;
+		font-size: clamp(1.05rem, 1.6vw, 1.25rem);
+		line-height: 1.55;
+		color: rgb(255 240 230 / 0.84);
+		text-wrap: pretty;
+	}
+
+	.ofrenda-nights ol {
+		display: flex;
+		align-items: flex-end;
+		justify-content: center;
+		gap: 2.5rem;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.ofrenda-nights li {
+		display: flex;
+		align-items: center;
+		gap: 0.4rem;
+	}
+
+	.ofrenda-night-candle {
+		width: 1rem;
+		height: 2rem;
+	}
+
+	.ofrenda-night-candle rect {
+		fill: #6b3a52;
+	}
+
+	.ofrenda-night-flame {
+		fill: transparent;
+		stroke: #6b3a52;
+		stroke-width: 1;
+	}
+
+	.ofrenda-nights li[data-state='past'] .ofrenda-night-candle rect {
+		fill: #a86a7f;
+	}
+
+	.ofrenda-nights li[data-state='tonight'] .ofrenda-night-candle rect {
+		fill: #f0c7b4;
+	}
+
+	.ofrenda-nights li[data-state='tonight'] .ofrenda-night-flame {
+		fill: var(--cempasuchil);
+		stroke: none;
+		filter: drop-shadow(0 0 6px var(--cempasuchil));
+	}
+
+	.ofrenda-night-label {
+		font-size: 0.85rem;
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
+		color: #c9a0b0;
+	}
+
+	.ofrenda-nights li[data-state='tonight'] .ofrenda-night-label {
+		color: var(--cempasuchil);
+	}
+
+	.ofrenda-nights-caption {
+		margin: 0.6rem 0 0;
+		font-size: 0.85rem;
+		font-weight: 600;
+		letter-spacing: 0.04em;
+		color: #f0c7b4;
+		font-variant-numeric: tabular-nums;
+	}
+
+	.ofrenda-actions {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 0.75rem;
+	}
+
+	.ofrenda-actions .btn-outline {
+		border-color: rgb(255 240 230 / 0.35);
+		color: var(--color-base-content, #fff0e6);
+	}
+
+	.ofrenda-actions .btn-outline:hover {
+		border-color: var(--color-base-content, #fff0e6);
+		background: rgb(255 240 230 / 0.08);
+	}
+
+	@keyframes ofrenda-drift {
+		from {
+			transform: translateX(0);
+		}
+		to {
+			transform: translateX(-50%);
+		}
+	}
+
+	@keyframes ofrenda-sway {
+		from {
+			transform: rotate(-3deg);
+		}
+		to {
+			transform: rotate(3deg);
+		}
+	}
+
+	@keyframes ofrenda-flicker {
+		0%,
+		100% {
+			transform: scale(1, 1);
+		}
+		25% {
+			transform: scale(0.92, 1.08) skewX(2deg);
+		}
+		50% {
+			transform: scale(1.04, 0.94);
+		}
+		75% {
+			transform: scale(0.95, 1.05) skewX(-2deg);
+		}
+	}
+
+	@keyframes ofrenda-glow {
+		0%,
+		100% {
+			opacity: 0.85;
+		}
+		50% {
+			opacity: 1;
+		}
+	}
+
+	@keyframes ofrenda-fall {
+		0% {
+			opacity: 0;
+			transform: translate3d(0, 0, 0) rotate(0deg);
+		}
+		10%,
+		80% {
+			opacity: 0.8;
+		}
+		100% {
+			opacity: 0;
+			transform: translate3d(var(--drift), calc(100cqh + 2rem), 0) rotate(540deg);
+		}
+	}
+
+	@keyframes ofrenda-surface {
+		from {
+			transform: translateY(0.18em);
+			filter: blur(10px);
+			opacity: 0.35;
+		}
+	}
+
+	@media (prefers-reduced-motion: no-preference) {
+		.ofrenda-season {
+			animation: ofrenda-surface 1.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+		}
+
+		.ofrenda-flag {
+			animation: ofrenda-sway 4s var(--delay) ease-in-out infinite alternate;
+		}
+
+		.ofrenda-flame,
+		.ofrenda-flame-core {
+			animation: ofrenda-flicker var(--flicker) var(--delay) ease-in-out infinite;
+		}
+
+		.ofrenda-candle-glow {
+			animation: ofrenda-glow var(--flicker) var(--delay) ease-in-out infinite;
+		}
+
+		.ofrenda-petal {
+			animation: ofrenda-fall var(--duration) var(--delay) linear infinite;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.ofrenda-smoke {
+			animation: none;
+		}
+
+		.ofrenda-petals {
+			display: none;
+		}
+	}
+
+	@media (max-width: 640px) {
+		.ofrenda-smoke {
+			mask-size: 100% 100%;
+		}
+
+		.ofrenda-smoke-trail {
+			mask-size: 100% 100%, 100% 100%;
+		}
+
+		.ofrenda-smoke-front {
+			top: 30%;
+			height: 110%;
+		}
+
+		.ofrenda-altar::before {
+			background: linear-gradient(
+				to top,
+				transparent 2%,
+				rgb(140 52 70 / 0.4) 14%,
+				rgb(90 35 71 / 0.18) 32%,
+				transparent 46%
+			);
+		}
+	}
+</style>

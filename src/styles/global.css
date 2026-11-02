@@ -35,6 +35,38 @@
 	--depth: 0;
 	--noise: 0;
 }
+@plugin "daisyui/theme" {
+	name: 'ofrenda';
+	color-scheme: dark;
+	--color-base-100: #150914;
+	--color-base-200: #1b0c1a;
+	--color-base-300: #241124;
+	--color-base-content: #fff0e6;
+	--color-primary: #ff9f1c;
+	--color-primary-content: #150914;
+	--color-secondary: #e4007c;
+	--color-secondary-content: #fff0e6;
+	--color-accent: #2ec4b6;
+	--color-accent-content: #150914;
+	--color-neutral: #33182f;
+	--color-neutral-content: #fff0e6;
+	--color-info: #8fb8ff;
+	--color-info-content: #150914;
+	--color-success: #9ccc3c;
+	--color-success-content: #150914;
+	--color-warning: #ffcf5c;
+	--color-warning-content: #150914;
+	--color-error: #ff6b8a;
+	--color-error-content: #150914;
+	--radius-selector: 1rem;
+	--radius-field: 0.5rem;
+	--radius-box: 1rem;
+	--size-selector: 0.25rem;
+	--size-field: 0.25rem;
+	--border: 1px;
+	--depth: 0;
+	--noise: 0;
+}
 @theme {
 	--color-gold: #FFD700;
 	--color-silver: #C0C0C0;
@@ -43,10 +75,20 @@
 }
 
 html[data-edition='halloween'] {
+	--edition-scrollbar: #4a3470;
+	--edition-smoke: #3d2a63;
+}
+
+html[data-edition='muertos'] {
+	--edition-scrollbar: #6b3a52;
+	--edition-smoke: #5a2347;
+}
+
+html[data-edition] {
 	background: var(--color-base-100);
 	accent-color: var(--color-primary);
 	caret-color: var(--color-primary);
-	scrollbar-color: #4a3470 var(--color-base-100);
+	scrollbar-color: var(--edition-scrollbar) var(--color-base-100);
 
 	::selection {
 		background: var(--color-primary);
@@ -64,19 +106,19 @@ html[data-edition='halloween'] {
 	}
 }
 
-html[data-edition='halloween'] .site-footer {
+html[data-edition] .site-footer {
 	position: relative;
 	isolation: isolate;
 }
 
-html[data-edition='halloween'] .site-footer::before {
+html[data-edition] .site-footer::before {
 	content: '';
 	position: absolute;
 	left: 0;
 	right: 0;
 	bottom: 100%;
 	height: clamp(6rem, 14vw, 11rem);
-	background: #3d2a63;
+	background: var(--edition-smoke);
 	opacity: 0.5;
 	mask-image: url('/halloween/fog-back.webp'), linear-gradient(transparent, #000 70%);
 	mask-repeat: repeat-x, no-repeat;

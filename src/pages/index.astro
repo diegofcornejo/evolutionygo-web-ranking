@@ -10,6 +10,7 @@ import Crew from '@sections/Crew.astro';
 import { RoomsWebSocketListener } from '@components/RoomsWebSocketListener';
 import DuelistOfTheWeek from '@components/Cards/DuelistOfTheWeek.astro';
 import ShadowRealmHero from '@components/Halloween/ShadowRealmHero.astro';
+import OfrendaHero from '@components/DiaDeMuertos/OfrendaHero.astro';
 import { EDITION_PARAM, getSeasonalEdition } from '@utils/seasonalEdition';
 
 const currentSeason = import.meta.env.PUBLIC_DEFAULT_SEASON;
@@ -47,6 +48,8 @@ const keywords = [
 		{
 			edition === 'halloween' ? (
 				<ShadowRealmHero season={currentSeason} />
+			) : edition === 'muertos' ? (
+				<OfrendaHero season={currentSeason} />
 			) : (
 				<h1 class='text-4xl sm:text-5xl font-bold leading-none text-center mb-[1em] max-w-sm md:max-w-full pt-[1em]'>
 					<span class='text-gradient'> {title} </span>

@@ -101,8 +101,17 @@ describe('index.astro page', () => {
     expect(result).toMatch(/<filter[^>]*data-vortex-filter/);
   });
 
+  it('swaps in the ofrenda hero during Día de Muertos', async () => {
+    const result = await renderIndex('http://localhost/?edition=muertos');
+
+    expect(result).toContain('id="ofrenda-title"');
+    expect(result).toMatch(/class="ofrenda-season"[^>]*>Season/);
+    expect(result).not.toContain('shadow-realm-title');
+    expect(result).toContain('href="https://evoduel.com"');
+  });
+
   it('shows the live marquee right after the title, before the news', async () => {
-    for (const edition of ['off', 'halloween']) {
+    for (const edition of ['off', 'halloween', 'muertos']) {
       const result = await renderIndex(`http://localhost/?edition=${edition}`);
       const title = result.indexOf('</h1>');
       const live = result.indexOf('component-url="@sections/Live.svelte"');

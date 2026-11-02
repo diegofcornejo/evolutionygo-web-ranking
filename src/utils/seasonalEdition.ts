@@ -6,15 +6,30 @@
  * recomputed in the visitor's own timezone on the client.
  */
 
-export type SeasonalEdition = 'halloween';
+export type SeasonalEdition = 'halloween' | 'muertos';
 
 type MonthDay = { month: number; day: number };
 
+type EditionWindow = { start: MonthDay; end: MonthDay };
+
 /** Months are 1-based. Both ends are inclusive. */
-export const HALLOWEEN_WINDOW: { start: MonthDay; end: MonthDay } = {
+export const HALLOWEEN_WINDOW: EditionWindow = {
 	start: { month: 10, day: 1 },
+	end: { month: 10, day: 31 },
+};
+
+/** Día de Muertos takes over from Halloween for its two days. */
+export const MUERTOS_WINDOW: EditionWindow = {
+	start: { month: 11, day: 1 },
 	end: { month: 11, day: 2 },
 };
+
+const EDITION_WINDOWS: Record<SeasonalEdition, EditionWindow> = {
+	halloween: HALLOWEEN_WINDOW,
+	muertos: MUERTOS_WINDOW,
+};
+
+const EDITIONS = Object.keys(EDITION_WINDOWS) as SeasonalEdition[];
 
 export const HALLOWEEN_NIGHT: MonthDay = { month: 10, day: 31 };
 
@@ -25,20 +40,26 @@ const MONTH_NAMES = [
 
 export const formatMonthDay = ({ month, day }: MonthDay) => `${MONTH_NAMES[month - 1]} ${day}`;
 
-/** `?edition=halloween` previews the edition outside its window; `?edition=off` hides it inside. */
+/** `?edition=<name>` previews an edition outside its window; `?edition=off` hides it inside. */
 export const EDITION_PARAM = 'edition';
 
 const toKey = ({ month, day }: MonthDay) => month * 100 + day;
 
-export const isInHalloweenWindow = (date: Date): boolean => {
+const isInWindow = (date: Date, { start, end }: EditionWindow): boolean => {
 	const key = toKey({ month: date.getUTCMonth() + 1, day: date.getUTCDate() });
-	return key >= toKey(HALLOWEEN_WINDOW.start) && key <= toKey(HALLOWEEN_WINDOW.end);
+	return key >= toKey(start) && key <= toKey(end);
 };
 
+export const isInHalloweenWindow = (date: Date): boolean => isInWindow(date, HALLOWEEN_WINDOW);
+
+export const isInMuertosWindow = (date: Date): boolean => isInWindow(date, MUERTOS_WINDOW);
+
+const isEdition = (value: string): value is SeasonalEdition => (EDITIONS as string[]).includes(value);
+
 export const getSeasonalEdition = (now: Date, override?: string | null): SeasonalEdition | null => {
-	if (override === 'halloween') return 'halloween';
+	if (override && isEdition(override)) return override;
 	if (override === 'off') return null;
-	return isInHalloweenWindow(now) ? 'halloween' : null;
+	return EDITIONS.find((edition) => isInWindow(now, EDITION_WINDOWS[edition])) ?? null;
 };
 
 export type EditionNight = {
@@ -47,11 +68,11 @@ export type EditionNight = {
 	isHalloween: boolean;
 };
 
-/** Every night of the window, in order, for the year the window falls in. */
-export const getHalloweenNights = (year: number): EditionNight[] => {
+/** Every night of a window, in order, for the year the window falls in. */
+const getNights = (year: number, window: EditionWindow): EditionNight[] => {
 	const nights: EditionNight[] = [];
-	const cursor = new Date(Date.UTC(year, HALLOWEEN_WINDOW.start.month - 1, HALLOWEEN_WINDOW.start.day));
-	const last = Date.UTC(year, HALLOWEEN_WINDOW.end.month - 1, HALLOWEEN_WINDOW.end.day);
+	const cursor = new Date(Date.UTC(year, window.start.month - 1, window.start.day));
+	const last = Date.UTC(year, window.end.month - 1, window.end.day);
 	while (cursor.getTime() <= last) {
 		const month = cursor.getUTCMonth() + 1;
 		const day = cursor.getUTCDate();
@@ -64,6 +85,10 @@ export const getHalloweenNights = (year: number): EditionNight[] => {
 	}
 	return nights;
 };
+
+export const getHalloweenNights = (year: number): EditionNight[] => getNights(year, HALLOWEEN_WINDOW);
+
+export const getMuertosNights = (year: number): EditionNight[] => getNights(year, MUERTOS_WINDOW);
 
 /**
  * Index of the night matching a calendar date, or -1 outside the window.

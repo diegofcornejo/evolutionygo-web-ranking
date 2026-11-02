@@ -37,7 +37,8 @@ const {
 } = Astro.props;
 
 const edition = getSeasonalEdition(new Date(), Astro.url.searchParams.get(EDITION_PARAM));
-const baseTheme = edition === 'halloween' ? 'shadowrealm' : 'night';
+const EDITION_THEMES = { halloween: 'shadowrealm', muertos: 'ofrenda' } as const;
+const baseTheme = edition ? EDITION_THEMES[edition] : 'night';
 const { PUBLIC_ANALYTICS_ID, PUBLIC_ANALYTICS_URL, PUBLIC_DD_RUM_APP_ID, PUBLIC_DD_RUM_CLIENT_TOKEN, PUBLIC_DD_RUM_SERVICE, NODE_ENV } = import.meta.env;
 
 const datadogConfig = {
@@ -84,7 +85,7 @@ const datadogConfig = {
 			})
 		`}></script>
 		
-		{edition === 'halloween' && <link rel="preload" as="font" type="font/woff2" href={grenzeDisplayFont} crossorigin />}
+		{edition && <link rel="preload" as="font" type="font/woff2" href={grenzeDisplayFont} crossorigin />}
 		<!-- View Transitions -->
 		<ClientRouter/>
 	</head>
