@@ -4,8 +4,6 @@ import { ClientRouter } from 'astro:transitions';
 import { Toaster } from 'sonner';
 import Navbar from '@components/NavBar/Navbar.astro';
 import Footer from '@components/Footer.astro';
-import AnimationFrameSnow from '@components/Random/AnimationFrameSnow.svelte';
-import { isFeatureEnabled } from '@stores/featureFlagsStore';
 import SEO from '@components/SEO.astro';
 import grenzeDisplayFont from '@fontsource/grenze/files/grenze-latin-700-normal.woff2?url';
 import { EDITION_PARAM, getSeasonalEdition } from '@utils/seasonalEdition';
@@ -37,7 +35,8 @@ const {
 } = Astro.props;
 
 const edition = getSeasonalEdition(new Date(), Astro.url.searchParams.get(EDITION_PARAM));
-const EDITION_THEMES = { halloween: 'shadowrealm', muertos: 'ofrenda' } as const;
+const EDITION_THEMES = { halloween: 'shadowrealm', muertos: 'ofrenda', christmas: 'frost', newyear: 'midnight' } as const;
+const usesGrenze = edition !== null && edition !== 'newyear';
 const baseTheme = edition ? EDITION_THEMES[edition] : 'night';
 const { PUBLIC_ANALYTICS_ID, PUBLIC_ANALYTICS_URL, PUBLIC_DD_RUM_APP_ID, PUBLIC_DD_RUM_CLIENT_TOKEN, PUBLIC_DD_RUM_SERVICE, NODE_ENV } = import.meta.env;
 
@@ -85,7 +84,7 @@ const datadogConfig = {
 			})
 		`}></script>
 		
-		{edition && <link rel="preload" as="font" type="font/woff2" href={grenzeDisplayFont} crossorigin />}
+		{usesGrenze && <link rel="preload" as="font" type="font/woff2" href={grenzeDisplayFont} crossorigin />}
 		<!-- View Transitions -->
 		<ClientRouter/>
 	</head>
@@ -93,7 +92,6 @@ const datadogConfig = {
 		<Navbar />
 		<slot />
 		<Footer />
-		{isFeatureEnabled('SHOW_SNOW_EFFECT') && <AnimationFrameSnow client:only='svelte'/>}
 		<Toaster richColors closeButton duration={5000} position='bottom-right' client:load/>
 	</body>
 </html>

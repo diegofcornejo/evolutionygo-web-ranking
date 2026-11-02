@@ -1,12 +1,16 @@
 import { describe, it, expect } from 'vitest';
 import {
   formatMonthDay,
+  getChristmasNights,
   getHalloweenNights,
   getMuertosNights,
   getSeasonalEdition,
   getTonightIndex,
+  getWelcomedYear,
+  isInChristmasWindow,
   isInHalloweenWindow,
   isInMuertosWindow,
+  isInNewYearWindow,
 } from '@utils/seasonalEdition';
 
 const utc = (iso: string) => new Date(`${iso}Z`);
@@ -34,7 +38,36 @@ describe('isInMuertosWindow', () => {
   });
 });
 
+describe('isInChristmasWindow', () => {
+  it('covers December 1 to 25', () => {
+    expect(isInChristmasWindow(utc('2026-11-30T23:59:59'))).toBe(false);
+    expect(isInChristmasWindow(utc('2026-12-01T00:00:00'))).toBe(true);
+    expect(isInChristmasWindow(utc('2026-12-25T23:59:59'))).toBe(true);
+    expect(isInChristmasWindow(utc('2026-12-26T00:00:00'))).toBe(false);
+  });
+});
+
+describe('isInNewYearWindow', () => {
+  it('wraps from December 26 to January 6', () => {
+    expect(isInNewYearWindow(utc('2026-12-25T23:59:59'))).toBe(false);
+    expect(isInNewYearWindow(utc('2026-12-26T00:00:00'))).toBe(true);
+    expect(isInNewYearWindow(utc('2026-12-31T23:59:59'))).toBe(true);
+    expect(isInNewYearWindow(utc('2027-01-01T00:00:00'))).toBe(true);
+    expect(isInNewYearWindow(utc('2027-01-06T23:59:59'))).toBe(true);
+    expect(isInNewYearWindow(utc('2027-01-07T00:00:00'))).toBe(false);
+    expect(isInNewYearWindow(utc('2027-06-15T00:00:00'))).toBe(false);
+  });
+});
+
 describe('getSeasonalEdition', () => {
+  it('hands each part of the year to its edition', () => {
+    expect(getSeasonalEdition(utc('2026-12-10T10:00:00'))).toBe('christmas');
+    expect(getSeasonalEdition(utc('2026-12-28T10:00:00'))).toBe('newyear');
+    expect(getSeasonalEdition(utc('2027-01-03T10:00:00'))).toBe('newyear');
+    expect(getSeasonalEdition(utc('2027-01-07T10:00:00'))).toBeNull();
+    expect(getSeasonalEdition(utc('2026-11-15T10:00:00'))).toBeNull();
+  });
+
   it('follows the date when there is no override', () => {
     expect(getSeasonalEdition(utc('2026-10-25T10:00:00'))).toBe('halloween');
     expect(getSeasonalEdition(utc('2026-11-01T10:00:00'))).toBe('muertos');
@@ -50,7 +83,7 @@ describe('getSeasonalEdition', () => {
   });
 
   it('ignores unknown override values', () => {
-    expect(getSeasonalEdition(utc('2026-09-20T10:00:00'), 'christmas')).toBeNull();
+    expect(getSeasonalEdition(utc('2026-09-20T10:00:00'), 'easter')).toBeNull();
     expect(getSeasonalEdition(utc('2026-10-25T10:00:00'), '')).toBe('halloween');
   });
 });
@@ -76,6 +109,25 @@ describe('getMuertosNights', () => {
       { month: 11, day: 1 },
       { month: 11, day: 2 },
     ]);
+  });
+});
+
+describe('getChristmasNights', () => {
+  it('lists the twenty-five nights up to Christmas', () => {
+    const nights = getChristmasNights(2026);
+    expect(nights).toHaveLength(25);
+    expect(nights[24]).toMatchObject({ month: 12, day: 25 });
+  });
+});
+
+describe('getWelcomedYear', () => {
+  it('looks ahead in December and stays put in January', () => {
+    expect(getWelcomedYear(utc('2026-12-28T10:00:00'))).toBe(2027);
+    expect(getWelcomedYear(utc('2027-01-03T10:00:00'))).toBe(2027);
+  });
+
+  it('looks ahead when previewed outside the window', () => {
+    expect(getWelcomedYear(utc('2026-11-02T10:00:00'))).toBe(2027);
   });
 });
 

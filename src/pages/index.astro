@@ -11,10 +11,13 @@ import { RoomsWebSocketListener } from '@components/RoomsWebSocketListener';
 import DuelistOfTheWeek from '@components/Cards/DuelistOfTheWeek.astro';
 import ShadowRealmHero from '@components/Halloween/ShadowRealmHero.astro';
 import OfrendaHero from '@components/DiaDeMuertos/OfrendaHero.astro';
+import WinterHero from '@components/Christmas/WinterHero.astro';
+import NewYearHero from '@components/NewYear/NewYearHero.astro';
 import { EDITION_PARAM, getSeasonalEdition } from '@utils/seasonalEdition';
 
 const currentSeason = import.meta.env.PUBLIC_DEFAULT_SEASON;
 const edition = getSeasonalEdition(new Date(), Astro.url.searchParams.get(EDITION_PARAM));
+const EditionHero = edition && { halloween: ShadowRealmHero, muertos: OfrendaHero, christmas: WinterHero, newyear: NewYearHero }[edition];
 const title = `Evolution YGO Season ${currentSeason}`;
 const description = `Play Yu-Gi-Oh! online for free on Evolution YGO Season ${currentSeason}. Compatible with EDOPro, Koishi, and YGO Mobile. Join competitive rankings, participate in tournaments, and duel players worldwide!`;
 
@@ -46,10 +49,8 @@ const keywords = [
 >
 	<main class='w-full text-[white] text-xl leading-[1.6] mx-auto'>
 		{
-			edition === 'halloween' ? (
-				<ShadowRealmHero season={currentSeason} />
-			) : edition === 'muertos' ? (
-				<OfrendaHero season={currentSeason} />
+			EditionHero ? (
+				<EditionHero season={currentSeason} />
 			) : (
 				<h1 class='text-4xl sm:text-5xl font-bold leading-none text-center mb-[1em] max-w-sm md:max-w-full pt-[1em]'>
 					<span class='text-gradient'> {title} </span>

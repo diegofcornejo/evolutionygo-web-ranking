@@ -67,6 +67,70 @@
 	--depth: 0;
 	--noise: 0;
 }
+@plugin "daisyui/theme" {
+	name: 'frost';
+	color-scheme: dark;
+	--color-base-100: #0b1424;
+	--color-base-200: #0f1a2e;
+	--color-base-300: #15223a;
+	--color-base-content: #eef4ff;
+	--color-primary: #ffcf6b;
+	--color-primary-content: #0b1424;
+	--color-secondary: #e2384d;
+	--color-secondary-content: #ffffff;
+	--color-accent: #9fd8ff;
+	--color-accent-content: #0b1424;
+	--color-neutral: #1c2b45;
+	--color-neutral-content: #eef4ff;
+	--color-info: #8fb8ff;
+	--color-info-content: #0b1424;
+	--color-success: #6fd08c;
+	--color-success-content: #0b1424;
+	--color-warning: #ffcf5c;
+	--color-warning-content: #0b1424;
+	--color-error: #ff6b8a;
+	--color-error-content: #0b1424;
+	--radius-selector: 1rem;
+	--radius-field: 0.5rem;
+	--radius-box: 1rem;
+	--size-selector: 0.25rem;
+	--size-field: 0.25rem;
+	--border: 1px;
+	--depth: 0;
+	--noise: 0;
+}
+@plugin "daisyui/theme" {
+	name: 'midnight';
+	color-scheme: dark;
+	--color-base-100: #07070f;
+	--color-base-200: #0c0c18;
+	--color-base-300: #131326;
+	--color-base-content: #f6f1e6;
+	--color-primary: #f5d27a;
+	--color-primary-content: #07070f;
+	--color-secondary: #c86bff;
+	--color-secondary-content: #07070f;
+	--color-accent: #5fe1ff;
+	--color-accent-content: #07070f;
+	--color-neutral: #1d1d33;
+	--color-neutral-content: #f6f1e6;
+	--color-info: #8fb8ff;
+	--color-info-content: #07070f;
+	--color-success: #7ee0a0;
+	--color-success-content: #07070f;
+	--color-warning: #ffcf5c;
+	--color-warning-content: #07070f;
+	--color-error: #ff6b8a;
+	--color-error-content: #07070f;
+	--radius-selector: 1rem;
+	--radius-field: 0.5rem;
+	--radius-box: 1rem;
+	--size-selector: 0.25rem;
+	--size-field: 0.25rem;
+	--border: 1px;
+	--depth: 0;
+	--noise: 0;
+}
 @theme {
 	--color-gold: #FFD700;
 	--color-silver: #C0C0C0;
@@ -82,6 +146,16 @@ html[data-edition='halloween'] {
 html[data-edition='muertos'] {
 	--edition-scrollbar: #6b3a52;
 	--edition-smoke: #5a2347;
+}
+
+html[data-edition='christmas'] {
+	--edition-scrollbar: #2f4566;
+	--edition-smoke: #2c4468;
+}
+
+html[data-edition='newyear'] {
+	--edition-scrollbar: #2b2b4a;
+	--edition-smoke: #23234a;
 }
 
 html[data-edition] {

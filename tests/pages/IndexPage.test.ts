@@ -110,8 +110,24 @@ describe('index.astro page', () => {
     expect(result).toContain('href="https://evoduel.com"');
   });
 
+  it('swaps in the winter hero during Christmas', async () => {
+    const result = await renderIndex('http://localhost/?edition=christmas');
+
+    expect(result).toContain('id="winter-title"');
+    expect(result).toMatch(/class="winter-season"[^>]*>Season/);
+    expect(result).toContain('aria-label="Nights until Christmas"');
+  });
+
+  it('swaps in the New Year hero with a countdown and fireworks', async () => {
+    const result = await renderIndex('http://localhost/?edition=newyear');
+
+    expect(result).toContain('id="newyear-title"');
+    expect(result).toContain('data-countdown');
+    expect(result).toContain('data-fireworks');
+  });
+
   it('shows the live marquee right after the title, before the news', async () => {
-    for (const edition of ['off', 'halloween', 'muertos']) {
+    for (const edition of ['off', 'halloween', 'muertos', 'christmas', 'newyear']) {
       const result = await renderIndex(`http://localhost/?edition=${edition}`);
       const title = result.indexOf('</h1>');
       const live = result.indexOf('component-url="@sections/Live.svelte"');

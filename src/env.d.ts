@@ -10,7 +10,6 @@ interface ImportMetaEnv {
 	readonly PUBLIC_GAME_CLIENT_URL: string;
 	readonly PUBLIC_ROOMS_API_URL: string;
 	// Feature Flags
-	readonly PUBLIC_FF_SHOW_SNOW_EFFECT: string;
 }
 
 interface ImportMeta {

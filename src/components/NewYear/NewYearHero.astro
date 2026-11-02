@@ -1,0 +1,481 @@
+---
+import { getWelcomedYear } from '@utils/seasonalEdition';
+import { countdownParts } from './fireworks';
+import { FAR_SKYLINE, NEAR_SKYLINE, SKYLINE_EXTENT, SKYLINE_VIEWBOX, TWINKLING_WINDOWS, WINDOWS } from './skyline';
+
+interface Props {
+	season: string;
+}
+
+const { season } = Astro.props;
+const now = new Date();
+const year = getWelcomedYear(now);
+const initial = countdownParts(now.getTime(), Date.UTC(year, 0, 1));
+const pad = (value: number) => String(value).padStart(2, '0');
+const units = [
+	{ key: 'days', label: 'days', value: String(initial.days) },
+	{ key: 'hours', label: 'hours', value: pad(initial.hours) },
+	{ key: 'minutes', label: 'min', value: pad(initial.minutes) },
+	{ key: 'seconds', label: 'sec', value: pad(initial.seconds) },
+] as const;
+---
+
+<section class="newyear" aria-labelledby="newyear-title" data-done={initial.done ? '' : undefined}>
+	<div class="newyear-stage">
+		<canvas class="newyear-sky" aria-hidden="true" data-fireworks></canvas>
+
+		<div class="newyear-city" aria-hidden="true">
+			<svg viewBox={SKYLINE_VIEWBOX} preserveAspectRatio="xMidYMax meet" focusable="false">
+				<defs>
+					<linearGradient id="newyear-city-fade" x1="0" y1="0" x2="0" y2="1">
+						<stop offset="0.72" stop-color="#fff" />
+						<stop offset="0.97" stop-color="#fff" stop-opacity="0" />
+					</linearGradient>
+					<!-- An SVG mask, unlike a CSS one, reaches the buildings drawn past the edges of the box. -->
+					<mask id="newyear-city-mask" maskUnits="userSpaceOnUse" x={SKYLINE_EXTENT.x} y="0" width={SKYLINE_EXTENT.width} height="420">
+						<rect x={SKYLINE_EXTENT.x} y="0" width={SKYLINE_EXTENT.width} height="420" fill="url(#newyear-city-fade)" />
+					</mask>
+				</defs>
+				<g mask="url(#newyear-city-mask)">
+					<path d={FAR_SKYLINE} class="newyear-city-far" />
+					<path d={NEAR_SKYLINE} class="newyear-city-near" />
+					<path d={WINDOWS} class="newyear-windows" />
+					<path d={TWINKLING_WINDOWS} class="newyear-windows newyear-windows-twinkle" />
+				</g>
+			</svg>
+		</div>
+
+		<svg class="newyear-sigil" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+			<path d="M32 4C34 22 42 30 60 32C42 34 34 42 32 60C30 42 22 34 4 32C22 30 30 22 32 4Z" />
+			<path class="newyear-sigil-small" d="M52 6C52.8 10.5 53.5 11.2 58 12C53.5 12.8 52.8 13.5 52 18C51.2 13.5 50.5 12.8 46 12C50.5 11.2 51.2 10.5 52 6Z" />
+		</svg>
+
+		<div class="newyear-haze newyear-haze-back" aria-hidden="true"></div>
+		<div class="newyear-lockup">
+			<h1 id="newyear-title" class="newyear-title">
+				<span class="newyear-brand">Evolution YGO</span>
+				<span class="newyear-season">Season {season}</span>
+			</h1>
+		</div>
+	</div>
+	<div class="newyear-haze newyear-haze-trail" aria-hidden="true"></div>
+
+	<div class="newyear-body">
+		<p class="newyear-lede">
+			One last climb before <span data-year>{year}</span>, and the first ones after it.
+		</p>
+
+		<div class="newyear-countdown" data-countdown>
+			<p class="sr-only">Countdown to January 1, <span data-year>{year}</span>, in your timezone</p>
+			<ol class="newyear-units" aria-hidden="true">
+				{
+					units.map((unit) => (
+						<li>
+							<span class="newyear-unit-value" data-unit={unit.key}>
+								{unit.value}
+							</span>
+							<span class="newyear-unit-label">{unit.label}</span>
+						</li>
+					))
+				}
+			</ol>
+			<p class="newyear-greeting">Happy <span data-year>{year}</span></p>
+			<p class="newyear-caption">
+				<span class="newyear-caption-ahead">until <span data-year>{year}</span>, your time</span>
+				<span class="newyear-caption-done">from everyone at Evolution YGO</span>
+			</p>
+		</div>
+
+		<div class="newyear-actions">
+			<a class="btn btn-primary btn-lg" href="https://evoduel.com" data-umami-event="newyear-click-play">
+				Duel into <span data-year>{year}</span>
+			</a>
+			<a class="btn btn-outline btn-lg" href="#section-ranking" data-umami-event="newyear-click-ranking">
+				See the rankings
+			</a>
+		</div>
+	</div>
+</section>
+
+<script>
+	import { countdownParts, startFireworks, welcomedMidnight } from './fireworks';
+
+	document.addEventListener('astro:page-load', () => {
+		const hero = document.querySelector<HTMLElement>('.newyear');
+		if (!hero) return;
+		const pad = (value: number) => String(value).padStart(2, '0');
+		const values = Object.fromEntries(
+			[...hero.querySelectorAll<HTMLElement>('[data-unit]')].map((element) => [element.dataset.unit, element])
+		);
+		const midnight = welcomedMidnight(new Date());
+		const year = String(midnight.getFullYear());
+		hero.querySelectorAll('[data-year]').forEach((element) => (element.textContent = year));
+
+		const canvas = hero.querySelector<HTMLCanvasElement>('[data-fireworks]');
+		const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+		const fireworks = canvas && !reducedMotion ? startFireworks(canvas) : undefined;
+		let onScreen = true;
+		const sync = () => fireworks?.setActive(onScreen && !document.hidden);
+
+		let wasDone = false;
+		const update = () => {
+			const parts = countdownParts(Date.now(), midnight.getTime());
+			const shown = { days: String(parts.days), hours: pad(parts.hours), minutes: pad(parts.minutes), seconds: pad(parts.seconds) };
+			for (const [unit, text] of Object.entries(shown)) {
+				if (values[unit]) values[unit].textContent = text;
+			}
+			hero.toggleAttribute('data-done', parts.done);
+			// The stroke of midnight, or a first visit on New Year's Day, gets a minute of quicker fireworks.
+			if (parts.done && !wasDone && Date.now() - midnight.getTime() < 86_400_000) fireworks?.celebrate();
+			wasDone = parts.done;
+		};
+		update();
+		const clock = setInterval(update, 1000);
+
+		const observer = new IntersectionObserver(([entry]) => {
+			onScreen = entry.isIntersecting;
+			hero.classList.toggle('is-offscreen', !onScreen);
+			sync();
+		});
+		observer.observe(hero);
+		document.addEventListener('visibilitychange', sync);
+		sync();
+
+		document.addEventListener(
+			'astro:before-swap',
+			() => {
+				clearInterval(clock);
+				observer.disconnect();
+				document.removeEventListener('visibilitychange', sync);
+				fireworks?.destroy();
+			},
+			{ once: true }
+		);
+	});
+</script>
+
+<style>
+	.newyear {
+		--sky: #05050c;
+		--haze-deep: #23234a;
+		--champagne: var(--color-primary, #f5d27a);
+		--violet: var(--color-secondary, #c86bff);
+		position: relative;
+		isolation: isolate;
+		overflow: hidden;
+		margin-top: -1px;
+		padding-bottom: clamp(2.5rem, 6vw, 4.5rem);
+		background: linear-gradient(180deg, var(--sky) 0%, #0a0a18 55%, var(--color-base-100, #07070f) 100%);
+		color: var(--color-base-content, #f6f1e6);
+		text-align: center;
+	}
+
+	.newyear-stage {
+		position: relative;
+		padding: clamp(2.5rem, 7vh, 4.5rem) 0 0;
+	}
+
+	.newyear-sky {
+		position: absolute;
+		inset: 0;
+		z-index: 0;
+		width: 100%;
+		height: 100%;
+		pointer-events: none;
+	}
+
+	.newyear-city {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: 50%;
+		z-index: 0;
+		width: max(100%, 600px);
+		transform: translateX(-50%);
+		pointer-events: none;
+	}
+
+	.newyear-city svg {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		overflow: visible;
+	}
+
+	/* City glow rising behind the rooftops, so the skyline reads as a silhouette against it. */
+	.newyear-city::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(
+			to top,
+			transparent 2%,
+			rgb(72 52 120 / 0.4) 20%,
+			rgb(45 35 90 / 0.18) 44%,
+			transparent 62%
+		);
+	}
+
+	.newyear-city-far {
+		fill: #16152c;
+	}
+
+	.newyear-city-near {
+		fill: #0b0b18;
+	}
+
+	.newyear-windows {
+		fill: #f5d27a;
+		fill-opacity: 0.55;
+	}
+
+	.newyear-windows-twinkle {
+		fill-opacity: 0.8;
+	}
+
+	.newyear-sigil {
+		position: relative;
+		z-index: 1;
+		display: block;
+		width: clamp(2.75rem, 4.5vw, 3.75rem);
+		margin: 4.375rem auto 0.75rem;
+		fill: var(--champagne);
+	}
+
+	.newyear-sigil-small {
+		fill: var(--violet);
+	}
+
+	.newyear-lockup {
+		position: relative;
+	}
+
+	.newyear-title {
+		position: relative;
+		z-index: 1;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		margin: 0;
+		line-height: 1;
+	}
+
+	.newyear-brand {
+		font-size: clamp(1.4rem, 2.8vw, 2.2rem);
+		font-weight: 700;
+		letter-spacing: 0.02em;
+		line-height: 1;
+		color: var(--champagne);
+	}
+
+	.newyear-season {
+		font-weight: 800;
+		font-size: clamp(3.4rem, 12.5vw, 11.5rem);
+		line-height: 0.86;
+		letter-spacing: -0.035em;
+		text-transform: uppercase;
+		margin-top: 0.1em;
+		white-space: nowrap;
+		mask-image: linear-gradient(to bottom, #000 45%, rgb(0 0 0 / 0.6) 75%, rgb(0 0 0 / 0.18) 100%);
+	}
+
+	/* Firework smoke: the Halloween fog masks, tinted night blue. */
+	.newyear-haze {
+		position: absolute;
+		left: 0;
+		width: 200%;
+		pointer-events: none;
+		mask-image: url('/halloween/fog-back.webp');
+		mask-repeat: repeat-x;
+		mask-size: 50% 100%;
+		mask-position: left bottom;
+		will-change: transform;
+	}
+
+	.newyear-haze-back {
+		z-index: 0;
+		top: 30%;
+		height: 75%;
+		background: var(--haze-deep);
+		opacity: 0.6;
+		animation: newyear-drift 170s linear infinite;
+	}
+
+	.newyear-haze-trail {
+		z-index: 0;
+		bottom: 0;
+		height: 42%;
+		mask-image: url('/halloween/fog-back.webp'), linear-gradient(#000 55%, transparent);
+		mask-repeat: repeat-x, no-repeat;
+		mask-size: 50% 100%, 100% 100%;
+		mask-composite: intersect;
+		background: var(--haze-deep);
+		opacity: 0.45;
+		animation: newyear-drift 130s linear infinite;
+	}
+
+	.newyear.is-offscreen :is(.newyear-haze, .newyear-windows-twinkle) {
+		animation-play-state: paused;
+	}
+
+	.newyear-body {
+		position: relative;
+		z-index: 3;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 1.75rem;
+		padding: 0 1rem;
+		margin-top: clamp(2.5rem, 5vw, 4rem);
+	}
+
+	.newyear-lede {
+		max-width: 38ch;
+		margin: 0;
+		font-size: clamp(1.05rem, 1.6vw, 1.25rem);
+		line-height: 1.55;
+		color: rgb(246 241 230 / 0.84);
+		text-wrap: pretty;
+	}
+
+	.newyear-units {
+		display: flex;
+		justify-content: center;
+		gap: clamp(1rem, 3vw, 2rem);
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.newyear-units li {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		min-width: 2.5ch;
+	}
+
+	.newyear-unit-value {
+		font-size: clamp(1.6rem, 3vw, 2.2rem);
+		font-weight: 800;
+		line-height: 1;
+		font-variant-numeric: tabular-nums;
+		color: var(--champagne);
+	}
+
+	.newyear-unit-label {
+		margin-top: 0.3rem;
+		font-size: 0.75rem;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: rgb(246 241 230 / 0.6);
+	}
+
+	.newyear-greeting {
+		display: none;
+		margin: 0;
+		font-size: clamp(1.8rem, 3.4vw, 2.6rem);
+		font-weight: 800;
+		letter-spacing: -0.02em;
+		line-height: 1;
+		color: var(--champagne);
+	}
+
+	.newyear-caption {
+		margin: 0.7rem 0 0;
+		font-size: 0.85rem;
+		font-weight: 600;
+		letter-spacing: 0.04em;
+		color: rgb(246 241 230 / 0.7);
+	}
+
+	.newyear-caption-done {
+		display: none;
+	}
+
+	.newyear[data-done] .newyear-units,
+	.newyear[data-done] .newyear-caption-ahead {
+		display: none;
+	}
+
+	.newyear[data-done] .newyear-greeting {
+		display: block;
+	}
+
+	.newyear[data-done] .newyear-caption-done {
+		display: inline;
+	}
+
+	.newyear-actions {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 0.75rem;
+	}
+
+	.newyear-actions .btn-outline {
+		border-color: rgb(246 241 230 / 0.35);
+		color: var(--color-base-content, #f6f1e6);
+	}
+
+	.newyear-actions .btn-outline:hover {
+		border-color: var(--color-base-content, #f6f1e6);
+		background: rgb(246 241 230 / 0.08);
+	}
+
+	@keyframes newyear-drift {
+		from {
+			transform: translateX(0);
+		}
+		to {
+			transform: translateX(-50%);
+		}
+	}
+
+	@keyframes newyear-window {
+		0%,
+		45%,
+		100% {
+			opacity: 1;
+		}
+		55%,
+		90% {
+			opacity: 0;
+		}
+	}
+
+	@keyframes newyear-surface {
+		from {
+			transform: translateY(0.18em);
+			filter: blur(10px);
+			opacity: 0.35;
+		}
+	}
+
+	@media (prefers-reduced-motion: no-preference) {
+		.newyear-season {
+			animation: newyear-surface 1.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+		}
+
+		.newyear-windows-twinkle {
+			animation: newyear-window 9s steps(1) infinite;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.newyear-haze {
+			animation: none;
+		}
+	}
+
+	@media (max-width: 640px) {
+		.newyear-haze {
+			mask-size: 100% 100%;
+		}
+
+		.newyear-haze-trail {
+			mask-size: 100% 100%, 100% 100%;
+		}
+	}
+</style>
