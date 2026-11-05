@@ -36,7 +36,7 @@ export default function ProfileHeader({
 	const normalizedPosition = Number(position) || 0;
 	const chartWidth = 240;
 	const chartHeight = 28;
-	const orderedSeasons = [...(seasonStats ?? [])].sort((a, b) => b.season - a.season);
+	const orderedSeasons = [...(seasonStats ?? [])].sort((a, b) => a.season - b.season);
 	const hasChartData = orderedSeasons.length > 1;
 	const series = {
 		points: orderedSeasons.map((stat) => stat.points),
