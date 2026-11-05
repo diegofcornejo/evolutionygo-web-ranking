@@ -58,8 +58,9 @@ const keywords = [
 			)
 		}
 		<RoomsWebSocketListener client:only='react' />
+		{!EditionHero && <News client:only='react' />}
 		<Live client:only='svelte' />
-		<News client:only='react' />
+		{EditionHero && <News client:only='react' />}
 		<DuelistOfTheWeek />
 		<Ranking client:load />
 		<Features />
