@@ -1,31 +1,15 @@
-import { useEffect, useId, useRef, useState } from 'react';
+import { useId, useRef, useState } from 'react';
 import type { FocusEvent } from 'react';
 import { A11y, Autoplay, Keyboard, Navigation, Pagination } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import type { Swiper as SwiperInstance } from 'swiper';
 import Banner from '@components/Banner.tsx';
+import { usePrefersReducedMotion } from '@utils/usePrefersReducedMotion';
 import type { News } from '@types';
 
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/autoplay';
-
-function usePrefersReducedMotion() {
-	const [prefersReducedMotion, setPrefersReducedMotion] = useState(
-		() => typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
-	);
-
-	useEffect(() => {
-		const mediaQuery = window.matchMedia?.('(prefers-reduced-motion: reduce)');
-		if (!mediaQuery) return;
-
-		const updatePreference = () => setPrefersReducedMotion(mediaQuery.matches);
-		mediaQuery.addEventListener('change', updatePreference);
-		return () => mediaQuery.removeEventListener('change', updatePreference);
-	}, []);
-
-	return prefersReducedMotion;
-}
 
 type AutoplayHandle = Pick<SwiperInstance, 'autoplay'>;
 

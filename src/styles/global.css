@@ -136,6 +136,16 @@
 	--color-silver: #C0C0C0;
 	--color-bronze: #CD7F32;
 	--color-transparent: transparent;
+	--animate-foil: foil-sweep 4.5s linear infinite;
+
+	@keyframes foil-sweep {
+		from {
+			background-position: 150% 0;
+		}
+		to {
+			background-position: -50% 0;
+		}
+	}
 }
 
 html[data-edition='halloween'] {
