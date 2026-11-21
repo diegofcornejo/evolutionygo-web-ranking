@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import DuelistTradingCard from '@components/Cards/DuelistTradingCard';
+import PodiumVortex from '@components/PodiumVortex';
 import Rating from '@components/Rating';
 import type { Duelist } from '@types';
 import type { BanListSelectorOption } from '@utils/banListSelector';
@@ -235,14 +236,16 @@ export default function Ranking({ weekly = null }: Readonly<{ weekly?: WeeklyDue
         </div>
       ) : null}
       {leaderboardLoaded && (
+      <div className='relative isolate -mx-4 overflow-x-clip px-4'>
       <ul
         aria-label='Top three duelists'
-        className={`mx-auto mt-16 grid max-w-4xl grid-cols-2 items-end gap-x-4 gap-y-8 p-0 sm:gap-x-6 md:grid-cols-3 md:gap-x-8 ${
+        className={`relative mx-auto mt-16 grid max-w-4xl grid-cols-2 items-end gap-x-4 gap-y-8 p-0 sm:gap-x-6 md:grid-cols-3 md:gap-x-8 ${
           weekly ? 'lg:max-w-6xl' : ''
         } ${weeklyBeside ? 'lg:grid-cols-[1fr_1.15fr_1fr_auto_1fr]' : ''}`}
       >
         {topDuelists.map((duelist: Duelist, index: number) => (
-          <li key={duelist.userId} className={PODIUM_SLOT[index]}>
+          <li key={duelist.userId} className={`relative ${PODIUM_SLOT[index]}`}>
+            {index === 0 && <PodiumVortex />}
             <DuelistTradingCard
               {...duelist}
               username={getDisplayName(duelist)}
@@ -280,6 +283,7 @@ export default function Ranking({ weekly = null }: Readonly<{ weekly?: WeeklyDue
           </>
         )}
       </ul>
+      </div>
       )}
       {getDisplayDuelists().length > 0 && (
       <div className='overflow-x-auto mt-8'>

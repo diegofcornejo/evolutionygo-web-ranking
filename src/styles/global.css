@@ -137,6 +137,14 @@
 	--color-bronze: #CD7F32;
 	--color-transparent: transparent;
 	--animate-foil: foil-sweep 4.5s linear infinite;
+	--animate-vortex: vortex-spin 90s linear infinite;
+	--animate-vortex-reverse: vortex-spin 140s linear infinite reverse;
+
+	@keyframes vortex-spin {
+		to {
+			transform: rotate(1turn);
+		}
+	}
 
 	@keyframes foil-sweep {
 		from {

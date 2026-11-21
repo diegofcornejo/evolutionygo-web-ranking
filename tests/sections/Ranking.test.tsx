@@ -400,6 +400,31 @@ describe('Ranking', () => {
     });
   });
 
+  describe('vortex', () => {
+    it('draws the vortex behind the podium', async () => {
+      mockFetch({ stats: [...cardDuelists, ...tableDuelists] });
+
+      const { container, findByText } = render(<Ranking />);
+
+      expect(await findByText('RatedCardDuelist')).toBeTruthy();
+      // Centered on the #1 card, behind it, wherever the row puts that card.
+      const firstSlot = container.querySelector('[data-place="1"]')!.closest('li')!;
+      const vortex = firstSlot.querySelector('[data-podium-vortex]')!;
+      expect(vortex).not.toBeNull();
+      expect(vortex.compareDocumentPosition(firstSlot.querySelector('[data-place="1"]')!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+      expect(container.querySelectorAll('[data-podium-vortex]')).toHaveLength(1);
+    });
+
+    it('draws no vortex when the podium is empty', async () => {
+      mockFetch({ stats: [] });
+
+      const { container } = render(<Ranking />);
+
+      await waitFor(() => expect(container.querySelector('[aria-label="Top three duelists"]')).not.toBeNull());
+      expect(container.querySelector('[data-podium-vortex]')).toBeNull();
+    });
+  });
+
   describe('duelist of the week', () => {
     const weekly = parseWeeklyDuelist([weeklyItem])!;
 
