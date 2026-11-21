@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import type { DuelistTier } from '@types';
-import { cardLevel, parseTierLadder, tierForBanList, tierProgressView } from '@utils/tier';
+import { cardLevel, otherRanks, parseTierLadder, tierForBanList, tierProgressView } from '@utils/tier';
 
 // The live /ranked-tiers ladder (2026-11-21).
 const LADDER_PAYLOAD = {
@@ -110,5 +110,46 @@ describe('tierProgressView', () => {
     expect(tierProgressView(gold, ladder).distinct).toEqual({ current: 24, required: 5, met: true });
     const short: DuelistTier = { ...gold, progress: { ...gold.progress!, distinctOpponentWins: { current: 3, required: 5 } } };
     expect(tierProgressView(short, null)).toMatchObject({ nextName: 'Platinum', distinct: { current: 3, required: 5, met: false } });
+  });
+});
+
+describe('otherRanks', () => {
+  const diamond = (gamesPlayed: number, effectivePoints: number) => ({ id: 'diamond' as const, name: 'Diamond', gamesPlayed, effectivePoints, progress: null });
+  const edisonBanlist = { banListName: '2010.03 Edison', rankType: 'banlist', tier: diamond(40, 45) };
+  const edisonGroup = { banListName: 'Edison', rankType: 'group', members: ['2010.03 Edison'], tier: diamond(40, 45) };
+  const tcg = { banListName: 'TCG', rankType: 'group', tier: { id: 'gold' as const, name: 'Gold', gamesPlayed: 12, effectivePoints: 11 } };
+
+  it('drops the rank the card already shows, even under its other name', () => {
+    expect(otherRanks([edisonBanlist, edisonGroup, tcg], edisonGroup).map((rank) => rank.banListName)).toEqual(['TCG']);
+    expect(otherRanks([edisonBanlist, edisonGroup, tcg], edisonBanlist).map((rank) => rank.banListName)).toEqual(['TCG']);
+  });
+
+  it('lists a group and its single member once, as the group', () => {
+    expect(otherRanks([edisonBanlist, edisonGroup, tcg], null).map((rank) => rank.banListName)).toEqual(['Edison', 'TCG']);
+  });
+
+  it('keeps different ranks that only share a tier name', () => {
+    const goldA = { banListName: 'A', tier: { id: 'gold' as const, name: 'Gold' } };
+    const goldB = { banListName: 'B', tier: { id: 'gold' as const, name: 'Gold' } };
+    expect(otherRanks([goldA, goldB], null)).toHaveLength(2);
+  });
+
+  it('skips malformed and untiered entries', () => {
+    const junk = [null, 'x', { banListName: 3 }, { banListName: 'OCG', tier: null }, { banListName: 'Odd', tier: { name: 'No id' } }, tcg];
+    expect(otherRanks(junk as never, null).map((rank) => rank.banListName)).toEqual(['TCG']);
+    expect(otherRanks(undefined, null)).toEqual([]);
+  });
+});
+
+describe('robustness', () => {
+  it('finds the banlist rating among malformed entries', () => {
+    expect(tierForBanList([null, { banListName: 'TCG', rating: 1 }] as never, 'TCG')?.rating).toBe(1);
+  });
+
+  it('treats a malformed progress as no progress', () => {
+    const broken = { id: 'gold' as const, name: 'Gold', progress: { unit: 'points', current: 'x', target: 25 } } as never;
+    expect(tierProgressView(broken, null).kind).toBe('none');
+    const noNext = { id: 'gold' as const, name: 'Gold', progress: { unit: 'points', current: 3, target: 25, distinctOpponentWins: null } } as never;
+    expect(tierProgressView(noNext, null).kind).toBe('none');
   });
 });

@@ -54,6 +54,17 @@ describe('RankCard', () => {
     expect(requirement.closest('[data-met]')).toHaveAttribute('data-met', 'true');
   });
 
+  it('says what is missing when the points are met but the opponents are not', () => {
+    const stuck: DuelistRating = {
+      banListName: 'TCG',
+      tier: { id: 'platinum', name: 'Platinum', progress: { nextTierId: 'diamond', unit: 'points', current: 45, target: 40, distinctOpponentWins: { current: 3, required: 5 } } },
+    };
+    render(<RankCard {...base} rating={stuck} banListName="TCG" />);
+
+    expect(screen.getByText('Points met · needs wins vs 5 different opponents')).toBeInTheDocument();
+    expect(screen.queryByText(/0 more to/)).toBeNull();
+  });
+
   it('labels rank points with the note', () => {
     render(<RankCard {...base} rating={goldRating} banListName="2026.10 TCG" />);
 
@@ -100,11 +111,12 @@ describe('RankCard', () => {
     expect(steps[6]).toHaveTextContent('MasterTop 5');
   });
 
-  it('keeps only the current step name visible on small screens', () => {
+  it('hides the step names on small screens', () => {
     render(<RankCard {...base} rating={goldRating} banListName="2026.10 TCG" />);
 
     const steps = within(screen.getByRole('list', { name: 'Rank ladder' })).getAllByRole('listitem');
-    expect(within(steps[3]).getByText('Gold')).not.toHaveClass('max-sm:sr-only');
+    // The card heading already names the current tier, and seven names do not fit a phone.
+    expect(within(steps[3]).getByText('Gold')).toHaveClass('max-sm:sr-only');
     expect(within(steps[4]).getByText('Platinum')).toHaveClass('max-sm:sr-only');
   });
 

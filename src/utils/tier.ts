@@ -15,9 +15,43 @@ const TIER_LEVEL: Record<TierId, number> = {
 export const cardLevel = (duelist: { tier?: DuelistTier | null; winRate: number | null }): number =>
 	duelist.tier ? TIER_LEVEL[duelist.tier.id] : Math.floor(winRateStars(duelist.winRate));
 
+const isRating = (value: unknown): value is DuelistRating =>
+	!!value && typeof value === 'object' && typeof (value as DuelistRating).banListName === 'string';
+
+const hasTier = (rating: DuelistRating): rating is DuelistRating & { tier: DuelistTier } =>
+	!!rating.tier && typeof rating.tier === 'object' && typeof rating.tier.id === 'string';
+
 /** The ratings[] entry (banlist or group) that matches the banlist a profile is showing. */
 export const tierForBanList = (ratings: DuelistRating[] | undefined, banListName: string): DuelistRating | null =>
-	ratings?.find((rating) => rating.banListName === banListName) ?? null;
+	(Array.isArray(ratings) ? ratings : []).find((rating) => isRating(rating) && rating.banListName === banListName) ?? null;
+
+// A group with one member is sent twice, as the group and as the banlist, with the same numbers.
+const sameRank = (a: DuelistTier, b: DuelistTier) =>
+	a.id === b.id &&
+	typeof a.gamesPlayed === 'number' &&
+	a.gamesPlayed === b.gamesPlayed &&
+	typeof a.effectivePoints === 'number' &&
+	a.effectivePoints === b.effectivePoints;
+
+/** The player's other tiered ranks, without the one already shown and without group/member duplicates. */
+export const otherRanks = (
+	ratings: DuelistRating[] | undefined,
+	current: DuelistRating | null,
+): (DuelistRating & { tier: DuelistTier })[] => {
+	const currentTier = current && hasTier(current) ? current.tier : null;
+	const ranks: (DuelistRating & { tier: DuelistTier })[] = [];
+
+	for (const rating of Array.isArray(ratings) ? ratings : []) {
+		if (!isRating(rating) || !hasTier(rating)) continue;
+		if (current && rating.banListName === current.banListName) continue;
+		if (currentTier && sameRank(rating.tier, currentTier)) continue;
+
+		const twin = ranks.findIndex((rank) => rank.banListName === rating.banListName || sameRank(rank.tier, rating.tier));
+		if (twin === -1) ranks.push(rating);
+		else if (rating.rankType === 'group' && ranks[twin].rankType !== 'group') ranks[twin] = rating;
+	}
+	return ranks;
+};
 
 const KINDS = new Set(['placement', 'absolute', 'relative']);
 const toNumberOrNull = (value: unknown) => (typeof value === 'number' && Number.isFinite(value) ? value : null);
@@ -61,8 +95,13 @@ const tierName = (id: string, ladder: RankedTier[] | null) => ladder?.find((tier
 /** What the profile shows under the tier: a bar towards the next tier, Master's "top N", or the step to Master. */
 export const tierProgressView = (tier: DuelistTier, ladder: RankedTier[] | null): TierProgressView => {
 	const progress = tier.progress;
+	const usable =
+		!!progress &&
+		typeof progress.nextTierId === 'string' &&
+		Number.isFinite(progress.current) &&
+		Number.isFinite(progress.target);
 
-	if (progress) {
+	if (progress && usable) {
 		const { current, target } = progress;
 		const percent = target > 0 ? Math.round(Math.min(100, Math.max(0, (current / target) * 100))) : 100;
 		const distinct = progress.distinctOpponentWins

@@ -8,7 +8,7 @@ import RankCard from '@components/Profile/RankCard';
 import SeasonSelector from '@components/Profile/SeasonSelector.astro';
 import type { Achievement, AchievementCatalog, AchievementRecord, DuelistRating, Match } from '@types';
 import { formatWinRate } from '@utils/winRate';
-import { parseTierLadder, tierForBanList } from '@utils/tier';
+import { otherRanks, parseTierLadder, tierForBanList } from '@utils/tier';
 
 let { id, banlist = 'Global' } = Astro.params;
 const username = Astro.url.searchParams.get('username') || '';
@@ -62,12 +62,7 @@ const tierLadder = parseTierLadder(ladderPayload);
 // The rank lives in ratings[], one entry per banlist and per group, not at the root of the stats.
 const ratings: DuelistRating[] = Array.isArray(duelist.ratings) ? duelist.ratings : [];
 const currentRating = banlistName ? tierForBanList(ratings, banlistName) : null;
-const otherRatings = ratings.filter(
-	(rating, index) =>
-		rating.tier &&
-		rating.banListName !== banlistName &&
-		ratings.findIndex((candidate) => candidate.banListName === rating.banListName) === index,
-);
+const otherRatings = otherRanks(ratings, currentRating);
 const achievements: Achievement[] = achievementRecord?.achievements ?? duelist.achievements ?? [];
 
 const createMockMatches = (name: string): Match[] => [

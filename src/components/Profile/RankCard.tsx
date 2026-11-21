@@ -58,7 +58,11 @@ function Progress({ view }: Readonly<{ view: TierProgressView }>) {
 				) : (
 					<span className="font-bold tabular-nums">{`Placement ${view.current} / ${view.target} games`}</span>
 				)}
-				<span className="text-base-content/60">{`${view.remaining} more to ${view.nextName}`}</span>
+				<span className="text-base-content/60">
+					{view.remaining === 0 && view.distinct && !view.distinct.met
+						? `Points met · needs wins vs ${view.distinct.required} different opponents`
+						: `${view.remaining} more to ${view.nextName}`}
+				</span>
 			</div>
 		</div>
 	);
@@ -124,7 +128,7 @@ export default function RankCard({ rating, others, ladder, season, banListName, 
 										}`}
 									>
 										<TierEmblem tier={step.id} className={`h-6 w-6 ${state === 'locked' ? 'opacity-40 grayscale-[0.6]' : ''}`} />
-										<span className={`font-semibold ${state === 'current' ? '' : 'max-sm:sr-only'}`}>{step.name}</span>
+										<span className="font-semibold max-sm:sr-only">{step.name}</span>
 										<span className="tabular-nums">{ladderLabel(step)}</span>
 									</li>
 								);
