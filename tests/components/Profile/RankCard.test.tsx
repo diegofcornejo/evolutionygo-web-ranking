@@ -65,13 +65,26 @@ describe('RankCard', () => {
     expect(screen.queryByText(/0 more to/)).toBeNull();
   });
 
-  it('labels rank points with the note', () => {
+  it('explains rank points from a button keyboard and touch users can reach', () => {
     render(<RankCard {...base} rating={goldRating} banListName="2026.10 TCG" />);
 
-    expect(screen.getByText('Rank pts')).toHaveAttribute(
-      'title',
-      'Rank points decide your rank and are counted separately from ladder points.'
-    );
+    const note = 'Rank points decide your rank and are counted separately from ladder points.';
+    const button = screen.getByRole('button', { name: `About rank points: ${note}` });
+    expect(button.closest('[data-tip]')).toHaveAttribute('data-tip', note);
+    expect(screen.getByText('Rank pts')).toBeInTheDocument();
+  });
+
+  it('reads the progress in rank points or games, not only as a percent', () => {
+    const { unmount } = render(<RankCard {...base} rating={goldRating} banListName="2026.10 TCG" />);
+    expect(screen.getByRole('progressbar')).toHaveAttribute('aria-valuetext', '17 of 25 rank points');
+    unmount();
+
+    const rookie: DuelistRating = {
+      banListName: 'MD',
+      tier: { id: 'rookie', name: 'Rookie', progress: { nextTierId: 'bronze', unit: 'games', current: 3, target: 5, distinctOpponentWins: null } },
+    };
+    render(<RankCard {...base} rating={rookie} banListName="MD" />);
+    expect(screen.getByRole('progressbar')).toHaveAttribute('aria-valuetext', '3 of 5 placement games');
   });
 
   it('shows placement games for rookie', () => {
@@ -107,8 +120,12 @@ describe('RankCard', () => {
     const steps = within(screen.getByRole('list', { name: 'Rank ladder' })).getAllByRole('listitem');
     expect(steps.map((step) => step.getAttribute('data-state'))).toEqual(['done', 'done', 'done', 'current', 'locked', 'locked', 'locked']);
     expect(steps[3]).toHaveAttribute('aria-current', 'step');
-    expect(steps[4]).toHaveTextContent('Platinum25');
+    expect(steps[0]).toHaveTextContent('RookieStart');
+    expect(steps[1]).toHaveTextContent('Bronze5 games');
+    expect(steps[4]).toHaveTextContent('Platinum25 rank pts');
+    expect(within(steps[4]).getByText('rank pts')).toHaveClass('sr-only');
     expect(steps[6]).toHaveTextContent('MasterTop 5');
+    expect(screen.getByRole('list', { name: 'Rank ladder' })).toHaveStyle({ gridTemplateColumns: 'repeat(7, minmax(0, 1fr))' });
   });
 
   it('hides the step names on small screens', () => {

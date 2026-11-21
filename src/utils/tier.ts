@@ -13,7 +13,9 @@ const TIER_LEVEL: Record<TierId, number> = {
 
 // Ladders carry a ranked tier; Global has none, so its level comes from the win rate.
 export const cardLevel = (duelist: { tier?: DuelistTier | null; winRate: number | null }): number =>
-	duelist.tier ? TIER_LEVEL[duelist.tier.id] : Math.floor(winRateStars(duelist.winRate));
+	duelist.tier && Object.hasOwn(TIER_LEVEL, duelist.tier.id)
+		? TIER_LEVEL[duelist.tier.id]
+		: Math.floor(winRateStars(duelist.winRate));
 
 const isRating = (value: unknown): value is DuelistRating =>
 	!!value && typeof value === 'object' && typeof (value as DuelistRating).banListName === 'string';

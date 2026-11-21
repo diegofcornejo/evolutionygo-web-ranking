@@ -328,7 +328,7 @@ export default function Ranking({ weekly = null }: Readonly<{ weekly?: WeeklyDue
               <tr key={duelist.userId} className='relative cursor-pointer hover:bg-secondary transition-colors'>
                 <th scope="row" className='max-w-[75px] text-center'>{duelist.position}</th>
                 <td className='min-w-[200px]'>
-                  <a className='after:absolute after:inset-0' href={`/duelists/${duelist.userId}/${banList}?username=${duelist.username}&season=${season}`}>
+                  <a className='after:absolute after:inset-0' href={`/duelists/${duelist.userId}/${encodeURIComponent(banList)}?username=${encodeURIComponent(duelist.username)}&season=${season}`}>
                     <div className='flex items-center gap-3'>
                       <img
                         src={`https://ui-avatars.com/api/?name=${duelist.username}&background=random&size=128`}
@@ -351,13 +351,19 @@ export default function Ranking({ weekly = null }: Readonly<{ weekly?: WeeklyDue
                       {duelist.tier.name}
                     </span>
                   ) : (
-                    <span className='text-gray-400' aria-label='No rank yet'>—</span>
+                    <span className='text-gray-400'>
+                      <span aria-hidden='true'>—</span>
+                      <span className='sr-only'>No rank yet</span>
+                    </span>
                   )}
                 </td>}
                 <td className='font-bold text-lg text-orange-300'>{duelist.points}</td>
                 {!isGlobal && <td>
                   {duelist.rating == null ? (
-                    <span className='text-gray-400' aria-label='No Elo on this ladder'>—</span>
+                    <span className='text-gray-400'>
+                      <span aria-hidden='true'>—</span>
+                      <span className='sr-only'>No Elo on this ladder</span>
+                    </span>
                   ) : (
                     <span className='flex items-center gap-2'>
                       <span className='font-bold text-lg text-info'>{Math.round(duelist.rating)}</span>

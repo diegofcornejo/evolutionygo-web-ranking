@@ -311,7 +311,8 @@ describe('Ranking', () => {
       expect(provisionalRow.getByTitle('Provisional Elo — not enough duels yet')).toBeTruthy();
 
       const unratedRow = within(rows[3] as HTMLElement);
-      expect(unratedRow.getByLabelText('No Elo on this ladder')).toHaveTextContent('—');
+      expect(unratedRow.getByText('No Elo on this ladder')).toHaveClass('sr-only');
+      expect(unratedRow.getAllByText('—').every((dash) => dash.getAttribute('aria-hidden') === 'true')).toBe(true);
     });
   });
 
@@ -347,7 +348,17 @@ describe('Ranking', () => {
       await waitFor(() => expect(container.querySelector('thead')?.textContent).toContain('Rank'));
 
       const unrankedRow = container.querySelectorAll('tbody tr')[2] as HTMLElement;
-      expect(within(unrankedRow).getByLabelText('No rank yet')).toHaveTextContent('—');
+      expect(within(unrankedRow).getByText('No rank yet')).toHaveClass('sr-only');
+      expect(within(unrankedRow).getByText('No rank yet').previousElementSibling).toHaveAttribute('aria-hidden', 'true');
+    });
+
+    it('encodes the username and ban list in the row links', async () => {
+      mockFetch({ stats: [...cardDuelists, buildDuelist({ userId: '9', username: 'A+B C', position: 5 })] });
+
+      const { findByText } = render(<Ranking />);
+
+      const link = (await findByText('A+B C')).closest('a')!;
+      expect(link).toHaveAttribute('href', `/duelists/9/Global?username=A%2BB%20C&season=${link.getAttribute('href')!.split('season=')[1]}`);
     });
 
     it('hides the Rank column in Global', async () => {

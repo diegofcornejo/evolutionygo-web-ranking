@@ -20,7 +20,7 @@ interface Props {
 }
 
 export default function TierEmblem({ tier, className = 'h-6 w-6', title }: Readonly<Props>) {
-	const [light, dark] = PALETTES[tier] ?? PALETTES.rookie;
+	const [light, dark] = Object.hasOwn(PALETTES, tier) ? PALETTES[tier] : PALETTES.rookie;
 	const a11y = title ? { role: 'img', 'aria-label': title } : { 'aria-hidden': true as const };
 
 	return (

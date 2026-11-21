@@ -34,6 +34,11 @@ describe('cardLevel', () => {
     expect(cardLevel({ tier: { id: 'master', name: 'Master' }, winRate: 10 })).toBe(7);
   });
 
+  it('falls back to win-rate stars for a tier id it does not know', () => {
+    expect(cardLevel({ tier: { id: 'legend', name: 'Legend' } as never, winRate: 71.3 })).toBe(3);
+    expect(cardLevel({ tier: { id: 'constructor', name: 'Odd' } as never, winRate: 100 })).toBe(5);
+  });
+
   it('falls back to win-rate stars in Global', () => {
     expect(cardLevel({ tier: null, winRate: 71.3 })).toBe(3);
     expect(cardLevel({ tier: null, winRate: 100 })).toBe(5);

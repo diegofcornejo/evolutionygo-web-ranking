@@ -15,16 +15,26 @@ const username = Astro.url.searchParams.get('username') || '';
 const season = Astro.url.searchParams.get('season') || import.meta.env.PUBLIC_DEFAULT_SEASON;
 const API_URL = import.meta.env.PUBLIC_API_URL;
 
-const safeBanlist = banlist ?? 'Global';
+// Astro decodes params with decodeURI, which leaves reserved characters (%2B, %26, %2F…) encoded.
+const decodeParam = (value: string) => {
+	try {
+		return decodeURIComponent(value);
+	} catch {
+		return value;
+	}
+};
+const safeBanlist = decodeParam(banlist ?? 'Global');
 let banlistName = safeBanlist;
 
 if (safeBanlist === 'Global') {
 	banlistName = '';
 }
 
+const banListQuery = banlistName ? `&banListName=${encodeURIComponent(banlistName)}` : '';
+
 let duelist;
 const duelistResponse = await fetch(
-	`${API_URL}/users/${id}/stats?season=${season}${banlistName ? `&banListName=${banlistName}` : ''}`,
+	`${API_URL}/users/${id}/stats?season=${season}${banListQuery}`,
 );
 if (!duelistResponse.ok) {
 	duelist = {
@@ -60,7 +70,12 @@ const [achievementCatalog, achievementRecord, ladderPayload] = await Promise.all
 const tierLadder = parseTierLadder(ladderPayload);
 
 // The rank lives in ratings[], one entry per banlist and per group, not at the root of the stats.
-const ratings: DuelistRating[] = Array.isArray(duelist.ratings) ? duelist.ratings : [];
+// ratings[] covers every banlist, so when this banlist has no stats the Global stats still carry them.
+let ratings: DuelistRating[] = Array.isArray(duelist.ratings) ? duelist.ratings : [];
+if (!duelistResponse.ok && banlistName) {
+	const globalStats = await fetchJson<{ ratings?: unknown }>(`${API_URL}/users/${id}/stats?season=${season}`);
+	if (Array.isArray(globalStats?.ratings)) ratings = globalStats.ratings as DuelistRating[];
+}
 const currentRating = banlistName ? tierForBanList(ratings, banlistName) : null;
 const otherRatings = otherRanks(ratings, currentRating);
 const achievements: Achievement[] = achievementRecord?.achievements ?? duelist.achievements ?? [];
@@ -109,7 +124,7 @@ const createMockMatches = (name: string): Match[] => [
 
 let matchHistory: Match[] = [];
 const matchHistoryResponse = await fetch(
-	`${API_URL}/users/${id}/matches?page=1&limit=100&season=${season}${banlistName ? `&banListName=${banlistName}` : ''}`,
+	`${API_URL}/users/${id}/matches?page=1&limit=100&season=${season}${banListQuery}`,
 );
 	if (!matchHistoryResponse.ok) {
 		matchHistory = createMockMatches(duelist.username || username);
@@ -124,7 +139,7 @@ const matchHistoryResponse = await fetch(
 
 			while (shouldContinue) {
 				const pagedResponse = await fetch(
-					`${API_URL}/users/${id}/matches?page=${page}&limit=${matchesPerPage}&season=${season}${banlistName ? `&banListName=${banlistName}` : ''}`,
+					`${API_URL}/users/${id}/matches?page=${page}&limit=${matchesPerPage}&season=${season}${banListQuery}`,
 				);
 
 				if (!pagedResponse.ok) {
@@ -152,7 +167,7 @@ const seasonOptions = seasonNumbers.map((seasonNumber) => `${seasonNumber}`).rev
 const seasonStats = await Promise.all(
 	seasonNumbers.map(async (seasonNumber) => {
 		const statsResponse = await fetch(
-			`${API_URL}/users/${id}/stats?season=${seasonNumber}${banlistName ? `&banListName=${banlistName}` : ''}`,
+			`${API_URL}/users/${id}/stats?season=${seasonNumber}${banListQuery}`,
 		);
 
 		if (!statsResponse.ok) {

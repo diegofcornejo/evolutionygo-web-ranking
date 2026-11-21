@@ -108,13 +108,16 @@ describe('duelists/[id]/[banlist].astro page', () => {
       ],
     };
 
-    const renderProfile = async (banlist: string) => {
+    const renderProfile = async (banlist: string, { banlistStatsFail = false } = {}) => {
       const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
         const url = input.toString();
         const ok = (body: unknown) => ({ ok: true, json: async () => body }) as Response;
         if (url.includes('/ranked-tiers')) return ok(ladder);
         if (url.includes('/ban-lists')) return ok(['Global', 'TCG', 'OCG']);
         if (url.includes('/matches')) return { ok: false, json: async () => [] } as Response;
+        if (banlistStatsFail && url.includes('/stats') && url.includes('banListName=')) {
+          return { ok: false, status: 404, json: async () => ({}) } as Response;
+        }
         if (url.includes('/stats')) {
           return ok({ userId: '123', username: 'Test', points: 120, wins: 10, losses: 4, winRate: 71, position: 3, achievements: [], ratings });
         }
@@ -149,6 +152,22 @@ describe('duelists/[id]/[banlist].astro page', () => {
       expect(result).toContain('data-rank-card');
       expect(result).not.toContain('Top 5 of the ladder');
       expect(result).toContain('Also ranked in');
+    });
+
+    it('takes the ranks from the Global stats when the ban list stats fail', async () => {
+      const { result } = await renderProfile('OCG', { banlistStatsFail: true });
+
+      expect(result).toContain('Also ranked in');
+      expect(result).toContain('Genesys');
+    });
+
+    it('decodes the ban list once and encodes it once in API calls', async () => {
+      const { fetchMock } = await renderProfile('A%2BB');
+      const urls = fetchMock.mock.calls.map(([url]) => String(url));
+
+      expect(urls.some((url) => url.includes('/stats?') && url.includes('banListName=A%2BB'))).toBe(true);
+      expect(urls.some((url) => url.includes('/ranked-tiers?banListName=A%2BB'))).toBe(true);
+      expect(urls.some((url) => url.includes('%252B'))).toBe(false);
     });
 
     it('does not ask for a ladder on Global', async () => {

@@ -17,10 +17,21 @@ interface Props {
 
 const RANK_POINTS_NOTE = 'Rank points decide your rank and are counted separately from ladder points.';
 
-const ladderLabel = (step: RankedTier) => {
-	if (step.kind === 'relative') return step.size ? `Top ${step.size}` : '';
-	return step.threshold == null ? '' : String(step.threshold);
-};
+// What it takes to reach each step: Bronze needs the placement games, the absolute tiers need rank points.
+function LadderLabel({ step, ladder }: Readonly<{ step: RankedTier; ladder: RankedTier[] }>) {
+	if (step.kind === 'placement') return <>Start</>;
+	if (step.kind === 'relative') return <>{step.size ? `Top ${step.size}` : ''}</>;
+	if (step.threshold != null) {
+		return (
+			<>
+				{step.threshold}
+				<span className="sr-only"> rank pts</span>
+			</>
+		);
+	}
+	const placement = ladder.find((candidate) => candidate.kind === 'placement' && candidate.order === step.order - 1);
+	return <>{placement?.minGames ? `${placement.minGames} games` : ''}</>;
+}
 
 const profileHref = (userId: string, banListName: string, username: string, season: string) =>
 	`/duelists/${userId}/${encodeURIComponent(banListName)}?username=${encodeURIComponent(username)}&season=${season}`;
@@ -43,6 +54,9 @@ function Progress({ view }: Readonly<{ view: TierProgressView }>) {
 				aria-valuemin={0}
 				aria-valuemax={100}
 				aria-valuenow={view.percent}
+				aria-valuetext={
+					view.kind === 'points' ? `${view.current} of ${view.target} rank points` : `${view.current} of ${view.target} placement games`
+				}
 				className="h-2.5 overflow-hidden rounded-full bg-base-content/10"
 			>
 				<div className="h-full rounded-full bg-gradient-to-r from-primary to-secondary" style={{ width: `${view.percent}%` }} />
@@ -50,8 +64,17 @@ function Progress({ view }: Readonly<{ view: TierProgressView }>) {
 			<div className="mt-2 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 text-sm">
 				{view.kind === 'points' ? (
 					<span className="flex items-baseline gap-2">
-						<span title={RANK_POINTS_NOTE} className="cursor-help text-base-content/60 underline decoration-dotted underline-offset-4">
+						<span className="flex items-center gap-1 text-base-content/60">
 							Rank pts
+							<span className="tooltip tooltip-right before:max-w-[min(16rem,60vw)]" data-tip={RANK_POINTS_NOTE}>
+								<button
+									type="button"
+									aria-label={`About rank points: ${RANK_POINTS_NOTE}`}
+									className="grid h-4 w-4 cursor-help place-items-center rounded-full border border-base-content/30 text-[10px] leading-none"
+								>
+									?
+								</button>
+							</span>
 						</span>
 						<span className="font-bold tabular-nums">{`${view.current} / ${view.target}`}</span>
 					</span>
@@ -111,12 +134,16 @@ export default function RankCard({ rating, others, ladder, season, banListName, 
 					) : null}
 
 					{ladder && currentOrder != null ? (
-						<ol aria-label="Rank ladder" className="mt-5 grid grid-cols-7 gap-1.5">
+						<ol
+							aria-label="Rank ladder"
+							className="mt-5 grid gap-1.5"
+							style={{ gridTemplateColumns: `repeat(${ladder.length}, minmax(0, 1fr))` }}
+						>
 							{ladder.map((step) => {
 								const state = step.order < currentOrder ? 'done' : step.order === currentOrder ? 'current' : 'locked';
 								return (
 									<li
-										key={step.id}
+										key={`${step.order}-${step.id}`}
 										data-state={state}
 										aria-current={state === 'current' ? 'step' : undefined}
 										className={`flex flex-col items-center gap-1 rounded-xl px-1 py-2 text-center text-[11px] leading-tight ${
@@ -129,7 +156,9 @@ export default function RankCard({ rating, others, ladder, season, banListName, 
 									>
 										<TierEmblem tier={step.id} className={`h-6 w-6 ${state === 'locked' ? 'opacity-40 grayscale-[0.6]' : ''}`} />
 										<span className="font-semibold max-sm:sr-only">{step.name}</span>
-										<span className="tabular-nums">{ladderLabel(step)}</span>
+										<span className="tabular-nums">
+											<LadderLabel step={step} ladder={ladder} />
+										</span>
 									</li>
 								);
 							})}

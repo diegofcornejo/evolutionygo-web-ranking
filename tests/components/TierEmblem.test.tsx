@@ -25,6 +25,13 @@ describe('TierEmblem', () => {
     expect(paletteOf(container.querySelector('svg[data-tier-emblem="legend"]')!)).toBe(paletteOf(rookie));
   });
 
+  it('does not pick up object built-ins as a palette', () => {
+    const rookie = render(<TierEmblem tier="rookie" />).container.querySelector('svg')!;
+    const { container } = render(<TierEmblem tier="constructor" />);
+
+    expect(paletteOf(container.querySelector('svg')!)).toBe(paletteOf(rookie));
+  });
+
   it('is decorative unless titled', () => {
     const plain = render(<TierEmblem tier="gold" />).container.querySelector('svg')!;
     expect(plain).toHaveAttribute('aria-hidden', 'true');

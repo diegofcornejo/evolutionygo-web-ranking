@@ -57,6 +57,12 @@ describe('DuelistTradingCard', () => {
     expect(screen.getByText('ELO/—')).toBeInTheDocument();
   });
 
+  it('encodes the username and ban list in its link', () => {
+    render(<DuelistTradingCard {...fuku} username="A+B C" banListName="2026.10 TCG" season="7" place={1} showElo />);
+
+    expect(screen.getByRole('link')).toHaveAttribute('href', '/duelists/u1/2026.10%20TCG?username=A%2BB%20C&season=7');
+  });
+
   it('shows the tier emblem in the name bar', () => {
     const { container } = render(<DuelistTradingCard {...fuku} banListName="TCG" season="7" place={1} showElo />);
 

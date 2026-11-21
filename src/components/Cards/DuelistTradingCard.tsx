@@ -81,7 +81,7 @@ export default function DuelistTradingCard({
 	return (
 		<a
 			ref={cardRef}
-			href={`/duelists/${userId}/${banListName}?username=${username}&season=${season}`}
+			href={`/duelists/${userId}/${encodeURIComponent(banListName)}?username=${encodeURIComponent(username)}&season=${season}`}
 			{...(weekly ? { 'data-weekly': '' } : { 'data-place': place })}
 			data-tilt={reduceMotion ? 'off' : 'on'}
 			onPointerMove={onPointerMove}
