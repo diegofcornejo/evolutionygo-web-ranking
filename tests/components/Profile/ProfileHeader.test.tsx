@@ -31,6 +31,13 @@ describe('ProfileHeader', () => {
 		expect(getAllByText('Losses')[0]).toBeTruthy();
 	});
 
+	it('marks the picture with the player id so their own avatar can replace it', () => {
+		const { getByAltText } = render(
+			<ProfileHeader userId="42" username="Ace" points={0} wins={0} losses={0} winRate={null} position={0} season="5" banlistName="Global" />
+		);
+		expect(getByAltText('Ace')).toHaveAttribute('data-avatar-user', '42');
+	});
+
 	it('renders when the API sends a null win rate', () => {
 		const { getByText } = render(
 			<ProfileHeader

@@ -1,0 +1,16 @@
+---
+import AvatarEditor from './AvatarEditor';
+---
+
+<dialog id='dialog-avatar' class='modal' aria-labelledby='dialog-avatar-title'>
+	<div class='modal-box w-11/12 max-w-3xl'>
+		<form method='dialog'>
+			<button class='btn btn-sm btn-circle btn-ghost absolute right-2 top-2' aria-label='Close'>✕</button>
+		</form>
+		<h3 id='dialog-avatar-title' class='text-2xl text-center mb-6'>Your avatar</h3>
+		<AvatarEditor dialog='dialog-avatar' client:only='react' />
+	</div>
+	<form method='dialog' class='modal-backdrop'>
+		<button>close</button>
+	</form>
+</dialog>

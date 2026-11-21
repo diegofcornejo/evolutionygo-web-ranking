@@ -2,6 +2,7 @@ import Rating from '@components/Rating';
 import { formatWinRate, winRateStars } from '@utils/winRate';
 
 interface ProfileHeaderProps {
+	userId?: string;
 	username: string;
 	points: number;
 	wins: number;
@@ -21,6 +22,7 @@ interface SeasonStat {
 }
 
 export default function ProfileHeader({
+	userId,
 	username,
 	points,
 	wins,
@@ -148,6 +150,7 @@ export default function ProfileHeader({
 							<img
 								src={image}
 								alt={username}
+								data-avatar-user={userId || undefined}
 								className="w-32 h-32 md:w-40 md:h-40 rounded-full object-cover ring-4 ring-base-100"
 								loading="lazy"
 								decoding="async"

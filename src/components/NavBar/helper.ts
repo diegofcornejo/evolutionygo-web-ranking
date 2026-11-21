@@ -1,6 +1,8 @@
 import { getSession, updateSession } from '@stores/sessionStore';
+import { getAvatar, ownAvatarSrc } from '@stores/avatarStore';
 import { theme } from '@stores/themeStore';
 import type { Session } from '@types';
+import { avatarDataUri } from '@utils/avatar';
 
 const logout = () => {
 	const session: Session = {
@@ -24,6 +26,15 @@ const openSettings = () => {
 	const dialog = document.getElementById('dialog-settings');
 	// @ts-ignore
 	dialog.showModal();
+}
+
+const openAvatar = () => {
+	const dialog = document.getElementById('dialog-avatar') as HTMLDialogElement | null;
+	dialog?.showModal();
+}
+
+const handleOpenAvatar = () => {
+	document.getElementById('button-navbar-avatar')?.addEventListener('click', openAvatar);
 }
 
 const handleOpenSettings = () => {
@@ -57,11 +68,23 @@ const updateUser = () => {
 	// @ts-ignore
 	document.getElementById('navbar-username').innerHTML = session?.user?.username ?? '';
 	// @ts-ignore
-	document.getElementById('dropdown-navbar-avatar').src = `https://ui-avatars.com/api/?name=${session?.user?.username}&background=random&size=128`;
+	document.getElementById('dropdown-navbar-avatar').src = ownAvatarSrc(session?.user?.id ?? '', session?.user?.username ?? '');
 	// Determine default season, allowing tests to override via process.env
 	const defaultSeason = (typeof process !== 'undefined' && process.env.PUBLIC_DEFAULT_SEASON) || import.meta.env.PUBLIC_DEFAULT_SEASON;
 	// @ts-ignore
 	document.getElementById('dropdown-navbar-profile-link').href = `/duelists/${session?.user?.id}/Global?username=${session?.user?.username}&season=${defaultSeason}`;
+}
+
+// Pages mark the logged-in player's pictures with data-avatar-user so their own avatar replaces
+// the server-rendered initials; the original src comes back when they log out or reset it.
+const updateOwnAvatars = (root: ParentNode = document) => {
+	const userId = getSession()?.user?.id;
+	root.querySelectorAll<HTMLImageElement>('img[data-avatar-user]').forEach((img) => {
+		img.dataset.avatarFallback ??= img.getAttribute('src') ?? '';
+		const saved = userId && img.dataset.avatarUser === userId ? getAvatar(userId) : null;
+		const next = saved ? avatarDataUri(saved) : img.dataset.avatarFallback;
+		if (img.getAttribute('src') !== next) img.setAttribute('src', next);
+	});
 }
 
 const setTheme = () => {
@@ -82,4 +105,4 @@ const closeNavGroups = (target: EventTarget | null, root: ParentNode = document)
 	});
 };
 
-export { update, updateUser, setTheme, handleLogout, logout, handleOpenSettings, closeNavGroups };
+export { update, updateUser, updateOwnAvatars, setTheme, handleLogout, logout, handleOpenSettings, handleOpenAvatar, closeNavGroups };
