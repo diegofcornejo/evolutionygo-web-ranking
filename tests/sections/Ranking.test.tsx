@@ -297,7 +297,7 @@ describe('Ranking', () => {
 
       expect(await findByText('RatedDuelist')).toBeTruthy();
       fireEvent.change(banListSelect(container), { target: { value: 'Goat Format' } });
-      await waitFor(() => expect(container.querySelector('thead')?.textContent).toContain('Elo'));
+      await waitFor(() => expect(container.querySelector('[role="note"]')).toBeNull());
 
       const rows = container.querySelectorAll('tbody tr');
       expect(rows).toHaveLength(4);
@@ -329,8 +329,9 @@ describe('Ranking', () => {
 
       expect(await findByText('GoldDuelist')).toBeTruthy();
       fireEvent.change(banListSelect(container), { target: { value: 'Goat Format' } });
-      await waitFor(() => expect(container.querySelector('thead')?.textContent).toContain('Rank'));
+      await waitFor(() => expect(within(container.querySelectorAll('tbody tr')[1] as HTMLElement).queryByText('Gold')).not.toBeNull());
 
+      expect(container.querySelector('[role="note"]')).toBeNull();
       const headers = [...container.querySelectorAll('thead th')].map((th) => th.textContent);
       expect(headers.indexOf('Rank')).toBe(headers.indexOf('Username') + 1);
       const goldRow = within(container.querySelectorAll('tbody tr')[1] as HTMLElement);
@@ -345,7 +346,7 @@ describe('Ranking', () => {
 
       expect(await findByText('UnrankedDuelist')).toBeTruthy();
       fireEvent.change(banListSelect(container), { target: { value: 'Goat Format' } });
-      await waitFor(() => expect(container.querySelector('thead')?.textContent).toContain('Rank'));
+      await waitFor(() => expect(container.querySelector('[role="note"]')).toBeNull());
 
       const unrankedRow = container.querySelectorAll('tbody tr')[2] as HTMLElement;
       expect(within(unrankedRow).getByText('No rank yet')).toHaveClass('sr-only');
@@ -361,14 +362,16 @@ describe('Ranking', () => {
       expect(link).toHaveAttribute('href', `/duelists/9/Global?username=A%2BB%20C&season=${link.getAttribute('href')!.split('season=')[1]}`);
     });
 
-    it('hides the Rank column in Global', async () => {
+    it('keeps the Rank column in Global, with dashes', async () => {
       mockFetch({ stats: [...cardDuelists, ...rankedRows] });
 
       const { container, findByText } = render(<Ranking />);
 
       expect(await findByText('GoldDuelist')).toBeTruthy();
       const headers = [...container.querySelectorAll('thead th')].map((th) => th.textContent);
-      expect(headers).not.toContain('Rank');
+      expect(headers).toContain('Rank');
+      const firstRow = within(container.querySelectorAll('tbody tr')[0] as HTMLElement);
+      expect(firstRow.getAllByText('Not tracked in Global')).toHaveLength(2);
     });
   });
 
@@ -650,13 +653,16 @@ describe('Ranking', () => {
   });
 
   describe('Global ladder', () => {
-    it('hides the Elo column and the Elo sort in Global', async () => {
+    it('keeps the Elo column, disables the Elo sort and asks for a ban list in Global', async () => {
       mockFetch({ stats: [...cardDuelists, ...tableDuelists] });
 
-      const { container, findByText } = render(<Ranking />);
+      const { container, findByText, getByRole } = render(<Ranking />);
 
       expect(await findByText('RatedDuelist')).toBeTruthy();
-      expect([...container.querySelectorAll('thead th')].map((th) => th.textContent)).not.toContain('Elo');
+      expect([...container.querySelectorAll('thead th')].map((th) => th.textContent)).toContain('Elo');
+      const note = getByRole('note');
+      expect(note).toHaveTextContent('Rank and Elo are tracked per ban list. Select one to see them.');
+      expect(note.compareDocumentPosition(container.querySelector('table')!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
       // Elo stays visible but disabled in Global, which has no Elo ladder.
       expect(sortButtons(container).map((button) => button.textContent)).toEqual(['Points', 'Elo']);
       expect(sortButtons(container)[0]).toHaveAttribute('aria-pressed', 'true');

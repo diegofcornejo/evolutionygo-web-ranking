@@ -27,6 +27,16 @@ const GLOBAL_BAN_LIST = 'Global';
 const PILL_SELECT =
   'select h-10 w-auto cursor-pointer rounded-full border-white/20 bg-white/10 pl-4 pr-9 text-sm font-bold text-white focus:outline-primary [&::picker(select)]:border-white/15 [&::picker(select)]:bg-base-300';
 
+// Global has no ranks and no Elo: the columns stay, with a dash.
+function NotTracked() {
+  return (
+    <span className='text-gray-400'>
+      <span aria-hidden='true'>—</span>
+      <span className='sr-only'>Not tracked in Global</span>
+    </span>
+  );
+}
+
 const SORT_OPTIONS: { value: SortBy; label: string }[] = [
   { value: 'points', label: 'Points' },
   { value: 'rating', label: 'Elo' },
@@ -308,15 +318,24 @@ export default function Ranking({ weekly = null }: Readonly<{ weekly?: WeeklyDue
       )}
       </div>
       {getDisplayDuelists().length > 0 && (
-      <div className='overflow-x-auto mt-8'>
+      <div className='mt-8'>
+        {isGlobal ? (
+          <p role='note' className='mb-3 flex items-center gap-2 text-sm text-base-content/70'>
+            <svg viewBox='0 0 24 24' aria-hidden='true' className='h-4 w-4 shrink-0 fill-current text-info'>
+              <path d='M11 7h2v2h-2zm0 4h2v6h-2zm1-9a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16z' />
+            </svg>
+            Rank and Elo are tracked per ban list. Select one to see them.
+          </p>
+        ) : null}
+      <div className='overflow-x-auto'>
         <table className='table table-zebra bg-base-300'>
           <thead>
             <tr>
               <th scope="col" className='max-w-[75px] text-center'>Position</th>
               <th scope="col" className='min-w-[200px]'>Username</th>
-              {!isGlobal && <th scope="col">Rank</th>}
+              <th scope="col">Rank</th>
               <th scope="col">Points</th>
-              {!isGlobal && <th scope="col">Elo</th>}
+              <th scope="col">Elo</th>
               <th scope="col">Games</th>
               <th scope="col">Wins</th>
               <th scope="col">Losses</th>
@@ -344,8 +363,10 @@ export default function Ranking({ weekly = null }: Readonly<{ weekly?: WeeklyDue
                     </div>
                   </a>
                 </td>
-                {!isGlobal && <td>
-                  {duelist.tier ? (
+                <td>
+                  {isGlobal ? (
+                    <NotTracked />
+                  ) : duelist.tier ? (
                     <span className='flex items-center gap-2 font-bold'>
                       <TierEmblem tier={duelist.tier.id} className='h-7 w-7' />
                       {duelist.tier.name}
@@ -356,10 +377,12 @@ export default function Ranking({ weekly = null }: Readonly<{ weekly?: WeeklyDue
                       <span className='sr-only'>No rank yet</span>
                     </span>
                   )}
-                </td>}
+                </td>
                 <td className='font-bold text-lg text-orange-300'>{duelist.points}</td>
-                {!isGlobal && <td>
-                  {duelist.rating == null ? (
+                <td>
+                  {isGlobal ? (
+                    <NotTracked />
+                  ) : duelist.rating == null ? (
                     <span className='text-gray-400'>
                       <span aria-hidden='true'>—</span>
                       <span className='sr-only'>No Elo on this ladder</span>
@@ -372,7 +395,7 @@ export default function Ranking({ weekly = null }: Readonly<{ weekly?: WeeklyDue
                       ) : null}
                     </span>
                   )}
-                </td>}
+                </td>
 								<td>{duelist.wins + duelist.losses}</td>
                 <td className='text-success'>{duelist.wins}</td>
                 <td className='text-error'>{duelist.losses}</td>
@@ -381,6 +404,7 @@ export default function Ranking({ weekly = null }: Readonly<{ weekly?: WeeklyDue
             ))}
           </tbody>
         </table>
+      </div>
       </div>
       )}
     </div>
