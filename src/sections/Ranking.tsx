@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import DuelistCard from '@components/Cards/DuelistCard';
+import DuelistTradingCard from '@components/Cards/DuelistTradingCard';
 import Rating from '@components/Rating';
 import type { Duelist } from '@types';
 import type { BanListSelectorOption } from '@utils/banListSelector';
@@ -15,15 +15,18 @@ import {
   isBanListSectionList,
 } from '@utils/banListSelector';
 
-type BorderColor = 'gold' | 'silver' | 'bronze';
-
 type SortBy = 'points' | 'rating';
 
-const getBorderColor = (index: number): BorderColor => {
-  if (index === 0) return 'gold';
-  if (index === 1) return 'silver';
-  return 'bronze';
-};
+// Global has no Elo ladder: the API sends rating null for it.
+const GLOBAL_BAN_LIST = 'Global';
+
+// DOM order is 1, 2, 3 (reading order). Mobile: #1 across the top, #2 and #3 below.
+// Desktop: #2 left, #1 center and raised, #3 right.
+const PODIUM_SLOT = [
+  'col-span-2 mx-auto w-[58%] md:order-2 md:col-span-1 md:w-full md:-translate-y-8',
+  'w-full md:order-1 md:mx-auto md:w-[86%]',
+  'w-full md:order-3 md:mx-auto md:w-[86%]',
+];
 
 const buildUserStatsUrl = (apiUrl: string, userId: string, season: string, banList: string): string => {
   const baseUrl = `${apiUrl}/users/${userId}/stats?season=${season}`;
@@ -39,6 +42,7 @@ export default function Ranking() {
 	const [season, setSeason] = useState<string>(import.meta.env.PUBLIC_DEFAULT_SEASON);
 	const [banList, setBanList] = useState<string>(import.meta.env.PUBLIC_DEFAULT_BAN_LIST);
 	const [banListOptions, setBanListOptions] = useState<BanListSelectorOption[]>([]);
+	const isGlobal = banList === GLOBAL_BAN_LIST;
 	const [sortBy, setSortBy] = useState<SortBy>('points');
 	const [currentUser, setCurrentUser] = useState<{ id: string; username: string } | null>(null);
 	const [currentUserStats, setCurrentUserStats] = useState<Duelist | null>(null);
@@ -143,8 +147,13 @@ export default function Ranking() {
 		setSeason(event.target.value);
 	};
 
+	const selectBanList = (nextBanList: string) => {
+		setBanList(nextBanList);
+		if (nextBanList === GLOBAL_BAN_LIST) setSortBy('points');
+	};
+
 	const handleBanListChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-		setBanList(event.target.value);
+		selectBanList(event.target.value);
 	};
 
 	const handleSortByChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -157,8 +166,8 @@ export default function Ranking() {
         `${API_URL}/stats/?page=1&limit=20&banListName=${banList}&season=${season}&sortBy=${sortBy}`
       );
       const data = await response.json();
-      setTopDuelists(data.slice(0, 4));
-      setDuelists(data.slice(4));
+      setTopDuelists(data.slice(0, 3));
+      setDuelists(data.slice(3));
     };
 
     fetchDuelists();
@@ -195,7 +204,7 @@ export default function Ranking() {
         </select>
         <select className="select select-secondary w-full max-w-xs" value={sortBy} onChange={handleSortByChange} aria-label="Sort by">
           <option value="points">Sort by Points</option>
-          <option value="rating">Sort by Elo</option>
+          {!isGlobal && <option value="rating">Sort by Elo</option>}
         </select>
       </div>
       {banListChips.length > 0 && selectedFormat ? (
@@ -211,7 +220,7 @@ export default function Ranking() {
               className={`btn btn-xs ${chip === banList ? 'btn-secondary btn-active' : 'btn-outline'}`}
               aria-pressed={chip === banList}
               aria-label={index === 0 ? `All ${chip}` : undefined}
-              onClick={() => setBanList(chip)}
+              onClick={() => selectBanList(chip)}
             >
               {index === 0 ? 'All' : chip}
             </button>
@@ -219,17 +228,21 @@ export default function Ranking() {
         </div>
       ) : null}
       <ul
-        className='grid grid-cols-1 md:grid-cols-4 gap-6 mt-8 p-0 place-items-stretch'
+        aria-label='Top three duelists'
+        className='mx-auto mt-12 grid max-w-4xl grid-cols-2 items-end gap-x-4 gap-y-8 p-0 sm:gap-x-6 md:grid-cols-3 md:gap-x-8'
       >
         {topDuelists.map((duelist: Duelist, index: number) => (
-          <DuelistCard 
-            key={duelist.userId} 
-            {...duelist} 
-            username={getDisplayName(duelist)}
-            borderColor={getBorderColor(index)} 
-            banListName={banList} 
-            season={season} 
-          />
+          <li key={duelist.userId} className={PODIUM_SLOT[index]}>
+            <DuelistTradingCard
+              {...duelist}
+              username={getDisplayName(duelist)}
+              place={(index + 1) as 1 | 2 | 3}
+              featured={index === 0}
+              showElo={!isGlobal}
+              banListName={banList}
+              season={season}
+            />
+          </li>
         ))}
       </ul>
       <div className='overflow-x-auto mt-8'>
@@ -239,7 +252,7 @@ export default function Ranking() {
               <th scope="col" className='max-w-[75px] text-center'>Position</th>
               <th scope="col" className='min-w-[200px]'>Username</th>
               <th scope="col">Points</th>
-              <th scope="col">Elo</th>
+              {!isGlobal && <th scope="col">Elo</th>}
               <th scope="col">Games</th>
               <th scope="col">Wins</th>
               <th scope="col">Losses</th>
@@ -268,7 +281,7 @@ export default function Ranking() {
                   </a>
                 </td>
                 <td className='font-bold text-lg text-orange-300'>{duelist.points}</td>
-                <td>
+                {!isGlobal && <td>
                   {duelist.rating == null ? (
                     <span className='text-gray-400' aria-label='No Elo on this ladder'>—</span>
                   ) : (
@@ -279,7 +292,7 @@ export default function Ranking() {
                       ) : null}
                     </span>
                   )}
-                </td>
+                </td>}
 								<td>{duelist.wins + duelist.losses}</td>
                 <td className='text-success'>{duelist.wins}</td>
                 <td className='text-error'>{duelist.losses}</td>

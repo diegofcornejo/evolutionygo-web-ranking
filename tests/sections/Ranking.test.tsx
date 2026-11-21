@@ -278,19 +278,21 @@ describe('Ranking', () => {
       const { container, findByText, getByText } = render(<Ranking />);
 
       expect(await findByText('RatedDuelist')).toBeTruthy();
+      fireEvent.change(banListSelect(container), { target: { value: 'Goat Format' } });
+      await waitFor(() => expect(getByText('Elo')).toBeTruthy());
 
       const rows = container.querySelectorAll('tbody tr');
-      expect(rows).toHaveLength(3);
+      expect(rows).toHaveLength(4);
 
-      const ratedRow = within(rows[0] as HTMLElement);
+      const ratedRow = within(rows[1] as HTMLElement);
       expect(ratedRow.getByText('1544')).toBeTruthy();
       expect(ratedRow.queryByTitle('Provisional Elo — not enough duels yet')).toBeNull();
 
-      const provisionalRow = within(rows[1] as HTMLElement);
+      const provisionalRow = within(rows[2] as HTMLElement);
       expect(provisionalRow.getByText('1210')).toBeTruthy();
       expect(provisionalRow.getByTitle('Provisional Elo — not enough duels yet')).toBeTruthy();
 
-      const unratedRow = within(rows[2] as HTMLElement);
+      const unratedRow = within(rows[3] as HTMLElement);
       expect(unratedRow.getByLabelText('No Elo on this ladder')).toBeTruthy();
       expect(unratedRow.getByText('—')).toBeTruthy();
 
@@ -312,28 +314,94 @@ describe('Ranking', () => {
     });
   });
 
-  describe('top four cards', () => {
-    it('renders the rating, the provisional marker and the empty placeholder', async () => {
+  describe('podium', () => {
+    it('renders the top three as cards in ranking order, featuring #1', async () => {
       mockFetch({ stats: [...cardDuelists, ...tableDuelists] });
 
       const { container, findByText } = render(<Ranking />);
 
-      expect(await findByText('#1 RatedCardDuelist')).toBeTruthy();
+      expect(await findByText('RatedCardDuelist')).toBeTruthy();
+      const cards = container.querySelectorAll('[data-place]');
+      expect([...cards].map((card) => card.getAttribute('data-place'))).toEqual(['1', '2', '3']);
+      expect(container.querySelector('[data-place="1"] [data-foil-animated]')).not.toBeNull();
+      expect(container.querySelector('[data-place="2"] [data-foil-animated]')).toBeNull();
+    });
 
-      const cards = container.querySelectorAll('ul > a');
-      expect(cards).toHaveLength(4);
+    it('shows Elo on ladder cards and win rate on Global cards', async () => {
+      mockFetch({ stats: [...cardDuelists, ...tableDuelists] });
 
-      const ratedCard = within(cards[0] as HTMLElement);
-      expect(ratedCard.getByText('1720')).toBeTruthy();
-      expect(ratedCard.queryByTitle('Provisional Elo — not enough duels yet')).toBeNull();
+      const { container, findByText } = render(<Ranking />);
 
-      const provisionalCard = within(cards[1] as HTMLElement);
-      expect(provisionalCard.getByText('1106')).toBeTruthy();
-      expect(provisionalCard.getByTitle('Provisional Elo — not enough duels yet')).toBeTruthy();
+      expect(await findByText('RatedCardDuelist')).toBeTruthy();
+      expect(within(container.querySelector('[data-place="1"]') as HTMLElement).getByText('WIN%/67%')).toBeTruthy();
 
-      const unratedCard = within(cards[2] as HTMLElement);
-      expect(unratedCard.getByLabelText('No Elo on this ladder')).toBeTruthy();
-      expect(unratedCard.getByText('—')).toBeTruthy();
+      fireEvent.change(banListSelect(container), { target: { value: 'Goat Format' } });
+      await waitFor(() => {
+        const first = container.querySelector('[data-place="1"]') as HTMLElement;
+        expect(within(first).getByText('ELO/1720')).toBeTruthy();
+      });
+      const second = container.querySelector('[data-place="2"]') as HTMLElement;
+      expect(within(second).getByTitle('Provisional Elo — not enough duels yet')).toBeTruthy();
+    });
+
+    it('starts the table at position 4', async () => {
+      mockFetch({ stats: [...cardDuelists, ...tableDuelists] });
+
+      const { container, findByText } = render(<Ranking />);
+
+      expect(await findByText('RatedDuelist')).toBeTruthy();
+      const firstRow = container.querySelector('tbody tr') as HTMLElement;
+      expect(within(firstRow).getByText('PlainCardDuelist')).toBeTruthy();
+      expect(container.querySelector('[data-place="4"]')).toBeNull();
+    });
+
+    it('renders only the cards that exist when a ban list has fewer than three players', async () => {
+      mockFetch({ stats: cardDuelists.slice(0, 2) });
+
+      const { container, findByText } = render(<Ranking />);
+
+      expect(await findByText('NewCardDuelist')).toBeTruthy();
+      expect(container.querySelectorAll('[data-place]')).toHaveLength(2);
+      expect(container.querySelectorAll('tbody tr')).toHaveLength(0);
+    });
+  });
+
+  describe('Global ladder', () => {
+    it('hides the Elo column and the Elo sort in Global', async () => {
+      mockFetch({ stats: [...cardDuelists, ...tableDuelists] });
+
+      const { container, findByText } = render(<Ranking />);
+
+      expect(await findByText('RatedDuelist')).toBeTruthy();
+      expect([...container.querySelectorAll('thead th')].map((th) => th.textContent)).not.toContain('Elo');
+      expect(
+        [...container.querySelectorAll('select[aria-label="Sort by"] option')].map((option) => option.textContent)
+      ).toEqual(['Sort by Points']);
+    });
+
+    it('resets an Elo sort to points when switching to Global', async () => {
+      const fetchMock = mockFetch({ stats: [...cardDuelists, ...tableDuelists] });
+
+      const { container, findByText } = render(<Ranking />);
+
+      expect(await findByText('RatedDuelist')).toBeTruthy();
+      fireEvent.change(banListSelect(container), { target: { value: 'Goat Format' } });
+      const sortSelect = () => container.querySelector<HTMLSelectElement>('select[aria-label="Sort by"]')!;
+      await waitFor(() => expect(sortSelect().querySelectorAll('option')).toHaveLength(2));
+      fireEvent.change(sortSelect(), { target: { value: 'rating' } });
+      await waitFor(() => {
+        expect(fetchMock.mock.calls.some(([url]) => String(url).includes('sortBy=rating'))).toBe(true);
+      });
+
+      fireEvent.change(banListSelect(container), { target: { value: 'Global' } });
+
+      await waitFor(() => {
+        const statsCalls = fetchMock.mock.calls.map(([url]) => String(url)).filter((url) => url.includes('/stats/'));
+        const last = statsCalls.at(-1)!;
+        expect(last).toContain('banListName=Global');
+        expect(last).toContain('sortBy=points');
+      });
+      expect(sortSelect().value).toBe('points');
     });
   });
 
@@ -345,6 +413,11 @@ describe('Ranking', () => {
 
       await waitFor(() => {
         expect(fetchMock.mock.calls.some(([url]) => String(url).includes('sortBy=points'))).toBe(true);
+      });
+
+      fireEvent.change(banListSelect(container), { target: { value: 'Goat Format' } });
+      await waitFor(() => {
+        expect(container.querySelectorAll('select[aria-label="Sort by"] option')).toHaveLength(2);
       });
 
       const sortSelect = container.querySelector<HTMLSelectElement>('select[aria-label="Sort by"]')!;
@@ -361,7 +434,7 @@ describe('Ranking', () => {
 
       const ratingCall = fetchMock.mock.calls.find(([url]) => String(url).includes('sortBy=rating'))!;
       expect(String(ratingCall[0])).toBe(
-        `${API_URL}/stats/?page=1&limit=20&banListName=Global&season=3&sortBy=rating`
+        `${API_URL}/stats/?page=1&limit=20&banListName=Goat Format&season=3&sortBy=rating`
       );
     });
   });
