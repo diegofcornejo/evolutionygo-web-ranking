@@ -298,6 +298,20 @@ describe('Ranking', () => {
     });
   });
 
+  describe('win rate column', () => {
+    it('renders a dash for duelists the API sends with a null win rate', async () => {
+      const noDecisions = buildDuelist({ userId: '8', username: 'NoDecisionsDuelist', position: 5, wins: 0, losses: 0, winRate: null, rating: 1500 });
+      mockFetch({ stats: [...cardDuelists, noDecisions] });
+
+      const { container, findByText } = render(<Ranking />);
+
+      expect(await findByText('NoDecisionsDuelist')).toBeTruthy();
+
+      const cells = container.querySelectorAll('tbody tr td');
+      expect(cells[cells.length - 1].textContent).toBe('—');
+    });
+  });
+
   describe('top four cards', () => {
     it('renders the rating, the provisional marker and the empty placeholder', async () => {
       mockFetch({ stats: [...cardDuelists, ...tableDuelists] });

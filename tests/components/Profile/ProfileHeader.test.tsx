@@ -30,4 +30,22 @@ describe('ProfileHeader', () => {
 		expect(getAllByText('Wins')[0]).toBeTruthy();
 		expect(getAllByText('Losses')[0]).toBeTruthy();
 	});
+
+	it('renders when the API sends a null win rate', () => {
+		const { getByText } = render(
+			<ProfileHeader
+				username="NoDecisions"
+				points={0}
+				wins={0}
+				losses={0}
+				winRate={null}
+				position={5}
+				season="7"
+				banlistName="2026.03 MD"
+			/>
+		);
+
+		expect(getByText('NoDecisions')).toBeTruthy();
+		expect(getByText('(— win rate)')).toBeTruthy();
+	});
 });

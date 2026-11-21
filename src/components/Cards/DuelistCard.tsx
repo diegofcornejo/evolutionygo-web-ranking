@@ -1,6 +1,7 @@
 
 import type { Duelist } from '@types';
 import Rating from '@components/Rating';
+import { formatWinRate, winRateStars } from '@utils/winRate';
 
 interface Props extends Duelist {
 	banListName: string;
@@ -24,7 +25,7 @@ export default function DuelistCard({
 	clickable = true,
 }: Readonly<Props>) {
 	const image = `https://ui-avatars.com/api/?name=${username}&background=random&size=128`;
-	const rating = 1 + (winRate / 100) * 4;
+	const rating = winRateStars(winRate);
 	return (
 		<a href={clickable ? `/duelists/${userId}/${banListName}?username=${username}&season=${season}` : undefined}
 			className={`card bg-base-300 w-full shadow-xl cursor-pointer max-w-sm hover:bg-neutral transition-all duration-200 ease-in-out border-2 border-${borderColor}`}>
@@ -62,7 +63,7 @@ export default function DuelistCard({
 				</p>
 				<p className='text-sm text-success'>Wins: {wins}</p>
 				<p className='text-sm text-error'>Losses: {losses}</p>
-				<p className='text-sm'>Win Rate: {winRate.toFixed(2)}%</p>
+				<p className='text-sm'>Win Rate: {formatWinRate(winRate)}</p>
 			</div>
 		</a>
 	);

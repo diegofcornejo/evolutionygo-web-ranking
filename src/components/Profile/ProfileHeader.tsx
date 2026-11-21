@@ -1,11 +1,12 @@
 import Rating from '@components/Rating';
+import { formatWinRate, winRateStars } from '@utils/winRate';
 
 interface ProfileHeaderProps {
 	username: string;
 	points: number;
 	wins: number;
 	losses: number;
-	winRate: number;
+	winRate: number | null;
 	position: number;
 	season: string;
 	banlistName: string;
@@ -31,7 +32,7 @@ export default function ProfileHeader({
 	seasonStats,
 }: Readonly<ProfileHeaderProps>) {
 	const image = `https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&background=random&size=256`;
-	const rating = 1 + (winRate / 100) * 4;
+	const rating = winRateStars(winRate);
 	const totalGames = wins + losses;
 	const normalizedPosition = Number(position) || 0;
 	const chartWidth = 240;
@@ -182,7 +183,7 @@ export default function ProfileHeader({
 
 						<div className="flex items-center justify-center lg:justify-start gap-2 mb-4">
 							<Rating rating={rating} size="lg" />
-							<span className="text-sm text-base-content/60">({winRate.toFixed(1)}% win rate)</span>
+							<span className="text-sm text-base-content/60">({formatWinRate(winRate, 1)} win rate)</span>
 						</div>
 
 						{/* Quick Stats */}

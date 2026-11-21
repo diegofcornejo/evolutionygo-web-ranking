@@ -52,4 +52,9 @@ describe('DuelistCard', () => {
     expect(link).toBeTruthy();
     expect(link?.getAttribute('href')).toContain('/duelists/6afb80a6-6092-4201-abc6-e2db81d7e85f/2024-01?username=TestUser&season=Spring');
   });
+
+  it('renders a dash when the API sends a null win rate', () => {
+    const { getByText } = render(<DuelistCard {...mockProps} wins={0} losses={0} winRate={null} rating={null} />);
+    expect(getByText('Win Rate: —')).toBeTruthy();
+  });
 }); 

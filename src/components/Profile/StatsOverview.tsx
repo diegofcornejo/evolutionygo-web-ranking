@@ -1,7 +1,9 @@
+import { formatWinRate } from '@utils/winRate';
+
 interface StatsOverviewProps {
 	wins: number;
 	losses: number;
-	winRate: number;
+	winRate: number | null;
 	points: number;
 	position: number;
 }
@@ -74,7 +76,7 @@ export default function StatsOverview({
 		},
 		{
 			label: 'Win Rate',
-			value: `${winRate.toFixed(1)}%`,
+			value: formatWinRate(winRate, 1),
 			description: `${wins}W - ${losses}L`,
 			color: 'text-success',
 			bgColor: 'bg-success/10',

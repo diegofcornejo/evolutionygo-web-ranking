@@ -3,6 +3,7 @@ import DuelistCard from '@components/Cards/DuelistCard';
 import Rating from '@components/Rating';
 import type { Duelist } from '@types';
 import type { BanListSelectorOption } from '@utils/banListSelector';
+import { formatWinRate, winRateStars } from '@utils/winRate';
 import { banlists } from '@stores/banlistsStore';
 import { getSession } from '@stores/sessionStore';
 import {
@@ -167,8 +168,6 @@ export default function Ranking() {
 		getBanListOptions();
 	}, [season]);
 
-  const getRating = (winRate: number) => 1 + (winRate / 100) * 4;
-
 	const selectedFormat = findBanListSelectorOption(banListOptions, banList);
 	const banListChips = buildBanListChips(selectedFormat);
 
@@ -263,7 +262,7 @@ export default function Ranking() {
                       />
                       <div>
                         <div className='font-bold'>{getDisplayName(duelist)}</div>
-                        <Rating rating={getRating(duelist.winRate)} size='sm'/>
+                        <Rating rating={winRateStars(duelist.winRate)} size='sm'/>
                       </div>
                     </div>
                   </a>
@@ -284,7 +283,7 @@ export default function Ranking() {
 								<td>{duelist.wins + duelist.losses}</td>
                 <td className='text-success'>{duelist.wins}</td>
                 <td className='text-error'>{duelist.losses}</td>
-                <td>{duelist.winRate.toFixed(2)}%</td>
+                <td>{formatWinRate(duelist.winRate)}</td>
               </tr>
             ))}
           </tbody>
