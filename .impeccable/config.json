@@ -29,6 +29,15 @@
         ],
         "createdAt": "2026-10-09T19:28:20.616Z",
         "reason": "agent: alpha stop inside the footer fog mask-image gradient, never painted as a color"
+      },
+      {
+        "rule": "broken-image",
+        "value": "*",
+        "files": [
+          "src/components/NavBar/Navbar.astro"
+        ],
+        "createdAt": "2026-11-21T02:35:24.150Z",
+        "reason": "Claude: #dropdown-navbar-avatar starts with src='' on purpose; helper.ts sets the ui-avatars URL when a session exists, and the profile dropdown is hidden until then"
       }
     ]
   }
