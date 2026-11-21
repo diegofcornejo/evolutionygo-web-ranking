@@ -47,15 +47,29 @@ const jsonResponse = (data: unknown) => ({
   json: async () => data,
 });
 
+const weeklyItem = {
+  userId: 'w1',
+  username: 'WeeklyDuelist',
+  points: '27',
+  wins: '19',
+  losses: '5',
+  from: '2026-11-09T00:00:00.000Z',
+  to: '2026-11-15T00:00:00.000Z',
+};
+
 type FetchOverrides = {
   grouped?: () => Promise<unknown>;
   flat?: unknown;
   stats?: Duelist[];
+  weekly?: unknown[] | (() => Promise<unknown>);
 };
 
-const mockFetch = ({ grouped, flat = flatBanLists, stats = [] }: FetchOverrides = {}) => {
+const mockFetch = ({ grouped, flat = flatBanLists, stats = [], weekly = [weeklyItem] }: FetchOverrides = {}) => {
   const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
     const url = String(input);
+    if (url.includes('/stats/player-of-the-week')) {
+      return typeof weekly === 'function' ? await weekly() : jsonResponse(weekly);
+    }
     if (url.includes('/ban-lists/grouped')) {
       return grouped ? await grouped() : jsonResponse(groupedBanLists);
     }
@@ -382,6 +396,66 @@ describe('Ranking', () => {
       expect(await findByText('RatedCardDuelist')).toBeTruthy();
       expect(container.querySelector('[data-place="2"]')!.closest('li')).toHaveClass('md:col-start-1');
       expect(container.querySelector('[data-place="3"]')!.closest('li')).toHaveClass('md:col-start-3');
+    });
+  });
+
+  describe('duelist of the week', () => {
+    it('shows the weekly card after the podium', async () => {
+      mockFetch({ stats: [...cardDuelists, ...tableDuelists] });
+
+      const { container, findByText } = render(<Ranking />);
+
+      expect(await findByText('DUELIST OF THE WEEK')).toBeTruthy();
+      const third = container.querySelector('[data-place="3"]')!;
+      const weekly = container.querySelector('[data-weekly]')!;
+      expect(third.compareDocumentPosition(weekly) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+      expect(within(weekly as HTMLElement).getByText('[Nov 9 – Nov 15]')).toBeTruthy();
+      expect(weekly.closest('li')).toHaveClass('lg:col-start-5');
+      expect(weekly.closest('li')).not.toHaveClass('md:col-start-5');
+    });
+
+    it('hides the weekly card when the endpoint fails', async () => {
+      mockFetch({ stats: [...cardDuelists, ...tableDuelists], weekly: () => Promise.reject(new Error('down')) });
+
+      const { container, findByText } = render(<Ranking />);
+
+      expect(await findByText('RatedCardDuelist')).toBeTruthy();
+      await waitFor(() => expect(container.querySelector('[data-weekly]')).toBeNull());
+      expect(container.querySelector('[data-podium-divider]')).toBeNull();
+    });
+
+    it('hides the weekly card when the endpoint is empty', async () => {
+      mockFetch({ stats: [...cardDuelists, ...tableDuelists], weekly: [] });
+
+      const { container, findByText } = render(<Ranking />);
+
+      expect(await findByText('RatedCardDuelist')).toBeTruthy();
+      expect(container.querySelector('[data-weekly]')).toBeNull();
+    });
+
+    it('fetches the weekly player once, not on filter changes', async () => {
+      const fetchMock = mockFetch({ stats: [...cardDuelists, ...tableDuelists] });
+
+      const { container, findByText } = render(<Ranking />);
+
+      expect(await findByText('DUELIST OF THE WEEK')).toBeTruthy();
+      fireEvent.change(banListSelect(container), { target: { value: 'Goat Format' } });
+      fireEvent.change(container.querySelector('select[aria-label="Filter by season"]')!, { target: { value: '2' } });
+      await waitFor(() => {
+        expect(fetchMock.mock.calls.some(([url]) => String(url).includes('season=2'))).toBe(true);
+      });
+      const weeklyCalls = fetchMock.mock.calls.filter(([url]) => String(url).includes('player-of-the-week'));
+      expect(weeklyCalls).toHaveLength(1);
+    });
+
+    it('shows the weekly card even when that player is in the podium', async () => {
+      mockFetch({ stats: [...cardDuelists, ...tableDuelists], weekly: [{ ...weeklyItem, userId: '1', username: 'RatedCardDuelist' }] });
+
+      const { container, findByText } = render(<Ranking />);
+
+      expect(await findByText('DUELIST OF THE WEEK')).toBeTruthy();
+      expect(container.querySelector('[data-place="1"]')).not.toBeNull();
+      expect(container.querySelector('[data-weekly]')).not.toBeNull();
     });
   });
 

@@ -85,7 +85,7 @@ export default function DuelistTradingCard({
 			data-tilt={reduceMotion ? 'off' : 'on'}
 			onPointerMove={onPointerMove}
 			onPointerLeave={onPointerLeave}
-			className={`group relative block aspect-[59/86] w-full rounded-xl ${frame} p-2 shadow-[0_18px_40px_-12px_rgba(0,0,0,0.7)] outline-offset-4 transition-transform duration-200 ease-out [transform:perspective(900px)_rotateX(var(--tilt-x,0deg))_rotateY(var(--tilt-y,0deg))] focus-visible:outline-2 focus-visible:outline-primary motion-reduce:transition-none`}
+			className={`group relative grid aspect-[59/86] w-full rounded-xl ${frame} p-2 shadow-[0_18px_40px_-12px_rgba(0,0,0,0.7)] outline-offset-4 transition-transform duration-200 ease-out [transform:perspective(900px)_rotateX(var(--tilt-x,0deg))_rotateY(var(--tilt-y,0deg))] focus-visible:outline-2 focus-visible:outline-primary motion-reduce:transition-none`}
 		>
 			{weekly ? (
 				<span className="absolute -top-3 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-full border border-cyan-300 bg-cyan-900 px-2.5 py-0.5 text-[10px] font-extrabold tracking-wider text-cyan-50 shadow-lg sm:text-xs">
@@ -99,7 +99,7 @@ export default function DuelistTradingCard({
 					{place}
 				</span>
 			)}
-			<div className="flex h-full flex-col gap-1.5 rounded-lg ring-1 ring-black/40">
+			<div className="flex flex-col gap-1.5 rounded-lg ring-1 ring-black/40">
 				<div className="flex items-center justify-between gap-2 rounded-md bg-black/55 px-2.5 py-1.5">
 					<span title={username} className={`truncate font-extrabold text-white ${featured ? 'text-lg' : 'text-sm sm:text-base'}`}>
 						{username}

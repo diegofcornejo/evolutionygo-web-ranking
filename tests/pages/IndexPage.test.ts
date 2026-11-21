@@ -48,10 +48,6 @@ vi.mock('@components/RoomsWebSocketListener', async () => ({
   RoomsWebSocketListener: (await import('../__mocks__/SimpleReact')).default,
 }));
 
-vi.mock('@components/Cards/DuelistOfTheWeek.astro', async () => ({
-  default: (await import('../__mocks__/SimpleSection.astro')).default,
-}));
-
 // The Layout mock prints the page description and keywords; strip them so page-wide
 // text assertions only see rendered content. The SEO test opts back in.
 const stripLayoutMeta = (html: string) => html.replace(/ data-layout-(?:description|keywords)="[^"]*"/g, '');
@@ -129,6 +125,12 @@ describe('index.astro page', () => {
     expect(result).toContain('id="newyear-title"');
     expect(result).toContain('data-countdown');
     expect(result).toContain('data-fireworks');
+  });
+
+  it('no longer renders the separate player of the week strip', async () => {
+    const result = await renderIndex('http://localhost/?edition=off');
+
+    expect(result).not.toContain('Player of the Week');
   });
 
   it('opens with the EvoDuel block outside editions', async () => {

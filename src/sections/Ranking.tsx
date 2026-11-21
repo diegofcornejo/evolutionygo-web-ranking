@@ -4,6 +4,8 @@ import Rating from '@components/Rating';
 import type { Duelist } from '@types';
 import type { BanListSelectorOption } from '@utils/banListSelector';
 import { formatWinRate, winRateStars } from '@utils/winRate';
+import { parseWeeklyDuelist } from '@utils/weeklyDuelist';
+import type { WeeklyDuelist } from '@utils/weeklyDuelist';
 import { banlists } from '@stores/banlistsStore';
 import { getSession } from '@stores/sessionStore';
 import {
@@ -47,6 +49,21 @@ export default function Ranking() {
 	const [currentUser, setCurrentUser] = useState<{ id: string; username: string } | null>(null);
 	const [currentUserStats, setCurrentUserStats] = useState<Duelist | null>(null);
 	const API_URL = import.meta.env.PUBLIC_API_URL;
+	const [weekly, setWeekly] = useState<WeeklyDuelist | null>(null);
+
+	// The duelist of the week is global and weekly: fetched once, not on filter changes.
+	useEffect(() => {
+		const fetchWeekly = async () => {
+			try {
+				const response = await fetch(`${API_URL}/stats/player-of-the-week`);
+				if (!response.ok) return;
+				setWeekly(parseWeeklyDuelist(await response.json()));
+			} catch (error) {
+				console.error('Error fetching the duelist of the week:', error);
+			}
+		};
+		fetchWeekly();
+	}, [API_URL]);
 
 	
 	useEffect(() => {
@@ -229,7 +246,9 @@ export default function Ranking() {
       ) : null}
       <ul
         aria-label='Top three duelists'
-        className='mx-auto mt-16 grid max-w-4xl grid-cols-2 items-end gap-x-4 gap-y-8 p-0 sm:gap-x-6 md:grid-cols-3 md:gap-x-8'
+        className={`mx-auto mt-16 grid grid-cols-2 items-end gap-x-4 gap-y-8 p-0 sm:gap-x-6 md:gap-x-8 ${
+          weekly ? 'max-w-6xl md:grid-cols-3 lg:grid-cols-[1fr_1.15fr_1fr_auto_1fr]' : 'max-w-4xl md:grid-cols-3'
+        }`}
       >
         {topDuelists.map((duelist: Duelist, index: number) => (
           <li key={duelist.userId} className={PODIUM_SLOT[index]}>
@@ -244,6 +263,25 @@ export default function Ranking() {
             />
           </li>
         ))}
+        {weekly && (
+          <>
+            <li
+              aria-hidden='true'
+              data-podium-divider
+              className='hidden w-px self-stretch bg-gradient-to-b from-transparent via-base-content/20 to-transparent lg:col-start-4 lg:row-start-1 lg:block'
+            />
+            <li className='col-span-2 mx-auto w-[48%] md:col-span-3 md:w-[30%] lg:col-span-1 lg:col-start-5 lg:row-start-1 lg:w-[86%]'>
+              <DuelistTradingCard
+                {...weekly.duelist}
+                place={1}
+                showElo={false}
+                banListName='Global'
+                season={import.meta.env.PUBLIC_DEFAULT_SEASON}
+                weekly={{ from: weekly.from, to: weekly.to }}
+              />
+            </li>
+          </>
+        )}
       </ul>
       {getDisplayDuelists().length > 0 && (
       <div className='overflow-x-auto mt-8'>
