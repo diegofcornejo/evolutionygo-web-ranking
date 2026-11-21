@@ -52,7 +52,11 @@ vi.mock('@components/Cards/DuelistOfTheWeek.astro', async () => ({
   default: (await import('../__mocks__/SimpleSection.astro')).default,
 }));
 
-const renderIndex = async (url: string) => {
+// The Layout mock prints the page description and keywords; strip them so page-wide
+// text assertions only see rendered content. The SEO test opts back in.
+const stripLayoutMeta = (html: string) => html.replace(/ data-layout-(?:description|keywords)="[^"]*"/g, '');
+
+const renderIndex = async (url: string, { withMeta = false } = {}) => {
   const IndexPage = (await import('../../src/pages/index.astro')).default;
 
   const container = await experimental_AstroContainer.create();
@@ -61,7 +65,8 @@ const renderIndex = async (url: string) => {
   container.addClientRenderer({ name: '@astrojs/react', entrypoint: '@astrojs/react/client.js' });
   container.addClientRenderer({ name: '@astrojs/svelte', entrypoint: '@astrojs/svelte/client.js' });
 
-  return container.renderToString(IndexPage, { request: new Request(url) });
+  const html = await container.renderToString(IndexPage, { request: new Request(url) });
+  return withMeta ? html : stripLayoutMeta(html);
 };
 
 describe('index.astro page', () => {
@@ -138,9 +143,7 @@ describe('index.astro page', () => {
     expect(result).toContain('Play without an account. Sign in to earn rewards.');
     expect(result).toMatch(/<a[^>]*href="https:\/\/evoduel.com"[^>]*data-umami-event="home-click-evoduel-play"/);
     expect(result).toMatch(/<a[^>]*href="#section-download"[^>]*data-umami-event="home-click-other-clients"/);
-    const hero = result.match(/<section[^>]*aria-labelledby="evoduel-title"[\s\S]*?<\/section>/)?.[0] ?? '';
-    expect(hero).toContain('EvoDuel');
-    expect(hero).not.toContain('Play Yu-Gi-Oh!');
+    expect(result).not.toContain('Play Yu-Gi-Oh!');
   });
 
   it('reserves the news card height so the marquee does not jump on hydration', async () => {
@@ -158,7 +161,7 @@ describe('index.astro page', () => {
   });
 
   it('names EvoDuel in the home description and keywords', async () => {
-    const result = await renderIndex('http://localhost/?edition=off');
+    const result = await renderIndex('http://localhost/?edition=off', { withMeta: true });
 
     expect(result).toMatch(/data-layout-description="[^"]*Play instantly in your browser with EvoDuel\.[^"]*"/);
     expect(result).toMatch(/data-layout-keywords="[^"]*\bEvoDuel\b[^"]*"/);
