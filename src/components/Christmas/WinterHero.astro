@@ -1,0 +1,632 @@
+---
+import '@fontsource/grenze/latin-700.css';
+import { CHRISTMAS_WINDOW, formatMonthDay, getChristmasNights, getTonightIndex } from '@utils/seasonalEdition';
+import {
+	BACK_HILL,
+	BULBS,
+	FLAKES,
+	FRONT_HILL,
+	HILLS_VIEWBOX,
+	LIGHTS_VIEWBOX,
+	PINES,
+	WIRE_PATH,
+	pinePath,
+	pineSnowPath,
+} from './winter';
+
+interface Props {
+	season: string;
+}
+
+const { season } = Astro.props;
+const now = new Date();
+const nights = getChristmasNights(now.getUTCFullYear());
+const tonight = getTonightIndex(nights, now.getUTCMonth() + 1, now.getUTCDate());
+const windowEnd = formatMonthDay(CHRISTMAS_WINDOW.end);
+const allNightsCaption = `${nights.length} nights, ${formatMonthDay(CHRISTMAS_WINDOW.start)} to ${windowEnd}`;
+const nightsCaption = (index: number) => (index >= 0 ? `Night ${index + 1} of ${nights.length}` : allNightsCaption);
+const nightState = (index: number) => (tonight < 0 || index > tonight ? 'ahead' : index === tonight ? 'tonight' : 'past');
+const lastNight = nights.length - 1;
+---
+
+<section class="winter" aria-labelledby="winter-title">
+	<svg class="winter-lights" viewBox={LIGHTS_VIEWBOX} preserveAspectRatio="xMidYMin slice" aria-hidden="true" focusable="false">
+		<defs>
+			{
+				['red', 'gold', 'green', 'blue'].map((color) => (
+					<radialGradient id={`winter-glow-${color}`}>
+						<stop offset="0" class={`winter-glow-stop winter-glow-${color}`} stop-opacity="0.6" />
+						<stop offset="1" class={`winter-glow-stop winter-glow-${color}`} stop-opacity="0" />
+					</radialGradient>
+				))
+			}
+		</defs>
+		<path d={WIRE_PATH} class="winter-wire" />
+		{
+			BULBS.map((bulb) => (
+				<g class="winter-bulb" data-group={bulb.group}>
+					<circle class="winter-bulb-glow" cx={bulb.x} cy={bulb.y + 14} r="18" fill={`url(#winter-glow-${bulb.color})`} />
+					<rect class="winter-bulb-cap" x={bulb.x - 3} y={bulb.y - 1} width="6" height="5" rx="1" />
+					<ellipse class={`winter-bulb-glass winter-bulb-${bulb.color}`} cx={bulb.x} cy={bulb.y + 12} rx="5" ry="8" />
+				</g>
+			))
+		}
+	</svg>
+
+	<div class="winter-stage">
+		<div class="winter-snow" aria-hidden="true">
+			{
+				FLAKES.map((flake) => (
+					<span
+						class="winter-flake"
+						style={`--left: ${flake.left}%; --size: ${flake.size}px; --duration: ${flake.duration}s; --delay: ${flake.delay}s; --drift: ${flake.drift}px`}
+					/>
+				))
+			}
+		</div>
+
+		<svg class="winter-sigil" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+			<g stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none">
+				{
+					[0, 60, 120, 180, 240, 300].map((angle) => (
+						<g transform={`rotate(${angle} 32 32)`}>
+							<path d="M32 32V5" />
+							<path d="M32 14l-6-6M32 14l6-6M32 22l-5-4M32 22l5-4" />
+						</g>
+					))
+				}
+			</g>
+			<circle cx="32" cy="32" r="4" class="winter-sigil-heart" />
+		</svg>
+
+		<div class="winter-valley" aria-hidden="true">
+			<svg viewBox={HILLS_VIEWBOX} preserveAspectRatio="xMidYMax meet" focusable="false">
+				<defs>
+					<linearGradient id="winter-valley-fade" x1="0" y1="0" x2="0" y2="1">
+						<stop offset="0.76" stop-color="#fff" />
+						<stop offset="0.97" stop-color="#fff" stop-opacity="0" />
+					</linearGradient>
+					<!-- An SVG mask, unlike a CSS one, reaches the hills drawn past the edges of the box. -->
+					<mask id="winter-valley-mask" maskUnits="userSpaceOnUse" x="-900" y="0" width="3240" height="420">
+						<rect x="-900" y="0" width="3240" height="420" fill="url(#winter-valley-fade)" />
+					</mask>
+				</defs>
+				<g mask="url(#winter-valley-mask)">
+				<path d={BACK_HILL} class="winter-hill-back" />
+				{PINES.map((pine) => (
+					<g>
+						<path d={pinePath(pine)} class="winter-pine" />
+						<path d={pineSnowPath(pine)} class="winter-pine-snow" />
+					</g>
+				))}
+				<path d={FRONT_HILL} class="winter-hill-front" />
+				</g>
+			</svg>
+		</div>
+		<div class="winter-haze winter-haze-back" aria-hidden="true"></div>
+		<div class="winter-lockup">
+			<h1 id="winter-title" class="winter-title">
+				<span class="winter-brand">Evolution YGO</span>
+				<span class="winter-season">Season {season}</span>
+			</h1>
+			<div class="winter-haze winter-haze-front" aria-hidden="true"></div>
+		</div>
+	</div>
+	<div class="winter-haze winter-haze-trail" aria-hidden="true"></div>
+
+	<div class="winter-body">
+		<p class="winter-lede">
+			Season {season} is snowed in. Until {windowEnd} the duels go on by the fire.
+		</p>
+
+		<div class="winter-nights">
+			<ol aria-label="Nights until Christmas" data-nights>
+				{
+					nights.map((night, index) => (
+						<li
+							data-month={night.month}
+							data-day={night.day}
+							data-state={nightState(index)}
+							data-christmas={index === lastNight ? '' : undefined}
+							aria-current={index === tonight ? 'date' : undefined}
+						>
+							<span class="sr-only">
+								{formatMonthDay(night)}
+								{index === lastNight ? ', Christmas' : ''}
+							</span>
+							<span class="winter-night-mark" aria-hidden="true" />
+							{index === lastNight && (
+								<span class="winter-night-label" aria-hidden="true">
+									25
+								</span>
+							)}
+						</li>
+					))
+				}
+			</ol>
+			<p class="winter-nights-caption" data-nights-caption data-all-nights={allNightsCaption} aria-live="polite">{nightsCaption(tonight)}</p>
+		</div>
+
+		<div class="winter-actions">
+			<a class="btn btn-primary btn-lg" href="https://evoduel.com" data-umami-event="christmas-click-play">
+				Duel by the fire
+			</a>
+			<a class="btn btn-outline btn-lg" href="#section-ranking" data-umami-event="christmas-click-ranking">
+				See the rankings
+			</a>
+		</div>
+	</div>
+</section>
+
+<script is:inline>
+	(() => {
+		const hero = document.querySelector('.winter');
+		if (!hero || !('IntersectionObserver' in window)) return;
+		const observer = new IntersectionObserver(([entry]) => hero.classList.toggle('is-offscreen', !entry.isIntersecting));
+		observer.observe(hero);
+		document.addEventListener('astro:before-swap', () => observer.disconnect(), { once: true });
+	})();
+
+	(() => {
+		const list = document.querySelector('.winter [data-nights]');
+		const caption = document.querySelector('.winter [data-nights-caption]');
+		if (!list || !caption) return;
+		const today = new Date();
+		const items = [...list.children];
+		const tonight = items.findIndex(
+			(item) => Number(item.dataset.month) === today.getMonth() + 1 && Number(item.dataset.day) === today.getDate()
+		);
+		items.forEach((item, index) => {
+			item.dataset.state = tonight < 0 || index > tonight ? 'ahead' : index === tonight ? 'tonight' : 'past';
+			if (index === tonight) item.setAttribute('aria-current', 'date');
+			else item.removeAttribute('aria-current');
+		});
+		caption.textContent = tonight >= 0 ? `Night ${tonight + 1} of ${items.length}` : caption.dataset.allNights;
+	})();
+</script>
+
+<style>
+	.winter {
+		--night: #070d1a;
+		--haze-deep: #2c4468;
+		--haze-pale: #cfe0f5;
+		--warm: var(--color-primary, #ffcf6b);
+		--holly: var(--color-secondary, #e2384d);
+		--ice: var(--color-accent, #9fd8ff);
+		position: relative;
+		isolation: isolate;
+		overflow: hidden;
+		margin-top: -1px;
+		padding-bottom: clamp(2.5rem, 6vw, 4.5rem);
+		background: linear-gradient(180deg, var(--night) 0%, #0c1628 55%, var(--color-base-100, #0b1424) 100%);
+		color: var(--color-base-content, #eef4ff);
+		text-align: center;
+	}
+
+	.winter-lights {
+		position: absolute;
+		top: 0;
+		left: 50%;
+		z-index: 2;
+		width: max(100%, 720px);
+		height: auto;
+		transform: translateX(-50%);
+		pointer-events: none;
+	}
+
+	.winter-wire {
+		fill: none;
+		stroke: #0f1a2c;
+		stroke-width: 2;
+	}
+
+	.winter-bulb-cap {
+		fill: #3a4a63;
+	}
+
+	.winter-glow-red,
+	.winter-bulb-red {
+		stop-color: #ff4d5e;
+		fill: #ff4d5e;
+	}
+
+	.winter-glow-gold,
+	.winter-bulb-gold {
+		stop-color: #ffcf6b;
+		fill: #ffcf6b;
+	}
+
+	.winter-glow-green,
+	.winter-bulb-green {
+		stop-color: #5fd38a;
+		fill: #5fd38a;
+	}
+
+	.winter-glow-blue,
+	.winter-bulb-blue {
+		stop-color: #6fb8ff;
+		fill: #6fb8ff;
+	}
+
+	.winter-bulb-glass,
+	.winter-bulb-glow {
+		will-change: opacity;
+	}
+
+	/* Flakes stay above the lede so they never cross text the visitor is reading. */
+	.winter-snow {
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+		overflow: hidden;
+		container-type: size;
+		pointer-events: none;
+	}
+
+	.winter-flake {
+		position: absolute;
+		top: -1rem;
+		left: var(--left);
+		width: var(--size);
+		height: var(--size);
+		border-radius: 50%;
+		background: #f4f8ff;
+		opacity: 0;
+		will-change: transform;
+	}
+
+	.winter-stage {
+		position: relative;
+		padding: clamp(2.5rem, 7vh, 4.5rem) 0 0;
+	}
+
+	.winter-valley {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: 50%;
+		z-index: 0;
+		width: max(100%, 600px);
+		transform: translateX(-50%);
+		pointer-events: none;
+	}
+
+	.winter-valley svg {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		overflow: visible;
+	}
+
+	/* Cold moonlight over the valley, so the pines read as silhouettes against it. */
+	.winter-valley::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(
+			to top,
+			transparent 2%,
+			rgb(60 90 140 / 0.42) 22%,
+			rgb(44 68 104 / 0.18) 48%,
+			transparent 66%
+		);
+	}
+
+	.winter-hill-back {
+		fill: #1d2f4d;
+	}
+
+	.winter-hill-front {
+		fill: #2a4166;
+	}
+
+	.winter-pine {
+		fill: #0b1526;
+	}
+
+	.winter-pine-snow {
+		fill: none;
+		stroke: #b9cce6;
+		stroke-opacity: 0.55;
+		stroke-width: 3;
+		stroke-linecap: round;
+	}
+
+	.winter.is-offscreen :is(.winter-haze, .winter-flake, .winter-bulb-glass, .winter-bulb-glow) {
+		animation-play-state: paused;
+	}
+
+	.winter-sigil {
+		position: relative;
+		z-index: 1;
+		display: block;
+		width: clamp(2.75rem, 4.5vw, 3.75rem);
+		margin: 1.875rem auto 0.75rem;
+		color: var(--ice);
+	}
+
+	.winter-sigil-heart {
+		fill: var(--warm);
+	}
+
+	.winter-lockup {
+		position: relative;
+	}
+
+	.winter-title {
+		position: relative;
+		z-index: 1;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		margin: 0;
+		line-height: 1;
+	}
+
+	.winter-brand {
+		font-family: 'Grenze', 'Plus Jakarta Sans Variable', serif;
+		font-size: clamp(1.6rem, 3.2vw, 2.6rem);
+		font-weight: 700;
+		line-height: 1;
+		color: var(--ice);
+	}
+
+	.winter-season {
+		font-family: 'Grenze', 'Plus Jakarta Sans Variable', serif;
+		font-weight: 700;
+		font-size: clamp(3.6rem, 13.5vw, 12.5rem);
+		line-height: 0.82;
+		letter-spacing: -0.01em;
+		text-transform: uppercase;
+		margin-top: 0.08em;
+		white-space: nowrap;
+		mask-image: linear-gradient(to bottom, #000 38%, rgb(0 0 0 / 0.55) 68%, rgb(0 0 0 / 0.12) 100%);
+	}
+
+	/* Snow haze: the Halloween fog masks, tinted cold. */
+	.winter-haze {
+		position: absolute;
+		left: 0;
+		width: 200%;
+		pointer-events: none;
+		mask-image: url('/halloween/fog-back.webp');
+		mask-repeat: repeat-x;
+		mask-size: 50% 100%;
+		mask-position: left bottom;
+		will-change: transform;
+	}
+
+	.winter-haze-back {
+		z-index: 0;
+		top: 8%;
+		height: 85%;
+		background: var(--haze-deep);
+		opacity: 0.7;
+		animation: winter-drift 160s linear infinite;
+	}
+
+	.winter-haze-front {
+		z-index: 2;
+		top: 38%;
+		height: 95%;
+		mask-image: url('/halloween/fog-front.webp');
+		background: var(--haze-pale);
+		opacity: 0.55;
+		animation: winter-drift 95s linear infinite reverse;
+	}
+
+	.winter-haze-trail {
+		z-index: 0;
+		bottom: 0;
+		height: 42%;
+		mask-image: url('/halloween/fog-back.webp'), linear-gradient(#000 55%, transparent);
+		mask-repeat: repeat-x, no-repeat;
+		mask-size: 50% 100%, 100% 100%;
+		mask-composite: intersect;
+		background: var(--haze-deep);
+		opacity: 0.5;
+		animation: winter-drift 125s linear infinite;
+	}
+
+	.winter-body {
+		position: relative;
+		z-index: 3;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 1.75rem;
+		padding: 0 1rem;
+		margin-top: clamp(2.5rem, 5vw, 4rem);
+	}
+
+	.winter-lede {
+		max-width: 38ch;
+		margin: 0;
+		font-size: clamp(1.05rem, 1.6vw, 1.25rem);
+		line-height: 1.55;
+		color: rgb(238 244 255 / 0.84);
+		text-wrap: pretty;
+	}
+
+	.winter-nights ol {
+		display: flex;
+		align-items: flex-end;
+		justify-content: center;
+		gap: clamp(0.3rem, 1vw, 0.6rem);
+		height: 2.75rem;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.winter-nights li {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	.winter-night-mark {
+		display: block;
+		width: 0.3rem;
+		height: 1.1rem;
+		border-radius: 999px;
+		background: #3d5478;
+	}
+
+	.winter-nights li[data-state='past'] .winter-night-mark {
+		background: #9fb6d8;
+	}
+
+	.winter-nights li[data-christmas] .winter-night-mark {
+		height: 1.75rem;
+		background: transparent;
+		box-shadow: inset 0 0 0 2px var(--holly);
+	}
+
+	.winter-nights li[data-state='tonight'] .winter-night-mark {
+		width: 0.45rem;
+		height: 2.25rem;
+		background: var(--warm);
+		box-shadow: none;
+	}
+
+	.winter-night-label {
+		position: absolute;
+		top: 100%;
+		margin-top: 0.3rem;
+		font-size: 0.85rem;
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
+		color: var(--holly);
+	}
+
+	.winter-nights-caption {
+		margin: 1.4rem 0 0;
+		font-size: 0.85rem;
+		font-weight: 600;
+		letter-spacing: 0.04em;
+		color: var(--ice);
+		font-variant-numeric: tabular-nums;
+	}
+
+	.winter-actions {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 0.75rem;
+	}
+
+	.winter-actions .btn-outline {
+		border-color: rgb(238 244 255 / 0.35);
+		color: var(--color-base-content, #eef4ff);
+	}
+
+	.winter-actions .btn-outline:hover {
+		border-color: var(--color-base-content, #eef4ff);
+		background: rgb(238 244 255 / 0.08);
+	}
+
+	@keyframes winter-drift {
+		from {
+			transform: translateX(0);
+		}
+		to {
+			transform: translateX(-50%);
+		}
+	}
+
+	@keyframes winter-twinkle {
+		0%,
+		100% {
+			opacity: 1;
+		}
+		50% {
+			opacity: 0.35;
+		}
+	}
+
+	@keyframes winter-fall {
+		0% {
+			opacity: 0;
+			transform: translate3d(0, 0, 0);
+		}
+		10%,
+		85% {
+			opacity: 0.85;
+		}
+		50% {
+			transform: translate3d(var(--drift), calc(50cqh + 0.5rem), 0);
+		}
+		100% {
+			opacity: 0;
+			transform: translate3d(0, calc(100cqh + 1rem), 0);
+		}
+	}
+
+	@keyframes winter-surface {
+		from {
+			transform: translateY(0.18em);
+			filter: blur(10px);
+			opacity: 0.35;
+		}
+	}
+
+	@media (prefers-reduced-motion: no-preference) {
+		.winter-season {
+			animation: winter-surface 1.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+		}
+
+		.winter-bulb :is(.winter-bulb-glass, .winter-bulb-glow) {
+			animation: winter-twinkle 2.6s ease-in-out infinite;
+		}
+
+		.winter-bulb[data-group='1'] :is(.winter-bulb-glass, .winter-bulb-glow) {
+			animation-delay: -1.3s;
+		}
+
+		.winter-flake {
+			animation: winter-fall var(--duration) var(--delay) linear infinite;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.winter-haze {
+			animation: none;
+		}
+
+		.winter-snow {
+			display: none;
+		}
+	}
+
+	@media (max-width: 640px) {
+		.winter-haze {
+			mask-size: 100% 100%;
+		}
+
+		.winter-haze-trail {
+			mask-size: 100% 100%, 100% 100%;
+		}
+
+		.winter-haze-front {
+			top: 30%;
+			height: 110%;
+		}
+
+		.winter-nights ol {
+			gap: 0.28rem;
+		}
+
+		.winter-valley::before {
+			background: linear-gradient(
+				to top,
+				transparent 2%,
+				rgb(60 90 140 / 0.42) 14%,
+				rgb(44 68 104 / 0.18) 32%,
+				transparent 46%
+			);
+		}
+	}
+</style>

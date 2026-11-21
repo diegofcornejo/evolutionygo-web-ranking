@@ -1,8 +1,12 @@
 import { useState, useEffect } from 'react';
-import DuelistCard from '@components/Cards/DuelistCard';
+import DuelistTradingCard from '@components/Cards/DuelistTradingCard';
+import PodiumDarkness, { PodiumGlow } from '@components/PodiumDarkness';
+import TierEmblem from '@components/TierEmblem';
 import Rating from '@components/Rating';
 import type { Duelist } from '@types';
 import type { BanListSelectorOption } from '@utils/banListSelector';
+import { formatWinRate, winRateStars } from '@utils/winRate';
+import type { WeeklyDuelist } from '@utils/weeklyDuelist';
 import { banlists } from '@stores/banlistsStore';
 import { getSession } from '@stores/sessionStore';
 import {
@@ -14,15 +18,37 @@ import {
   isBanListSectionList,
 } from '@utils/banListSelector';
 
-type BorderColor = 'gold' | 'silver' | 'bronze';
-
 type SortBy = 'points' | 'rating';
 
-const getBorderColor = (index: number): BorderColor => {
-  if (index === 0) return 'gold';
-  if (index === 1) return 'silver';
-  return 'bronze';
-};
+// Global has no Elo ladder: the API sends rating null for it.
+const GLOBAL_BAN_LIST = 'Global';
+
+// Native selects (so phones open their own picker), styled as pills to match the rest of the home.
+const PILL_SELECT =
+  'select h-10 w-auto cursor-pointer rounded-full border-white/20 bg-white/10 pl-4 pr-9 text-sm font-bold text-white focus:outline-primary [&::picker(select)]:border-white/15 [&::picker(select)]:bg-base-300';
+
+// Global has no ranks and no Elo: the columns stay, with a dash.
+function NotTracked() {
+  return (
+    <span className='text-gray-400'>
+      <span aria-hidden='true'>—</span>
+      <span className='sr-only'>Not tracked in Global</span>
+    </span>
+  );
+}
+
+const SORT_OPTIONS: { value: SortBy; label: string }[] = [
+  { value: 'points', label: 'Points' },
+  { value: 'rating', label: 'Elo' },
+];
+
+// DOM order is 1, 2, 3 (reading order). Mobile: #1 across the top, #2 and #3 below.
+// Desktop: explicit columns, so a lone #1 still sits in the middle: #2 left, #1 center and raised, #3 right.
+const PODIUM_SLOT = [
+  'col-span-2 mx-auto w-[58%] md:col-span-1 md:col-start-2 md:row-start-1 md:w-full md:-translate-y-8',
+  'w-full md:col-start-1 md:row-start-1 md:mx-auto md:w-[86%]',
+  'w-full md:col-start-3 md:row-start-1 md:mx-auto md:w-[86%]',
+];
 
 const buildUserStatsUrl = (apiUrl: string, userId: string, season: string, banList: string): string => {
   const baseUrl = `${apiUrl}/users/${userId}/stats?season=${season}`;
@@ -32,16 +58,22 @@ const buildUserStatsUrl = (apiUrl: string, userId: string, season: string, banLi
   return `${baseUrl}&banListName=${banList}`;
 };
 
-export default function Ranking() {
+// The duelist of the week is fetched on the server (index.astro) so it is there from the first render.
+export default function Ranking({ weekly = null }: Readonly<{ weekly?: WeeklyDuelist | null }>) {
   const [duelists, setDuelists] = useState<Duelist[]>([]);
   const [topDuelists, setTopDuelists] = useState<Duelist[]>([]);
 	const [season, setSeason] = useState<string>(import.meta.env.PUBLIC_DEFAULT_SEASON);
 	const [banList, setBanList] = useState<string>(import.meta.env.PUBLIC_DEFAULT_BAN_LIST);
 	const [banListOptions, setBanListOptions] = useState<BanListSelectorOption[]>([]);
+	const isGlobal = banList === GLOBAL_BAN_LIST;
+	// With no podium (empty ladder) the weekly card is centered instead of sitting in the fifth column.
+	const weeklyBeside = !!weekly && topDuelists.length > 0;
 	const [sortBy, setSortBy] = useState<SortBy>('points');
 	const [currentUser, setCurrentUser] = useState<{ id: string; username: string } | null>(null);
 	const [currentUserStats, setCurrentUserStats] = useState<Duelist | null>(null);
 	const API_URL = import.meta.env.PUBLIC_API_URL;
+	// Cards wait for the first leaderboard response so the podium row never reflows when it lands.
+	const [leaderboardLoaded, setLeaderboardLoaded] = useState(false);
 
 	
 	useEffect(() => {
@@ -142,13 +174,15 @@ export default function Ranking() {
 		setSeason(event.target.value);
 	};
 
-	const handleBanListChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-		setBanList(event.target.value);
+	const selectBanList = (nextBanList: string) => {
+		setBanList(nextBanList);
+		if (nextBanList === GLOBAL_BAN_LIST) setSortBy('points');
 	};
 
-	const handleSortByChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-		setSortBy(event.target.value as SortBy);
+	const handleBanListChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+		selectBanList(event.target.value);
 	};
+
 
   useEffect(() => {
     const fetchDuelists = async () => {
@@ -156,8 +190,9 @@ export default function Ranking() {
         `${API_URL}/stats/?page=1&limit=20&banListName=${banList}&season=${season}&sortBy=${sortBy}`
       );
       const data = await response.json();
-      setTopDuelists(data.slice(0, 4));
-      setDuelists(data.slice(4));
+      setTopDuelists(data.slice(0, 3));
+      setDuelists(data.slice(3));
+      setLeaderboardLoaded(true);
     };
 
     fetchDuelists();
@@ -167,41 +202,53 @@ export default function Ranking() {
 		getBanListOptions();
 	}, [season]);
 
-  const getRating = (winRate: number) => 1 + (winRate / 100) * 4;
-
 	const selectedFormat = findBanListSelectorOption(banListOptions, banList);
 	const banListChips = buildBanListChips(selectedFormat);
 
 	const title = 'Top Players';
-  const description = 'Explore the top players in our community. Discover who the standout competitors are in our tournaments and events. Get to know their achievements, strategies, and stay updated with the rankings.';
 
   return (
     <div className='mx-4' id='section-ranking'>
-      <div className='flex flex-col gap-8 text-center place-items-center'>
-        <h1 className='text-3xl md:text-5xl md:leading-[3.5rem] font-bold pt-6'>{title}</h1>
-        <h2 className='text-lg text-gray-400 leading-8 max-w-4xl'>{description}</h2>
+      <div className='relative pb-16 md:pb-20'>
+      <PodiumDarkness />
+      <div className='relative z-10 flex flex-col items-center gap-1 pt-12 text-center md:pt-16'>
+        <h2 className='text-3xl font-bold md:text-5xl md:leading-[3.5rem]'>{title}</h2>
+        <p className='text-sm font-bold uppercase tracking-[0.18em] text-indigo-300'>Season {season} · {banList}</p>
       </div>
-      <div className="flex flex-col md:flex-row justify-center gap-4 pt-4">
-        <select className="select select-secondary w-full max-w-xs" value={season} onChange={handleSeasonChange} aria-label="Filter by season">
+      <div className='relative z-10 flex flex-wrap items-center justify-center gap-2 pt-6'>
+        <select className={PILL_SELECT} value={season} onChange={handleSeasonChange} aria-label="Filter by season">
 				{Array.from({ length: Number.parseInt(import.meta.env.PUBLIC_DEFAULT_SEASON) }, (_, index) => (
 					<option key={index} value={index + 1}>
 						{`Season ${index + 1}`}
 					</option>
 				)).reverse()}
         </select>
-        <select className="select select-secondary w-full max-w-xs" value={selectedFormat ? selectedFormat.value : banList} onChange={handleBanListChange} aria-label="Filter by banlist">
+        <select className={PILL_SELECT} value={selectedFormat ? selectedFormat.value : banList} onChange={handleBanListChange} aria-label="Filter by banlist">
           {banListOptions.map((option: BanListSelectorOption) => (
             <option key={option.value} value={option.value}>{option.value}</option>
           ))}
         </select>
-        <select className="select select-secondary w-full max-w-xs" value={sortBy} onChange={handleSortByChange} aria-label="Sort by">
-          <option value="points">Sort by Points</option>
-          <option value="rating">Sort by Elo</option>
-        </select>
+        <div role='group' aria-label='Sort by' className='flex h-10 items-center rounded-full border border-white/20 bg-white/10 p-1'>
+          {SORT_OPTIONS.map((option) => (
+            <button
+              key={option.value}
+              type='button'
+              aria-pressed={sortBy === option.value}
+              // Global has no Elo ladder, so Elo stays visible but cannot be picked there.
+              disabled={option.value === 'rating' && isGlobal}
+              onClick={() => setSortBy(option.value)}
+              className={`h-8 rounded-full px-4 text-sm font-bold transition-colors enabled:cursor-pointer disabled:cursor-not-allowed disabled:opacity-40 ${
+                sortBy === option.value ? 'bg-primary text-primary-content' : 'text-white/80 enabled:hover:text-white'
+              }`}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
       </div>
       {banListChips.length > 0 && selectedFormat ? (
         <div
-          className='flex flex-wrap justify-center gap-2 pt-4'
+          className='relative z-10 flex flex-wrap justify-center gap-2 pt-4'
           role='group'
           aria-label={`Ban lists in ${selectedFormat.value}`}
         >
@@ -212,33 +259,81 @@ export default function Ranking() {
               className={`btn btn-xs ${chip === banList ? 'btn-secondary btn-active' : 'btn-outline'}`}
               aria-pressed={chip === banList}
               aria-label={index === 0 ? `All ${chip}` : undefined}
-              onClick={() => setBanList(chip)}
+              onClick={() => selectBanList(chip)}
             >
               {index === 0 ? 'All' : chip}
             </button>
           ))}
         </div>
       ) : null}
+      {leaderboardLoaded && (
+      <div className='relative isolate -mx-4 overflow-x-clip px-4'>
       <ul
-        className='grid grid-cols-1 md:grid-cols-4 gap-6 mt-8 p-0 place-items-stretch'
+        aria-label='Top three duelists'
+        className={`relative mx-auto mt-16 grid max-w-4xl md:mt-24 grid-cols-2 items-end gap-x-4 gap-y-8 p-0 sm:gap-x-6 md:grid-cols-3 md:gap-x-8 ${
+          weekly ? 'lg:max-w-6xl' : ''
+        } ${weeklyBeside ? 'lg:grid-cols-[1fr_1.15fr_1fr_auto_1fr]' : ''}`}
       >
         {topDuelists.map((duelist: Duelist, index: number) => (
-          <DuelistCard 
-            key={duelist.userId} 
-            {...duelist} 
-            username={getDisplayName(duelist)}
-            borderColor={getBorderColor(index)} 
-            banListName={banList} 
-            season={season} 
-          />
+          <li key={duelist.userId} className={`relative ${PODIUM_SLOT[index]}`}>
+            {index === 0 && <PodiumGlow />}
+            <DuelistTradingCard
+              {...duelist}
+              username={getDisplayName(duelist)}
+              place={(index + 1) as 1 | 2 | 3}
+              featured={index === 0}
+              showElo={!isGlobal}
+              banListName={banList}
+              season={season}
+            />
+          </li>
         ))}
+        {weekly && (
+          <>
+            {weeklyBeside && (
+              <li
+                aria-hidden='true'
+                data-podium-divider
+                className='hidden w-px self-stretch bg-gradient-to-b from-transparent via-base-content/20 to-transparent lg:col-start-4 lg:row-start-1 lg:block'
+              />
+            )}
+            <li
+              className={`col-span-2 mx-auto w-[48%] md:col-span-3 md:w-[30%] ${
+                weeklyBeside ? 'lg:col-span-1 lg:col-start-5 lg:row-start-1 lg:w-[86%]' : 'lg:w-[22%]'
+              }`}
+            >
+              <DuelistTradingCard
+                {...weekly.duelist}
+                place={1}
+                showElo={false}
+                banListName='Global'
+                season={import.meta.env.PUBLIC_DEFAULT_SEASON}
+                weekly={{ from: weekly.from, to: weekly.to }}
+              />
+            </li>
+          </>
+        )}
       </ul>
-      <div className='overflow-x-auto mt-8'>
+      </div>
+      )}
+      </div>
+      {getDisplayDuelists().length > 0 && (
+      <div className='mt-8'>
+        {isGlobal ? (
+          <p role='note' className='mb-3 flex items-center gap-2 text-sm text-base-content/70'>
+            <svg viewBox='0 0 24 24' aria-hidden='true' className='h-4 w-4 shrink-0 fill-current text-info'>
+              <path d='M11 7h2v2h-2zm0 4h2v6h-2zm1-9a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16z' />
+            </svg>
+            Rank and Elo are tracked per ban list. Select one to see them.
+          </p>
+        ) : null}
+      <div className='overflow-x-auto'>
         <table className='table table-zebra bg-base-300'>
           <thead>
             <tr>
               <th scope="col" className='max-w-[75px] text-center'>Position</th>
               <th scope="col" className='min-w-[200px]'>Username</th>
+              <th scope="col">Rank</th>
               <th scope="col">Points</th>
               <th scope="col">Elo</th>
               <th scope="col">Games</th>
@@ -249,10 +344,10 @@ export default function Ranking() {
           </thead>
           <tbody>
             {getDisplayDuelists().map((duelist: Duelist) => (
-              <tr key={duelist.userId}>
+              <tr key={duelist.userId} className='relative cursor-pointer hover:bg-secondary transition-colors'>
                 <th scope="row" className='max-w-[75px] text-center'>{duelist.position}</th>
-                <td className='min-w-[200px] hover:bg-secondary'>
-                  <a href={`/duelists/${duelist.userId}/${banList}?username=${duelist.username}&season=${season}`}>
+                <td className='min-w-[200px]'>
+                  <a className='after:absolute after:inset-0' href={`/duelists/${duelist.userId}/${encodeURIComponent(banList)}?username=${encodeURIComponent(duelist.username)}&season=${season}`}>
                     <div className='flex items-center gap-3'>
                       <img
                         src={`https://ui-avatars.com/api/?name=${duelist.username}&background=random&size=128`}
@@ -263,20 +358,40 @@ export default function Ranking() {
                       />
                       <div>
                         <div className='font-bold'>{getDisplayName(duelist)}</div>
-                        <Rating rating={getRating(duelist.winRate)} size='sm'/>
+                        <Rating rating={winRateStars(duelist.winRate)} size='sm'/>
                       </div>
                     </div>
                   </a>
                 </td>
+                <td>
+                  {isGlobal ? (
+                    <NotTracked />
+                  ) : duelist.tier ? (
+                    <span className='flex items-center gap-2 font-bold'>
+                      <TierEmblem tier={duelist.tier.id} className='h-7 w-7' />
+                      {duelist.tier.name}
+                    </span>
+                  ) : (
+                    <span className='text-gray-400'>
+                      <span aria-hidden='true'>—</span>
+                      <span className='sr-only'>No rank yet</span>
+                    </span>
+                  )}
+                </td>
                 <td className='font-bold text-lg text-orange-300'>{duelist.points}</td>
                 <td>
-                  {duelist.rating == null ? (
-                    <span className='text-gray-400' aria-label='No Elo on this ladder'>—</span>
+                  {isGlobal ? (
+                    <NotTracked />
+                  ) : duelist.rating == null ? (
+                    <span className='text-gray-400'>
+                      <span aria-hidden='true'>—</span>
+                      <span className='sr-only'>No Elo on this ladder</span>
+                    </span>
                   ) : (
                     <span className='flex items-center gap-2'>
                       <span className='font-bold text-lg text-info'>{Math.round(duelist.rating)}</span>
                       {duelist.provisional ? (
-                        <span className='badge badge-sm badge-warning' title='Provisional Elo — not enough duels yet'>?</span>
+                        <span className='badge badge-sm badge-warning relative z-10' title='Provisional Elo — not enough duels yet'>?</span>
                       ) : null}
                     </span>
                   )}
@@ -284,12 +399,14 @@ export default function Ranking() {
 								<td>{duelist.wins + duelist.losses}</td>
                 <td className='text-success'>{duelist.wins}</td>
                 <td className='text-error'>{duelist.losses}</td>
-                <td>{duelist.winRate.toFixed(2)}%</td>
+                <td>{formatWinRate(duelist.winRate)}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+      </div>
+      )}
     </div>
   );
 }

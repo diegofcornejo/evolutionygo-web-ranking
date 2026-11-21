@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useHydrated } from '@utils/useHydrated';
 import type { Match } from '@types';
 
 interface MatchHistoryProps {
@@ -40,6 +41,10 @@ export default function MatchHistory({ matches }: Readonly<MatchHistoryProps>) {
 		return { mode, bestOf: `Bo${match.bestOf}` };
 	};
 
+	// The server renders in UTC and so does hydration; the viewer's own time zone comes after mounting.
+	const hydrated = useHydrated();
+	const timeZone = hydrated ? undefined : 'UTC';
+
 	const localDateString = (date: string) => {
 		const utcDate = new Date(date);
 		return {
@@ -47,11 +52,13 @@ export default function MatchHistory({ matches }: Readonly<MatchHistoryProps>) {
 				month: 'short',
 				day: 'numeric',
 				year: 'numeric',
+				timeZone,
 			}),
 			time: utcDate.toLocaleTimeString('en-US', {
 				hour: '2-digit',
 				minute: '2-digit',
 				hour12: true,
+				timeZone,
 			}),
 		};
 	};

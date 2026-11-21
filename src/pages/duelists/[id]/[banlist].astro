@@ -4,24 +4,37 @@ import ProfileHeader from '@components/Profile/ProfileHeader';
 import StatsOverview from '@components/Profile/StatsOverview';
 import MatchHistory from '@components/Profile/MatchHistory';
 import AchievementShowcase from '@components/Profile/AchievementShowcase';
+import RankCard from '@components/Profile/RankCard';
 import SeasonSelector from '@components/Profile/SeasonSelector.astro';
-import type { Match } from '@types';
+import type { Achievement, AchievementCatalog, AchievementRecord, DuelistRating, Match } from '@types';
+import { formatWinRate } from '@utils/winRate';
+import { otherRanks, parseTierLadder, tierForBanList } from '@utils/tier';
 
 let { id, banlist = 'Global' } = Astro.params;
 const username = Astro.url.searchParams.get('username') || '';
 const season = Astro.url.searchParams.get('season') || import.meta.env.PUBLIC_DEFAULT_SEASON;
 const API_URL = import.meta.env.PUBLIC_API_URL;
 
-const safeBanlist = banlist ?? 'Global';
+// Astro decodes params with decodeURI, which leaves reserved characters (%2B, %26, %2F…) encoded.
+const decodeParam = (value: string) => {
+	try {
+		return decodeURIComponent(value);
+	} catch {
+		return value;
+	}
+};
+const safeBanlist = decodeParam(banlist ?? 'Global');
 let banlistName = safeBanlist;
 
 if (safeBanlist === 'Global') {
 	banlistName = '';
 }
 
+const banListQuery = banlistName ? `&banListName=${encodeURIComponent(banlistName)}` : '';
+
 let duelist;
 const duelistResponse = await fetch(
-	`${API_URL}/users/${id}/stats?season=${season}${banlistName ? `&banListName=${banlistName}` : ''}`,
+	`${API_URL}/users/${id}/stats?season=${season}${banListQuery}`,
 );
 if (!duelistResponse.ok) {
 	duelist = {
@@ -37,6 +50,35 @@ if (!duelistResponse.ok) {
 } else {
 	duelist = await duelistResponse.json();
 }
+
+const fetchJson = async <T,>(url: string): Promise<T | null> => {
+	try {
+		const response = await fetch(url);
+		if (!response.ok) return null;
+		return (await response.json()) as T;
+	} catch {
+		return null;
+	}
+};
+
+const [achievementCatalog, achievementRecord, ladderPayload] = await Promise.all([
+	fetchJson<AchievementCatalog>(`${API_URL}/achievements/`),
+	fetchJson<AchievementRecord>(`${API_URL}/users/${id}/achievements`),
+	// Global has no ranked ladder.
+	banlistName ? fetchJson<unknown>(`${API_URL}/ranked-tiers?banListName=${encodeURIComponent(banlistName)}`) : Promise.resolve(null),
+]);
+const tierLadder = parseTierLadder(ladderPayload);
+
+// The rank lives in ratings[], one entry per banlist and per group, not at the root of the stats.
+// ratings[] covers every banlist, so when this banlist has no stats the Global stats still carry them.
+let ratings: DuelistRating[] = Array.isArray(duelist.ratings) ? duelist.ratings : [];
+if (!duelistResponse.ok && banlistName) {
+	const globalStats = await fetchJson<{ ratings?: unknown }>(`${API_URL}/users/${id}/stats?season=${season}`);
+	if (Array.isArray(globalStats?.ratings)) ratings = globalStats.ratings as DuelistRating[];
+}
+const currentRating = banlistName ? tierForBanList(ratings, banlistName) : null;
+const otherRatings = otherRanks(ratings, currentRating);
+const achievements: Achievement[] = achievementRecord?.achievements ?? duelist.achievements ?? [];
 
 const createMockMatches = (name: string): Match[] => [
 	{
@@ -82,7 +124,7 @@ const createMockMatches = (name: string): Match[] => [
 
 let matchHistory: Match[] = [];
 const matchHistoryResponse = await fetch(
-	`${API_URL}/users/${id}/matches?page=1&limit=100&season=${season}${banlistName ? `&banListName=${banlistName}` : ''}`,
+	`${API_URL}/users/${id}/matches?page=1&limit=100&season=${season}${banListQuery}`,
 );
 	if (!matchHistoryResponse.ok) {
 		matchHistory = createMockMatches(duelist.username || username);
@@ -97,7 +139,7 @@ const matchHistoryResponse = await fetch(
 
 			while (shouldContinue) {
 				const pagedResponse = await fetch(
-					`${API_URL}/users/${id}/matches?page=${page}&limit=${matchesPerPage}&season=${season}${banlistName ? `&banListName=${banlistName}` : ''}`,
+					`${API_URL}/users/${id}/matches?page=${page}&limit=${matchesPerPage}&season=${season}${banListQuery}`,
 				);
 
 				if (!pagedResponse.ok) {
@@ -125,7 +167,7 @@ const seasonOptions = seasonNumbers.map((seasonNumber) => `${seasonNumber}`).rev
 const seasonStats = await Promise.all(
 	seasonNumbers.map(async (seasonNumber) => {
 		const statsResponse = await fetch(
-			`${API_URL}/users/${id}/stats?season=${seasonNumber}${banlistName ? `&banListName=${banlistName}` : ''}`,
+			`${API_URL}/users/${id}/stats?season=${seasonNumber}${banListQuery}`,
 		);
 
 		if (!statsResponse.ok) {
@@ -176,7 +218,7 @@ const seasonStats = await Promise.all(
 
 <Layout 
 	title={`Duelist ${duelist.username} Stats`}
-	description={`Check out ${duelist.username}'s stats, match history, and achievements in Evolution YGO Season ${season}. Wins: ${duelist.wins}, Losses: ${duelist.losses}, Win Rate: ${duelist.winRate}%.`}
+	description={`Check out ${duelist.username}'s stats, match history, and achievements in Evolution YGO Season ${season}. Wins: ${duelist.wins}, Losses: ${duelist.losses}, Win Rate: ${formatWinRate(duelist.winRate)}.`}
 	image={`https://ui-avatars.com/api/?name=${encodeURIComponent(duelist.username)}&background=random&size=512`}
 	type="profile"
 	keywords={[
@@ -225,6 +267,7 @@ const seasonStats = await Promise.all(
 
 		<div class="grid grid-cols-1 xl:grid-cols-[1.1fr_1.4fr] gap-6 items-start">
 		<ProfileHeader
+			userId={id ?? ''}
 			username={duelist.username}
 			points={duelist.points}
 			wins={duelist.wins}
@@ -245,8 +288,23 @@ const seasonStats = await Promise.all(
 					position={duelist.position}
 				/>
 
+				<RankCard
+					rating={currentRating}
+					others={otherRatings}
+					ladder={tierLadder}
+					season={season}
+					banListName={banlistName || 'Global'}
+					userId={id ?? ''}
+					username={duelist.username}
+				/>
+
 				<div>
-					<AchievementShowcase achievements={duelist.achievements} client:load />
+					<AchievementShowcase
+						achievements={achievements}
+						catalog={achievementCatalog?.items ?? []}
+						progress={achievementRecord?.progress ?? null}
+						client:load
+					/>
 				</div>
 			</div>
 		</div>

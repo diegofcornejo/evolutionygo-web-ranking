@@ -1,11 +1,13 @@
 import Rating from '@components/Rating';
+import { formatWinRate, winRateStars } from '@utils/winRate';
 
 interface ProfileHeaderProps {
+	userId?: string;
 	username: string;
 	points: number;
 	wins: number;
 	losses: number;
-	winRate: number;
+	winRate: number | null;
 	position: number;
 	season: string;
 	banlistName: string;
@@ -20,6 +22,7 @@ interface SeasonStat {
 }
 
 export default function ProfileHeader({
+	userId,
 	username,
 	points,
 	wins,
@@ -31,12 +34,12 @@ export default function ProfileHeader({
 	seasonStats,
 }: Readonly<ProfileHeaderProps>) {
 	const image = `https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&background=random&size=256`;
-	const rating = 1 + (winRate / 100) * 4;
+	const rating = winRateStars(winRate);
 	const totalGames = wins + losses;
 	const normalizedPosition = Number(position) || 0;
 	const chartWidth = 240;
 	const chartHeight = 28;
-	const orderedSeasons = [...(seasonStats ?? [])].sort((a, b) => b.season - a.season);
+	const orderedSeasons = [...(seasonStats ?? [])].sort((a, b) => a.season - b.season);
 	const hasChartData = orderedSeasons.length > 1;
 	const series = {
 		points: orderedSeasons.map((stat) => stat.points),
@@ -147,6 +150,7 @@ export default function ProfileHeader({
 							<img
 								src={image}
 								alt={username}
+								data-avatar-user={userId || undefined}
 								className="w-32 h-32 md:w-40 md:h-40 rounded-full object-cover ring-4 ring-base-100"
 								loading="lazy"
 								decoding="async"
@@ -182,7 +186,7 @@ export default function ProfileHeader({
 
 						<div className="flex items-center justify-center lg:justify-start gap-2 mb-4">
 							<Rating rating={rating} size="lg" />
-							<span className="text-sm text-base-content/60">({winRate.toFixed(1)}% win rate)</span>
+							<span className="text-sm text-base-content/60">({formatWinRate(winRate, 1)} win rate)</span>
 						</div>
 
 						{/* Quick Stats */}

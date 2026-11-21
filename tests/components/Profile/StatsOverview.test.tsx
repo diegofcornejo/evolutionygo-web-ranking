@@ -62,4 +62,12 @@ describe('StatsOverview', () => {
 		expect(getByText('Ranked Player')).toBeTruthy();
 		expect(getByText('#50')).toBeTruthy();
 	});
+
+	it('shows a dash when the API sends a null win rate', () => {
+		const { getByText } = render(
+			<StatsOverview wins={0} losses={0} winRate={null} points={0} position={5} />
+		);
+
+		expect(getByText('—')).toBeTruthy();
+	});
 });

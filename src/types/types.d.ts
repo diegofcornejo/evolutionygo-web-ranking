@@ -1,6 +1,6 @@
 export type { News } from './New';
 export type { Session } from './Session';
-export type { Duelist } from './Duelist';
+export type { Duelist, DuelistRating, DuelistTier, RankedTier, TierId, TierProgress } from './Duelist';
 export type { MenuItem } from './MenuItem';
 export type { Match } from './Match';
 export type { CrewMember } from './CrewMember';
@@ -8,6 +8,15 @@ export type { GameClient } from './GameClient';
 export type { Faq } from './Faq';
 export type { Feature } from './Feature';
 export type { User } from './User';
-export type { Achievement } from './Achievement';
+export type {
+	Achievement,
+	AchievementCatalog,
+	AchievementCatalogItem,
+	AchievementMetric,
+	AchievementProgress,
+	AchievementRecord,
+	AchievementRequirement,
+} from './Achievement';
 export type { Command } from './Command';
 export type { Room } from './Room';
+export type { WatchRoom, WatchRoomPlayer } from './WatchRoom';

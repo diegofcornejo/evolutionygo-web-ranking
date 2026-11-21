@@ -3,9 +3,251 @@
 @plugin "daisyui" {
     themes: 'night', 'dracula'
 }
+@plugin "daisyui/theme" {
+	name: 'shadowrealm';
+	color-scheme: dark;
+	--color-base-100: #120a1c;
+	--color-base-200: #170d24;
+	--color-base-300: #1d112e;
+	--color-base-content: #ece4ff;
+	--color-primary: #9dff6a;
+	--color-primary-content: #0b0612;
+	--color-secondary: #8a5cff;
+	--color-secondary-content: #0b0612;
+	--color-accent: #c9b2ff;
+	--color-accent-content: #0b0612;
+	--color-neutral: #271a3d;
+	--color-neutral-content: #ece4ff;
+	--color-info: #8fb8ff;
+	--color-info-content: #0b0612;
+	--color-success: #9dff6a;
+	--color-success-content: #0b0612;
+	--color-warning: #ffcf5c;
+	--color-warning-content: #0b0612;
+	--color-error: #ff6b8a;
+	--color-error-content: #0b0612;
+	--radius-selector: 1rem;
+	--radius-field: 0.5rem;
+	--radius-box: 1rem;
+	--size-selector: 0.25rem;
+	--size-field: 0.25rem;
+	--border: 1px;
+	--depth: 0;
+	--noise: 0;
+}
+@plugin "daisyui/theme" {
+	name: 'ofrenda';
+	color-scheme: dark;
+	--color-base-100: #150914;
+	--color-base-200: #1b0c1a;
+	--color-base-300: #241124;
+	--color-base-content: #fff0e6;
+	--color-primary: #ff9f1c;
+	--color-primary-content: #150914;
+	--color-secondary: #e4007c;
+	--color-secondary-content: #fff0e6;
+	--color-accent: #2ec4b6;
+	--color-accent-content: #150914;
+	--color-neutral: #33182f;
+	--color-neutral-content: #fff0e6;
+	--color-info: #8fb8ff;
+	--color-info-content: #150914;
+	--color-success: #9ccc3c;
+	--color-success-content: #150914;
+	--color-warning: #ffcf5c;
+	--color-warning-content: #150914;
+	--color-error: #ff6b8a;
+	--color-error-content: #150914;
+	--radius-selector: 1rem;
+	--radius-field: 0.5rem;
+	--radius-box: 1rem;
+	--size-selector: 0.25rem;
+	--size-field: 0.25rem;
+	--border: 1px;
+	--depth: 0;
+	--noise: 0;
+}
+@plugin "daisyui/theme" {
+	name: 'frost';
+	color-scheme: dark;
+	--color-base-100: #0b1424;
+	--color-base-200: #0f1a2e;
+	--color-base-300: #15223a;
+	--color-base-content: #eef4ff;
+	--color-primary: #ffcf6b;
+	--color-primary-content: #0b1424;
+	--color-secondary: #e2384d;
+	--color-secondary-content: #ffffff;
+	--color-accent: #9fd8ff;
+	--color-accent-content: #0b1424;
+	--color-neutral: #1c2b45;
+	--color-neutral-content: #eef4ff;
+	--color-info: #8fb8ff;
+	--color-info-content: #0b1424;
+	--color-success: #6fd08c;
+	--color-success-content: #0b1424;
+	--color-warning: #ffcf5c;
+	--color-warning-content: #0b1424;
+	--color-error: #ff6b8a;
+	--color-error-content: #0b1424;
+	--radius-selector: 1rem;
+	--radius-field: 0.5rem;
+	--radius-box: 1rem;
+	--size-selector: 0.25rem;
+	--size-field: 0.25rem;
+	--border: 1px;
+	--depth: 0;
+	--noise: 0;
+}
+@plugin "daisyui/theme" {
+	name: 'midnight';
+	color-scheme: dark;
+	--color-base-100: #07070f;
+	--color-base-200: #0c0c18;
+	--color-base-300: #131326;
+	--color-base-content: #f6f1e6;
+	--color-primary: #f5d27a;
+	--color-primary-content: #07070f;
+	--color-secondary: #c86bff;
+	--color-secondary-content: #07070f;
+	--color-accent: #5fe1ff;
+	--color-accent-content: #07070f;
+	--color-neutral: #1d1d33;
+	--color-neutral-content: #f6f1e6;
+	--color-info: #8fb8ff;
+	--color-info-content: #07070f;
+	--color-success: #7ee0a0;
+	--color-success-content: #07070f;
+	--color-warning: #ffcf5c;
+	--color-warning-content: #07070f;
+	--color-error: #ff6b8a;
+	--color-error-content: #07070f;
+	--radius-selector: 1rem;
+	--radius-field: 0.5rem;
+	--radius-box: 1rem;
+	--size-selector: 0.25rem;
+	--size-field: 0.25rem;
+	--border: 1px;
+	--depth: 0;
+	--noise: 0;
+}
 @theme {
 	--color-gold: #FFD700;
 	--color-silver: #C0C0C0;
 	--color-bronze: #CD7F32;
 	--color-transparent: transparent;
+	--animate-foil: foil-sweep 4.5s linear infinite;
+	--animate-fog-a: fog-a 8s ease-in-out infinite alternate;
+	--animate-fog-b: fog-b 10s ease-in-out infinite alternate;
+	--animate-fog-c: fog-c 12s ease-in-out infinite alternate;
+	--animate-mist: mist-drift 16s linear infinite alternate;
+	--animate-glow-breathe: glow-breathe 4s ease-in-out infinite;
+
+	@keyframes fog-a {
+		to {
+			transform: translate(32%, -8%);
+		}
+	}
+
+	@keyframes fog-b {
+		to {
+			transform: translate(-36%, 6%);
+		}
+	}
+
+	@keyframes fog-c {
+		to {
+			transform: translate(26%, 10%);
+		}
+	}
+
+	/* The mist is 150% wide and starts at -25%: a ±8% drift (±12% of the viewport) never shows its edges. */
+	@keyframes mist-drift {
+		from {
+			transform: translateX(8%);
+		}
+		to {
+			transform: translateX(-8%);
+		}
+	}
+
+	@keyframes glow-breathe {
+		50% {
+			opacity: 0.6;
+			transform: scale(1.06);
+		}
+	}
+
+	@keyframes foil-sweep {
+		from {
+			background-position: 150% 0;
+		}
+		to {
+			background-position: -50% 0;
+		}
+	}
+}
+
+html[data-edition='halloween'] {
+	--edition-scrollbar: #4a3470;
+	--edition-smoke: #3d2a63;
+}
+
+html[data-edition='muertos'] {
+	--edition-scrollbar: #6b3a52;
+	--edition-smoke: #5a2347;
+}
+
+html[data-edition='christmas'] {
+	--edition-scrollbar: #2f4566;
+	--edition-smoke: #2c4468;
+}
+
+html[data-edition='newyear'] {
+	--edition-scrollbar: #2b2b4a;
+	--edition-smoke: #23234a;
+}
+
+html[data-edition] {
+	background: var(--color-base-100);
+	accent-color: var(--color-primary);
+	caret-color: var(--color-primary);
+	scrollbar-color: var(--edition-scrollbar) var(--color-base-100);
+
+	::selection {
+		background: var(--color-primary);
+		color: var(--color-primary-content);
+	}
+
+	:focus-visible {
+		outline-color: var(--color-primary);
+	}
+
+	:is(.text-gradient, .bg-clip-text.text-transparent) {
+		background: none;
+		color: var(--color-base-content);
+		-webkit-text-fill-color: currentColor;
+	}
+}
+
+html[data-edition] .site-footer {
+	position: relative;
+	isolation: isolate;
+}
+
+html[data-edition] .site-footer::before {
+	content: '';
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 100%;
+	height: clamp(6rem, 14vw, 11rem);
+	background: var(--edition-smoke);
+	opacity: 0.5;
+	mask-image: url('/halloween/fog-back.webp'), linear-gradient(transparent, #000 70%);
+	mask-repeat: repeat-x, no-repeat;
+	mask-size: auto 190%, 100% 100%;
+	mask-position: left top, left top;
+	mask-composite: intersect;
+	pointer-events: none;
 }

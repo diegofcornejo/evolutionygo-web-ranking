@@ -8,11 +8,32 @@ import Download from '@sections/Download.astro';
 import Faqs from '@sections/Faqs.astro';
 import Crew from '@sections/Crew.astro';
 import { RoomsWebSocketListener } from '@components/RoomsWebSocketListener';
-import DuelistOfTheWeek from '@components/Cards/DuelistOfTheWeek.astro';
+import ShadowRealmHero from '@components/Halloween/ShadowRealmHero.astro';
+import OfrendaHero from '@components/DiaDeMuertos/OfrendaHero.astro';
+import WinterHero from '@components/Christmas/WinterHero.astro';
+import NewYearHero from '@components/NewYear/NewYearHero.astro';
+import EvoDuelHero from '@components/EvoDuel/EvoDuelHero.astro';
+import { EDITION_PARAM, getSeasonalEdition } from '@utils/seasonalEdition';
+import { parseWeeklyDuelist } from '@utils/weeklyDuelist';
+
+// Server-side, like the old strip, so the ranking has it from the first render and nothing reflows.
+const fetchWeeklyDuelist = async () => {
+	try {
+		const response = await fetch(`${import.meta.env.PUBLIC_API_URL}/stats/player-of-the-week`, { cache: 'no-store' });
+		if (!response.ok) return null;
+		return parseWeeklyDuelist(await response.json());
+	} catch (error) {
+		console.error('Error fetching the duelist of the week:', error);
+		return null;
+	}
+};
 
 const currentSeason = import.meta.env.PUBLIC_DEFAULT_SEASON;
+const weeklyDuelist = await fetchWeeklyDuelist();
+const edition = getSeasonalEdition(new Date(), Astro.url.searchParams.get(EDITION_PARAM));
+const EditionHero = edition && { halloween: ShadowRealmHero, muertos: OfrendaHero, christmas: WinterHero, newyear: NewYearHero }[edition];
 const title = `Evolution YGO Season ${currentSeason}`;
-const description = `Play Yu-Gi-Oh! online for free on Evolution YGO Season ${currentSeason}. Compatible with EDOPro, Koishi, and YGO Mobile. Join competitive rankings, participate in tournaments, and duel players worldwide!`;
+const description = `Play Yu-Gi-Oh! online for free on Evolution YGO Season ${currentSeason}. Compatible with EDOPro, Koishi, and YGO Mobile. Join competitive rankings, participate in tournaments, and duel players worldwide! Play instantly in your browser with EvoDuel.`;
 
 const keywords = [
 	'Yu-Gi-Oh online',
@@ -28,6 +49,7 @@ const keywords = [
 	'Yu-Gi-Oh tournaments',
 	`Season ${currentSeason}`,
 	'Evolution YGO',
+	'EvoDuel',
 	'Evolution Server',
 	'duel links alternative',
 	'master duel alternative'
@@ -40,19 +62,30 @@ const keywords = [
 	keywords={keywords}
 	image="/banners/banner1.webp"
 >
-	<!-- <LightsOut client:only='react' /> -->
 	<main class='w-full text-[white] text-xl leading-[1.6] mx-auto'>
-		<h1
-			class='text-4xl sm:text-5xl font-bold leading-none text-center mb-[1em] max-w-sm md:max-w-full pt-[1em]'
-		>
-			<!-- <p class='flex justify-center'><Eyes client:only='react' /></p> -->
-			<span class='text-gradient'> {title} </span> 
-		</h1>
-		<News client:only='react' />
 		<RoomsWebSocketListener client:only='react' />
-		<Live client:only='svelte' />
-		<DuelistOfTheWeek />
-		<Ranking client:load />
+		{
+			EditionHero ? (
+				<Fragment>
+					<EditionHero season={currentSeason} />
+					<Live client:only='svelte' />
+					<News client:only='react' />
+				</Fragment>
+			) : (
+				<div class='mx-4 mt-4 mb-10 grid gap-4 sm:mt-6 lg:grid-cols-[minmax(0,1.8fr)_minmax(0,1fr)]'>
+					<div class='lg:col-start-1 lg:row-start-1'>
+						<EvoDuelHero season={currentSeason} />
+					</div>
+					<div data-home-news class='order-last min-w-0 lg:relative lg:order-none lg:col-start-2 lg:row-start-1 lg:min-h-[24rem]'>
+						<News variant='compact' client:only='react' />
+					</div>
+					<div class='min-w-0 lg:col-span-2 lg:row-start-2'>
+						<Live client:only='svelte' />
+					</div>
+				</div>
+			)
+		}
+		<Ranking weekly={weeklyDuelist} client:load />
 		<Features />
 		<Download />
 		<Faqs />

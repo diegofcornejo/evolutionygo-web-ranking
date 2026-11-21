@@ -51,3 +51,12 @@ coverage/
 # agent teams / SDD registry
 .atl/
 .codegraph/
+
+# impeccable working files
+.impeccable/mocks/
+.impeccable/review/
+.impeccable/questions/
+.impeccable/build/
+
+# superpowers brainstorm mockups and plan workspaces
+.superpowers/

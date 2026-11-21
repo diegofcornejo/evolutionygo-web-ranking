@@ -4,6 +4,7 @@ import type { MenuItem } from '@types';
 import Modal from '@components/Modal.astro';
 import { SignInForm, SignUpForm } from '@components/Auth';
 import SettingsDialog from '@components/Settings/Modal.astro';
+import AvatarDialog from '@components/Avatar/Modal.astro';
 import AnnouncementsDropdown from './AnnouncementsDropdown.astro';
 import menuItems from './menuItems';
 
@@ -19,7 +20,8 @@ const getBadgeClass = (item: MenuItemWithBadge) => item.badgeClass ?? 'text-prim
 
 <script>
 	import { session, currentNavPath, setNavPath } from '@stores/sessionStore';
-	import { update, updateUser, setTheme, handleLogout, handleOpenSettings } from './helper';
+	import { avatars } from '@stores/avatarStore';
+	import { update, updateUser, updateOwnAvatars, setTheme, handleLogout, handleOpenSettings, handleOpenAvatar, closeNavGroups } from './helper';
 
 	const normalizePath = (href: string | null): { path: string; hash: string } | null => {
 		if (!href || href.startsWith('http')) return null;
@@ -30,10 +32,9 @@ const getBadgeClass = (item: MenuItemWithBadge) => item.badgeClass ?? 'text-prim
 		};
 	};
 
-	const applyActiveNav = (path: string) => {
+	const applyActiveNav = (path: string, currentHash = window.location.hash) => {
 		const nav = document.querySelector('nav.navbar');
 		if (!nav) return;
-		const currentHash = window.location.hash;
 
 		nav.querySelectorAll('[data-nav-link]').forEach((link) => {
 			const href = link.getAttribute('href');
@@ -71,19 +72,46 @@ const getBadgeClass = (item: MenuItemWithBadge) => item.badgeClass ?? 'text-prim
 	session.subscribe(() => {
 		update();
 		updateUser();
+		updateOwnAvatars();
+	});
+
+	avatars.listen(() => {
+		updateUser();
+		updateOwnAvatars();
 	});
 
 	document.addEventListener('astro:page-load', () => {
 		update();
 		updateUser();
+		updateOwnAvatars();
 		setTheme();
 		handleLogout();
 		handleOpenSettings();
+		handleOpenAvatar();
 		setNavPath(window.location.pathname);
 	});
 
+	// The path store only notifies when the path changes, so jumping between
+	// sections of the same page (same path, new hash) has to refresh directly.
+	const refreshActiveNav = () => applyActiveNav(window.location.pathname);
+
 	window.addEventListener('popstate', () => {
 		setNavPath(window.location.pathname);
+		refreshActiveNav();
+	});
+
+	window.addEventListener('hashchange', refreshActiveNav);
+
+	document.addEventListener('click', (event) => closeNavGroups(event.target));
+	document.addEventListener('keydown', (event) => {
+		if (event.key === 'Escape') closeNavGroups(null);
+	});
+
+	document.addEventListener('click', (event) => {
+		const link = (event.target as Element | null)?.closest?.('[data-nav-link]');
+		const linkData = normalizePath(link?.getAttribute('href') ?? null);
+		if (!linkData?.hash || linkData.path !== window.location.pathname) return;
+		applyActiveNav(linkData.path, linkData.hash);
 	});
 </script>
 
@@ -154,7 +182,10 @@ const getBadgeClass = (item: MenuItemWithBadge) => item.badgeClass ?? 'text-prim
 				}
 			</ul>
 		</div>
-		<a href='/'><img src='/logo.svg' alt='logo' class='h-12 w-auto cursor-pointer' loading='lazy' decoding='async' fetchpriority='low'/></a>
+		<a href='/' class='shrink-0' aria-label='Evolution home'>
+			<img src='/favicon.svg' alt='' width='34' height='34' class='h-8.5 w-8.5 rounded-md sm:hidden' decoding='async'/>
+			<img src='/logo.svg' alt='' width='184' height='34' class='hidden h-8.5 w-auto cursor-pointer sm:block' loading='lazy' decoding='async' fetchpriority='low'/>
+		</a>
 	</div>
 	<div class='navbar-center hidden lg:flex'>
 		<ul class='menu menu-horizontal px-1'>
@@ -237,16 +268,18 @@ const getBadgeClass = (item: MenuItemWithBadge) => item.badgeClass ?? 'text-prim
 						<!-- <span class='badge badge-sm badge-primary'>New</span> -->
 					</a>
 				</li>
+				<li><a id='button-navbar-avatar' data-umami-event='navbar-click-avatar'>Avatar</a></li>
 				<li><a id='button-navbar-settings' data-umami-event='navbar-click-settings'>Settings</a></li>
 				<li><a id='button-navbar-logout' data-umami-event='navbar-click-logout'>Logout</a></li>
 			</ul>
 		</div>
+		<Modal id='signin' open='Login' showButtons={false}>
+			<SignInForm dialog='signin' slot='main' client:load />
+		</Modal>
+		<Modal id='signup' open='Register' showButtons={false}>
+			<SignUpForm dialog='signup' slot='main' client:load />
+		</Modal>
 	</div>
 	<SettingsDialog />
-	<Modal id='signin' open='Login' showButtons={false}>
-		<SignInForm dialog='signin' slot='main' client:load />
-	</Modal>
-	<Modal id='signup' open='Register' showButtons={false}>
-		<SignUpForm dialog='signup' slot='main' client:load />
-	</Modal>
+	<AvatarDialog />
 </nav>

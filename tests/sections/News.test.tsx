@@ -1,6 +1,6 @@
 import type { PropsWithChildren } from 'react';
-import { render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { act, fireEvent, render, screen } from '@testing-library/react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import NewsSection from '@sections/News';
 
 const swiperSpy = vi.hoisted(() => vi.fn());
@@ -21,7 +21,80 @@ vi.mock('swiper/modules', () => ({
   Pagination: 'Pagination',
 }));
 
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
+
+const reduceMotion = () =>
+  vi.stubGlobal(
+    'matchMedia',
+    vi.fn(() => ({ matches: true, addEventListener: vi.fn(), removeEventListener: vi.fn() }))
+  );
+
+const attachFakeSwiper = () => {
+  const fake = { autoplay: { stop: vi.fn(), start: vi.fn() } };
+  const swiperProps = swiperSpy.mock.calls.at(-1)?.[0];
+  act(() => swiperProps.onSwiper(fake));
+  return fake;
+};
+
+const sharedAutoplayControls = (variant: 'full' | 'compact') => {
+  it('pauses autoplay while keyboard focus is on a slide and resumes when it leaves', () => {
+    render(<NewsSection variant={variant} />);
+    const fake = attachFakeSwiper();
+    const link = screen.getAllByRole('link')[0];
+
+    fireEvent.focusIn(link);
+    expect(fake.autoplay.stop).toHaveBeenCalledTimes(1);
+
+    fireEvent.focusOut(link, { relatedTarget: null });
+    expect(fake.autoplay.start).toHaveBeenCalledTimes(1);
+  });
+
+  it('offers a pause button that stops autoplay until it is pressed again', () => {
+    render(<NewsSection variant={variant} />);
+    const fake = attachFakeSwiper();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Pause news' }));
+    expect(fake.autoplay.stop).toHaveBeenCalled();
+
+    const link = screen.getAllByRole('link')[0];
+    fireEvent.focusIn(link);
+    fireEvent.focusOut(link, { relatedTarget: null });
+    expect(fake.autoplay.start).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Play news' }));
+    expect(fake.autoplay.start).toHaveBeenCalledTimes(1);
+  });
+
+  it('hides the pause button when reduced motion already stops autoplay', () => {
+    reduceMotion();
+    render(<NewsSection variant={variant} />);
+
+    expect(screen.queryByRole('button', { name: 'Pause news' })).toBeNull();
+  });
+
+  it('draws inactive pagination dots with enough contrast', () => {
+    render(<NewsSection variant={variant} />);
+    const swiperProps = swiperSpy.mock.calls.at(-1)?.[0];
+
+    expect(swiperProps.className).toContain('[&_.swiper-pagination-bullet]:bg-base-content/70');
+    expect(swiperProps.className).not.toContain('bg-base-content/40');
+  });
+
+  it('marks its pagination styles important, since Swiper ships unlayered CSS that outranks Tailwind utilities', () => {
+    render(<NewsSection variant={variant} />);
+    const swiperProps = swiperSpy.mock.calls.at(-1)?.[0];
+    const paginationClasses = swiperProps.className.split(' ').filter((name: string) => name.includes('swiper-pagination'));
+
+    expect(paginationClasses.length).toBeGreaterThan(0);
+    paginationClasses.forEach((name: string) => expect(name.endsWith('!')).toBe(true));
+  });
+};
+
 describe('NewsSection', () => {
+  sharedAutoplayControls('full');
+
   it('renders all five current news visuals', () => {
     render(<NewsSection />);
 
@@ -70,5 +143,86 @@ describe('NewsSection', () => {
     expect(screen.getByRole('button', { name: 'Next news item' })).toBeInTheDocument();
     expect(previousButton.parentElement).toHaveClass('top-[calc(16.6667vw-0.3333rem)]');
     expect(previousButton.parentElement).toHaveClass('lg:top-1/2');
+  });
+});
+
+describe('NewsSection compact variant', () => {
+  sharedAutoplayControls('compact');
+
+  it('loads the first image eagerly and the rest lazily', () => {
+    const { container } = render(<NewsSection variant="compact" />);
+    const images = [...container.querySelectorAll('img')];
+
+    expect(images).toHaveLength(5);
+    expect(images[0]).toHaveAttribute('loading', 'eager');
+    images.slice(1).forEach((image) => expect(image).toHaveAttribute('loading', 'lazy'));
+  });
+
+  it('lets each heading name its slide instead of repeating it in the image alt', () => {
+    const { container } = render(<NewsSection variant="compact" />);
+
+    container.querySelectorAll('img').forEach((image) => expect(image).toHaveAttribute('alt', ''));
+  });
+
+  it('is labelled once, by its visible heading', () => {
+    render(<NewsSection variant="compact" />);
+    const swiperProps = swiperSpy.mock.calls.at(-1)?.[0];
+
+    expect(screen.getByRole('region', { name: 'Latest news' })).toHaveAttribute('aria-labelledby');
+    expect(swiperProps['aria-label']).toBeUndefined();
+  });
+
+  it('renders all five news items as compact cards', () => {
+    render(<NewsSection variant="compact" />);
+
+    expect(screen.getAllByRole('article')).toHaveLength(5);
+    expect(screen.getByRole('heading', { name: 'Season 7 is live' })).toBeInTheDocument();
+  });
+
+  it('links each slide through its title instead of a separate button', () => {
+    render(<NewsSection variant="compact" />);
+
+    expect(screen.getByRole('link', { name: 'Season 7 is live' })).toHaveAttribute('href', '#section-ranking');
+    expect(screen.getByRole('link', { name: 'Edison, exactly as it was' })).toHaveAttribute('href', 'https://evoduel.com');
+    expect(screen.queryByText('Start climbing')).toBeNull();
+  });
+
+  it('keeps the pagination strip from swallowing clicks on the slide', () => {
+    render(<NewsSection variant="compact" />);
+    const swiperProps = swiperSpy.mock.calls.at(-1)?.[0];
+
+    expect(swiperProps.className).toContain('[&_.swiper-pagination]:pointer-events-none');
+    expect(swiperProps.className).toContain('[&_.swiper-pagination-bullet]:pointer-events-auto');
+  });
+
+  it('fills its grid cell on desktop instead of sizing the row', () => {
+    render(<NewsSection variant="compact" />);
+
+    const card = screen.getByRole('region', { name: 'Latest news' });
+    expect(card).toHaveClass('lg:absolute', 'lg:inset-0');
+  });
+
+  it('clamps descriptions so every slide keeps one height', () => {
+    render(<NewsSection variant="compact" />);
+
+    expect(screen.getByText(/A new season begins/)).toHaveClass('line-clamp-3');
+  });
+
+  it('uses its own arrow selectors', () => {
+    render(<NewsSection variant="compact" />);
+
+    const swiperProps = swiperSpy.mock.calls.at(-1)?.[0];
+    expect(swiperProps.navigation).toEqual({ nextEl: '.news-compact-next', prevEl: '.news-compact-prev' });
+    expect(screen.getByRole('button', { name: 'Previous news item' })).toHaveClass('news-compact-prev');
+    expect(screen.getByRole('button', { name: 'Next news item' })).toHaveClass('news-compact-next');
+  });
+
+  it('turns autoplay and transitions off for reduced motion', () => {
+    reduceMotion();
+    render(<NewsSection variant="compact" />);
+
+    const swiperProps = swiperSpy.mock.calls.at(-1)?.[0];
+    expect(swiperProps.autoplay).toBe(false);
+    expect(swiperProps.speed).toBe(0);
   });
 });
