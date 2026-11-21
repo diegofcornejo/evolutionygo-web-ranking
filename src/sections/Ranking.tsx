@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import DuelistTradingCard from '@components/Cards/DuelistTradingCard';
-import PodiumDarkness from '@components/PodiumDarkness';
+import PodiumDarkness, { PodiumGlow } from '@components/PodiumDarkness';
 import Rating from '@components/Rating';
 import type { Duelist } from '@types';
 import type { BanListSelectorOption } from '@utils/banListSelector';
@@ -198,6 +198,8 @@ export default function Ranking({ weekly = null }: Readonly<{ weekly?: WeeklyDue
 
   return (
     <div className='mx-4' id='section-ranking'>
+      <div className='relative pb-16'>
+      <PodiumDarkness />
       <div className='relative z-10 flex flex-col items-center gap-1 pt-6 text-center'>
         <h2 className='text-3xl font-bold md:text-5xl md:leading-[3.5rem]'>{title}</h2>
         <p className='text-sm font-bold uppercase tracking-[0.18em] text-indigo-300'>Season {season} · {banList}</p>
@@ -263,7 +265,7 @@ export default function Ranking({ weekly = null }: Readonly<{ weekly?: WeeklyDue
       >
         {topDuelists.map((duelist: Duelist, index: number) => (
           <li key={duelist.userId} className={`relative ${PODIUM_SLOT[index]}`}>
-            {index === 0 && <PodiumDarkness />}
+            {index === 0 && <PodiumGlow />}
             <DuelistTradingCard
               {...duelist}
               username={getDisplayName(duelist)}
@@ -303,6 +305,7 @@ export default function Ranking({ weekly = null }: Readonly<{ weekly?: WeeklyDue
       </ul>
       </div>
       )}
+      </div>
       {getDisplayDuelists().length > 0 && (
       <div className='overflow-x-auto mt-8'>
         <table className='table table-zebra bg-base-300'>

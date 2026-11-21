@@ -450,28 +450,44 @@ describe('Ranking', () => {
   });
 
   describe('darkness', () => {
-    it('draws the darkness behind the podium', async () => {
+    it('fills the panel behind the title, filters and podium with the darkness', async () => {
       mockFetch({ stats: [...cardDuelists, ...tableDuelists] });
 
       const { container, findByText } = render(<Ranking />);
 
       expect(await findByText('RatedCardDuelist')).toBeTruthy();
-      // Centered on the #1 card, behind it, wherever the row puts that card.
-      const firstSlot = container.querySelector('[data-place="1"]')!.closest('li')!;
-      const darkness = firstSlot.querySelector('[data-podium-darkness]')!;
-      expect(darkness).not.toBeNull();
-      expect(darkness.compareDocumentPosition(firstSlot.querySelector('[data-place="1"]')!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
       expect(container.querySelectorAll('[data-podium-darkness]')).toHaveLength(1);
+      const clearing = container.querySelector('[data-podium-darkness]')!.parentElement!;
+      expect(clearing).toHaveClass('relative');
+      expect(clearing.querySelector('h2')).not.toBeNull();
+      expect(clearing.querySelector('select[aria-label="Filter by season"]')).not.toBeNull();
+      expect(clearing.querySelector('[aria-label="Top three duelists"]')).not.toBeNull();
+      // The table keeps its own solid panel below the clearing.
+      expect(clearing.querySelector('table')).toBeNull();
       expect(container.querySelector('[data-podium-vortex]')).toBeNull();
     });
 
-    it('draws no darkness when the podium is empty', async () => {
+    it('lights a glow behind the #1 card', async () => {
+      mockFetch({ stats: [...cardDuelists, ...tableDuelists] });
+
+      const { container, findByText } = render(<Ranking />);
+
+      expect(await findByText('RatedCardDuelist')).toBeTruthy();
+      const firstSlot = container.querySelector('[data-place="1"]')!.closest('li')!;
+      const glow = firstSlot.querySelector('[data-podium-glow]')!;
+      expect(glow).not.toBeNull();
+      expect(glow.compareDocumentPosition(firstSlot.querySelector('[data-place="1"]')!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+      expect(container.querySelectorAll('[data-podium-glow]')).toHaveLength(1);
+    });
+
+    it('keeps the darkness but lights no glow when the podium is empty', async () => {
       mockFetch({ stats: [] });
 
       const { container } = render(<Ranking />);
 
       await waitFor(() => expect(container.querySelector('[aria-label="Top three duelists"]')).not.toBeNull());
-      expect(container.querySelector('[data-podium-darkness]')).toBeNull();
+      expect(container.querySelector('[data-podium-darkness]')).not.toBeNull();
+      expect(container.querySelector('[data-podium-glow]')).toBeNull();
     });
   });
 

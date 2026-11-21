@@ -1,10 +1,16 @@
 import { render } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import PodiumDarkness from '@components/PodiumDarkness';
+import PodiumDarkness, { PodiumGlow } from '@components/PodiumDarkness';
 
 afterEach(() => {
   vi.unstubAllGlobals();
 });
+
+const reduceMotion = () =>
+  vi.stubGlobal(
+    'matchMedia',
+    vi.fn(() => ({ matches: true, addEventListener: vi.fn(), removeEventListener: vi.fn() }))
+  );
 
 const darknessOf = (container: HTMLElement) => container.querySelector('[data-podium-darkness]')!;
 
@@ -17,10 +23,21 @@ describe('PodiumDarkness', () => {
     expect(darkness).toHaveClass('pointer-events-none');
     expect(darkness.querySelectorAll('[data-darkness-fog]')).toHaveLength(3);
     expect(darkness.querySelector('[data-darkness-mist] feTurbulence')).not.toBeNull();
-    expect(darkness.querySelector('[data-darkness-glow]')).not.toBeNull();
   });
 
-  it('drifts the fog banks and the mist, and lets the glow breathe', () => {
+  it('pins the darkness to the viewport and shows it only through the panel, with soft edges', () => {
+    const { container } = render(<PodiumDarkness />);
+    const darkness = darknessOf(container);
+    const veil = darkness.querySelector('[data-darkness-veil]')!;
+
+    // Covers the whole panel, edge to edge, and clips the fixed layer to it.
+    expect(darkness).toHaveClass('absolute', 'inset-y-0', '-inset-x-4', '[clip-path:inset(0)]');
+    expect(darkness.className).toContain('[mask-image:');
+    expect(veil).toHaveClass('fixed', 'inset-0');
+    expect(veil.querySelectorAll('[data-darkness-fog]')).toHaveLength(3);
+  });
+
+  it('drifts the fog banks and the mist', () => {
     const { container } = render(<PodiumDarkness />);
     const darkness = darknessOf(container);
 
@@ -30,7 +47,6 @@ describe('PodiumDarkness', () => {
     );
     expect(fogAnimations.sort()).toEqual(['animate-fog-a', 'animate-fog-b', 'animate-fog-c']);
     expect(darkness.querySelector('[data-darkness-mist]')).toHaveClass('animate-mist');
-    expect(darkness.querySelector('[data-darkness-glow]')).toHaveClass('animate-glow-breathe');
   });
 
   it('gives each render its own mist filter id', () => {
@@ -47,14 +63,28 @@ describe('PodiumDarkness', () => {
   });
 
   it('holds still for reduced motion', () => {
-    vi.stubGlobal(
-      'matchMedia',
-      vi.fn(() => ({ matches: true, addEventListener: vi.fn(), removeEventListener: vi.fn() }))
-    );
+    reduceMotion();
     const { container } = render(<PodiumDarkness />);
     const darkness = darknessOf(container);
 
     expect(darkness).toHaveAttribute('data-motion', 'still');
     expect(darkness.querySelector('[class*="animate-"]')).toBeNull();
+  });
+});
+
+describe('PodiumGlow', () => {
+  it('breathes behind the first card, ignored by screen readers and clicks', () => {
+    const { container } = render(<PodiumGlow />);
+    const glow = container.querySelector('[data-podium-glow]')!;
+
+    expect(glow).toHaveAttribute('aria-hidden', 'true');
+    expect(glow).toHaveClass('pointer-events-none', 'animate-glow-breathe');
+  });
+
+  it('holds still for reduced motion', () => {
+    reduceMotion();
+    const { container } = render(<PodiumGlow />);
+
+    expect(container.querySelector('[data-podium-glow]')).not.toHaveClass('animate-glow-breathe');
   });
 });

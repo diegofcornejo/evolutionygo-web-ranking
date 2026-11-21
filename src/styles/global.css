@@ -137,11 +137,11 @@
 	--color-bronze: #CD7F32;
 	--color-transparent: transparent;
 	--animate-foil: foil-sweep 4.5s linear infinite;
-	--animate-fog-a: fog-a 13s ease-in-out infinite alternate;
-	--animate-fog-b: fog-b 16s ease-in-out infinite alternate;
-	--animate-fog-c: fog-c 20s ease-in-out infinite alternate;
-	--animate-mist: mist-drift 28s linear infinite alternate;
-	--animate-glow-breathe: glow-breathe 5s ease-in-out infinite;
+	--animate-fog-a: fog-a 8s ease-in-out infinite alternate;
+	--animate-fog-b: fog-b 10s ease-in-out infinite alternate;
+	--animate-fog-c: fog-c 12s ease-in-out infinite alternate;
+	--animate-mist: mist-drift 16s linear infinite alternate;
+	--animate-glow-breathe: glow-breathe 4s ease-in-out infinite;
 
 	@keyframes fog-a {
 		to {
