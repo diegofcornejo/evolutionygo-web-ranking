@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { handleOpenAvatar, updateOwnAvatars, updateUser } from '@components/NavBar/helper';
 import { getSession } from '@stores/sessionStore';
-import { avatars, saveAvatar } from '@stores/avatarStore';
+import { avatars } from '@stores/avatarStore';
 import { DEFAULT_AVATAR, avatarDataUri } from '@utils/avatar';
 
 vi.mock('@stores/sessionStore', () => ({
@@ -30,14 +30,14 @@ describe('own avatar in the navbar and on the page', () => {
 
 	it('shows the saved avatar in the navbar', () => {
 		login('1');
-		saveAvatar('1', DEFAULT_AVATAR);
+		avatars.set({ '1': DEFAULT_AVATAR });
 		updateUser();
 		expect(src('dropdown-navbar-avatar')).toBe(avatarDataUri(DEFAULT_AVATAR));
 	});
 
 	it('swaps only the logged-in player pictures', () => {
 		login('1');
-		saveAvatar('1', DEFAULT_AVATAR);
+		avatars.set({ '1': DEFAULT_AVATAR });
 		updateOwnAvatars();
 		expect(src('mine')).toBe(avatarDataUri(DEFAULT_AVATAR));
 		expect(src('theirs')).toBe(INITIALS);
@@ -51,7 +51,7 @@ describe('own avatar in the navbar and on the page', () => {
 
 	it('puts the initials back after logging out', () => {
 		login('1');
-		saveAvatar('1', DEFAULT_AVATAR);
+		avatars.set({ '1': DEFAULT_AVATAR });
 		updateOwnAvatars();
 		login('');
 		updateOwnAvatars();

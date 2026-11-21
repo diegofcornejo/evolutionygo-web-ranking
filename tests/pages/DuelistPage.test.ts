@@ -96,6 +96,30 @@ describe('duelists/[id]/[banlist].astro page', () => {
     expect(result).toContain('MockReactSection');
     expect(result).toContain('Match History');
   });
+  it('asks for the player avatar and renders the profile when that call fails', async () => {
+    const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+      const url = input.toString();
+      if (url.includes('/avatars?')) throw new Error('avatars down');
+      if (url.includes('/stats')) {
+        return { ok: true, json: async () => ({ userId: '123', username: 'Test', points: 1, wins: 1, losses: 0, winRate: 100, position: 1, achievements: [] }) } as Response;
+      }
+      return { ok: false, json: async () => ({}) } as Response;
+    });
+    global.fetch = fetchMock as unknown as typeof fetch;
+
+    const DuelistPage = (await import('../../src/pages/duelists/[id]/[banlist].astro')).default;
+    const container = await experimental_AstroContainer.create();
+    container.addServerRenderer({ name: '@astrojs/react', renderer: reactRenderer });
+
+    const result = await container.renderToString(DuelistPage, {
+      params: { id: '123', banlist: 'Global' },
+      request: new Request('https://evolutionygo.com/duelists/123/Global?username=Test&season=1'),
+    });
+
+    expect(result).toContain('Match History');
+    expect(fetchMock.mock.calls.some(([url]) => String(url).endsWith('/avatars?userIds=123'))).toBe(true);
+  });
+
   describe('rank card', () => {
     const ratings = [
       { banListName: 'TCG', rankType: 'group', rating: 1129, peak: 1193, tier: { id: 'master', name: 'Master', progress: null } },

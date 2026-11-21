@@ -11,7 +11,10 @@ import {
 	sanitizeAvatar,
 	type AvatarConfig,
 	type AvatarPart,
+	type AvatarWriteResult,
 } from '@utils/avatar';
+
+const SESSION_EXPIRED = 'Your session expired. Log in again to save your avatar.';
 
 type Group = {
 	part: AvatarPart;
@@ -106,14 +109,32 @@ function AvatarForm({ dialog, userId, saved }: Readonly<FormProps>) {
 
 	const pick = (part: AvatarPart, id: string) => setLook((current) => sanitizeAvatar({ ...current, [part]: id }));
 
-	const handleSave = () => {
-		saveAvatar(userId, look);
+	const [busy, setBusy] = useState(false);
+
+	const reportFailure = (result: AvatarWriteResult, failed: string) => {
+		toast.error(result === 'unauthorized' ? SESSION_EXPIRED : failed);
+	};
+
+	const handleSave = async () => {
+		setBusy(true);
+		const result = await saveAvatar(userId, look);
+		setBusy(false);
+		if (result !== 'ok') {
+			reportFailure(result, 'Could not save your avatar. Try again.');
+			return;
+		}
 		toast.success('Avatar saved');
 		closeDialog(dialog);
 	};
 
-	const handleUseInitials = () => {
-		clearAvatar(userId);
+	const handleUseInitials = async () => {
+		setBusy(true);
+		const result = await clearAvatar(userId);
+		setBusy(false);
+		if (result !== 'ok') {
+			reportFailure(result, 'Could not remove your avatar. Try again.');
+			return;
+		}
 		toast.success('Back to your initials');
 		closeDialog(dialog);
 	};
@@ -167,7 +188,12 @@ function AvatarForm({ dialog, userId, saved }: Readonly<FormProps>) {
 
 			<div className="flex flex-wrap items-center gap-2">
 				{saved && (
-					<button type="button" className="btn btn-sm btn-ghost text-base-content/70" onClick={handleUseInitials}>
+					<button
+						type="button"
+						className="btn btn-sm btn-ghost text-base-content/70"
+						onClick={handleUseInitials}
+						disabled={busy}
+					>
 						Use initials
 					</button>
 				)}
@@ -175,7 +201,7 @@ function AvatarForm({ dialog, userId, saved }: Readonly<FormProps>) {
 					<button type="button" className="btn btn-ghost" onClick={() => closeDialog(dialog)}>
 						Cancel
 					</button>
-					<button type="button" className="btn btn-primary" onClick={handleSave}>
+					<button type="button" className="btn btn-primary" onClick={handleSave} disabled={busy}>
 						Save
 					</button>
 				</div>

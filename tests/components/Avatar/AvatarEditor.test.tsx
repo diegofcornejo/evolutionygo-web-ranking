@@ -1,12 +1,17 @@
-import { render, fireEvent, screen } from '@testing-library/react';
+import { render, fireEvent, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { toast } from 'sonner';
 import { session } from '@stores/sessionStore';
-import { avatars, getAvatar, saveAvatar } from '@stores/avatarStore';
-import { DEFAULT_AVATAR, avatarDataUri } from '@utils/avatar';
+import { avatars, getAvatar } from '@stores/avatarStore';
+import { DEFAULT_AVATAR, avatarDataUri, deleteMyAvatar, putMyAvatar } from '@utils/avatar';
 import AvatarEditor from '@components/Avatar/AvatarEditor';
 
 vi.mock('sonner', () => ({ toast: { success: vi.fn(), error: vi.fn() } }));
+vi.mock('@utils/avatar', async (importOriginal) => ({
+	...(await importOriginal<typeof import('@utils/avatar')>()),
+	putMyAvatar: vi.fn(async () => 'ok'),
+	deleteMyAvatar: vi.fn(async () => 'ok'),
+}));
 
 const preview = () => screen.getByRole('img', { name: 'Avatar preview' }).getAttribute('src');
 
@@ -26,7 +31,7 @@ describe('AvatarEditor', () => {
 
 	it('starts from the saved look', () => {
 		const look = { ...DEFAULT_AVATAR, hairStyle: 'curly' as const };
-		saveAvatar('1', look);
+		avatars.set({ '1': look });
 		render(<AvatarEditor dialog="dialog-avatar" />);
 		expect(preview()).toBe(avatarDataUri(look));
 	});
@@ -40,14 +45,38 @@ describe('AvatarEditor', () => {
 		expect(screen.getByRole('radio', { name: 'Spiky' })).toHaveAttribute('aria-checked', 'true');
 	});
 
-	it('saves the look for the logged-in player and closes', () => {
+	it('saves the look for the logged-in player and closes', async () => {
 		render(<AvatarEditor dialog="dialog-avatar" />);
 		fireEvent.click(screen.getByRole('tab', { name: 'Shirt' }));
 		fireEvent.click(screen.getByRole('radio', { name: 'EVO' }));
 		fireEvent.click(screen.getByRole('button', { name: 'Save' }));
-		expect(getAvatar('1')).toEqual({ ...DEFAULT_AVATAR, shirtLogo: 'evo' });
+		await waitFor(() => expect(getAvatar('1')).toEqual({ ...DEFAULT_AVATAR, shirtLogo: 'evo' }));
+		expect(putMyAvatar).toHaveBeenCalledWith('t', { ...DEFAULT_AVATAR, shirtLogo: 'evo' });
 		expect(toast.success).toHaveBeenCalled();
 		expect((document.getElementById('dialog-avatar') as HTMLDialogElement).close).toHaveBeenCalled();
+	});
+
+	it('keeps the previous avatar and shows an error when saving fails', async () => {
+		vi.mocked(putMyAvatar).mockResolvedValueOnce('error');
+		avatars.set({ '1': DEFAULT_AVATAR });
+		render(<AvatarEditor dialog="dialog-avatar" />);
+		fireEvent.click(screen.getByRole('tab', { name: 'Hair' }));
+		fireEvent.click(screen.getByRole('radio', { name: 'Afro' }));
+		fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+		await waitFor(() => expect(toast.error).toHaveBeenCalledWith('Could not save your avatar. Try again.'));
+		expect(getAvatar('1')).toEqual(DEFAULT_AVATAR);
+		expect(preview()).toBe(avatarDataUri({ ...DEFAULT_AVATAR, hairStyle: 'afro' }));
+		expect((document.getElementById('dialog-avatar') as HTMLDialogElement).close).not.toHaveBeenCalled();
+	});
+
+	it('asks the player to log in again when the session expired', async () => {
+		vi.mocked(putMyAvatar).mockResolvedValueOnce('unauthorized');
+		render(<AvatarEditor dialog="dialog-avatar" />);
+		fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+		await waitFor(() =>
+			expect(toast.error).toHaveBeenCalledWith('Your session expired. Log in again to save your avatar.'),
+		);
+		expect((document.getElementById('dialog-avatar') as HTMLDialogElement).close).not.toHaveBeenCalled();
 	});
 
 	it('does not save until the player presses Save', () => {
@@ -64,11 +93,12 @@ describe('AvatarEditor', () => {
 		expect(preview()).toBe(avatarDataUri(DEFAULT_AVATAR));
 	});
 
-	it('goes back to initials', () => {
-		saveAvatar('1', DEFAULT_AVATAR);
+	it('goes back to initials', async () => {
+		avatars.set({ '1': DEFAULT_AVATAR });
 		render(<AvatarEditor dialog="dialog-avatar" />);
 		fireEvent.click(screen.getByRole('button', { name: 'Use initials' }));
-		expect(getAvatar('1')).toBeNull();
+		await waitFor(() => expect(getAvatar('1')).toBeNull());
+		expect(deleteMyAvatar).toHaveBeenCalledWith('t');
 	});
 
 	it('hides the initials option when there is nothing saved', () => {

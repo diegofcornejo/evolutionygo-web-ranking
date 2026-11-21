@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useStore } from '@nanostores/react';
 import DuelistTradingCard from '@components/Cards/DuelistTradingCard';
 import PodiumDarkness, { PodiumGlow } from '@components/PodiumDarkness';
 import TierEmblem from '@components/TierEmblem';
@@ -7,8 +8,10 @@ import type { Duelist } from '@types';
 import type { BanListSelectorOption } from '@utils/banListSelector';
 import { formatWinRate, winRateStars } from '@utils/winRate';
 import type { WeeklyDuelist } from '@utils/weeklyDuelist';
+import { avatarDataUri, fetchAvatars, sanitizeAvatar, type AvatarConfig } from '@utils/avatar';
 import { banlists } from '@stores/banlistsStore';
 import { getSession } from '@stores/sessionStore';
+import { avatars as ownAvatars } from '@stores/avatarStore';
 import {
   buildBanListChips,
   buildBanListSelectorOptions,
@@ -113,6 +116,35 @@ export default function Ranking({ weekly = null }: Readonly<{ weekly?: WeeklyDue
 		const inTopDuelists = topDuelists.some(duelist => duelist.userId === userId);
 		const inDuelists = duelists.some(duelist => duelist.userId === userId);
 		return inTopDuelists || inDuelists;
+	};
+
+	const [avatarsById, setAvatarsById] = useState<Record<string, AvatarConfig>>({});
+	const shownUserIds = [...topDuelists, ...duelists, ...(currentUserStats ? [currentUserStats] : [])]
+		.map((duelist) => duelist.userId)
+		.join(',');
+
+	useEffect(() => {
+		if (!shownUserIds) return;
+		let cancelled = false;
+		fetchAvatars(shownUserIds.split(',')).then((found) => {
+			if (!cancelled) setAvatarsById(found);
+		});
+		return () => {
+			cancelled = true;
+		};
+	}, [shownUserIds]);
+
+	// The player's own row reads this browser's copy, which a save updates at once; the public
+	// endpoint is cached for a minute and the page does not refetch it.
+	const cachedOwnAvatars = useStore(ownAvatars);
+
+	const avatarSrc = (duelist: Duelist) => {
+		const isOwn = currentUser !== null && duelist.userId === currentUser.id;
+		const own = isOwn ? cachedOwnAvatars[duelist.userId] : undefined;
+		const avatar = isOwn ? (own ? sanitizeAvatar(own) : undefined) : avatarsById[duelist.userId];
+		return avatar
+			? avatarDataUri(avatar)
+			: `https://ui-avatars.com/api/?name=${duelist.username}&background=random&size=128`;
 	};
 
 	const getDisplayName = (duelist: Duelist) => {
@@ -350,7 +382,7 @@ export default function Ranking({ weekly = null }: Readonly<{ weekly?: WeeklyDue
                   <a className='after:absolute after:inset-0' href={`/duelists/${duelist.userId}/${encodeURIComponent(banList)}?username=${encodeURIComponent(duelist.username)}&season=${season}`}>
                     <div className='flex items-center gap-3'>
                       <img
-                        src={`https://ui-avatars.com/api/?name=${duelist.username}&background=random&size=128`}
+                        src={avatarSrc(duelist)}
                         alt={duelist.username}
                         className='w-12 h-12 rounded-full'
 												loading='lazy'

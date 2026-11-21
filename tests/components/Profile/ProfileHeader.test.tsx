@@ -1,6 +1,7 @@
 import { render } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
 import ProfileHeader from '@components/Profile/ProfileHeader';
+import { DEFAULT_AVATAR, avatarDataUri } from '@utils/avatar';
 
 describe('ProfileHeader', () => {
 	it('renders champion badge and core stats', () => {
@@ -29,6 +30,21 @@ describe('ProfileHeader', () => {
 		expect(getAllByText('Points')[0]).toBeTruthy();
 		expect(getAllByText('Wins')[0]).toBeTruthy();
 		expect(getAllByText('Losses')[0]).toBeTruthy();
+	});
+
+	it('draws the avatar it is given', () => {
+		const avatar = { ...DEFAULT_AVATAR, hairStyle: 'afro' as const };
+		const { getByAltText } = render(
+			<ProfileHeader userId="42" username="Ace" avatar={avatar} points={0} wins={0} losses={0} winRate={null} position={0} season="5" banlistName="Global" />
+		);
+		expect(getByAltText('Ace')).toHaveAttribute('src', avatarDataUri(avatar));
+	});
+
+	it('keeps the initials when the player has no avatar', () => {
+		const { getByAltText } = render(
+			<ProfileHeader userId="42" username="Ace" avatar={null} points={0} wins={0} losses={0} winRate={null} position={0} season="5" banlistName="Global" />
+		);
+		expect(getByAltText('Ace').getAttribute('src')).toContain('ui-avatars.com');
 	});
 
 	it('marks the picture with the player id so their own avatar can replace it', () => {

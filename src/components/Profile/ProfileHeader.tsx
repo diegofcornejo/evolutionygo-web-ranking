@@ -1,9 +1,11 @@
 import Rating from '@components/Rating';
 import { formatWinRate, winRateStars } from '@utils/winRate';
+import { avatarDataUri, type AvatarConfig } from '@utils/avatar';
 
 interface ProfileHeaderProps {
 	userId?: string;
 	username: string;
+	avatar?: AvatarConfig | null;
 	points: number;
 	wins: number;
 	losses: number;
@@ -24,6 +26,7 @@ interface SeasonStat {
 export default function ProfileHeader({
 	userId,
 	username,
+	avatar,
 	points,
 	wins,
 	losses,
@@ -33,7 +36,9 @@ export default function ProfileHeader({
 	banlistName,
 	seasonStats,
 }: Readonly<ProfileHeaderProps>) {
-	const image = `https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&background=random&size=256`;
+	const image = avatar
+		? avatarDataUri(avatar)
+		: `https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&background=random&size=256`;
 	const rating = winRateStars(winRate);
 	const totalGames = wins + losses;
 	const normalizedPosition = Number(position) || 0;

@@ -20,7 +20,7 @@ const getBadgeClass = (item: MenuItemWithBadge) => item.badgeClass ?? 'text-prim
 
 <script>
 	import { session, currentNavPath, setNavPath } from '@stores/sessionStore';
-	import { avatars } from '@stores/avatarStore';
+	import { avatars, syncOwnAvatar } from '@stores/avatarStore';
 	import { update, updateUser, updateOwnAvatars, setTheme, handleLogout, handleOpenSettings, handleOpenAvatar, closeNavGroups } from './helper';
 
 	const normalizePath = (href: string | null): { path: string; hash: string } | null => {
@@ -73,6 +73,7 @@ const getBadgeClass = (item: MenuItemWithBadge) => item.badgeClass ?? 'text-prim
 		update();
 		updateUser();
 		updateOwnAvatars();
+		void syncOwnAvatar();
 	});
 
 	avatars.listen(() => {
