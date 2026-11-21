@@ -57,3 +57,6 @@ coverage/
 .impeccable/review/
 .impeccable/questions/
 .impeccable/build/
+
+# superpowers brainstorm mockups and plan workspaces
+.superpowers/
