@@ -1,4 +1,5 @@
 import { render, fireEvent } from '@testing-library/react';
+import { renderToString } from 'react-dom/server';
 import { describe, it, expect } from 'vitest';
 import MatchHistory from '@components/Profile/MatchHistory';
 import type { Match } from '@types';
@@ -96,5 +97,24 @@ describe('MatchHistory', () => {
 
 		expect(getByText(/RivalOne/)).toBeTruthy();
 		expect(queryByText(/RivalTwo/)).toBeNull();
+	});
+
+	describe('match times', () => {
+		const lateMatch: Match = { ...pvpMatch, date: '2024-01-10T23:30:00.000Z' };
+
+		it('renders the server HTML in UTC, so the browser hydrates the same text', () => {
+			const html = renderToString(<MatchHistory matches={[lateMatch]} />);
+
+			expect(html).toContain('Jan 10, 2024');
+			expect(html).toContain('11:30 PM');
+		});
+
+		it('switches to the viewer local time once mounted', () => {
+			const { getByText } = render(<MatchHistory matches={[lateMatch]} />);
+			const local = new Date(lateMatch.date);
+
+			expect(getByText(local.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }))).toBeTruthy();
+			expect(getByText(local.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }))).toBeTruthy();
+		});
 	});
 });

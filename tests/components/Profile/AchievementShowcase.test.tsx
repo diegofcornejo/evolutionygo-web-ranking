@@ -1,3 +1,4 @@
+import { renderToString } from 'react-dom/server';
 import { render, fireEvent, within, screen } from '@testing-library/react';
 import { describe, it, expect, beforeAll, vi } from 'vitest';
 import AchievementShowcase, { getRequirementProgress } from '@components/Profile/AchievementShowcase';
@@ -182,6 +183,21 @@ describe('getRequirementProgress', () => {
 		expect(getRequirementProgress({ ...catalog[0], requirement: null }, progress)).toEqual({
 			current: null,
 			target: null,
+		});
+	});
+
+	describe('unlock dates', () => {
+		const lateNight = { ...achievements[0], unlockedAt: '2026-09-01T02:00:00.000Z' };
+
+		it('renders the server HTML in UTC, so the browser hydrates the same text', () => {
+			expect(renderToString(<AchievementShowcase achievements={[lateNight]} />)).toContain('Sep 1, 2026');
+		});
+
+		it('switches to the viewer local date once mounted', () => {
+			const { getAllByText } = render(<AchievementShowcase achievements={[lateNight]} />);
+			const local = new Date(lateNight.unlockedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+			expect(getAllByText(new RegExp(local)).length).toBeGreaterThan(0);
 		});
 	});
 });

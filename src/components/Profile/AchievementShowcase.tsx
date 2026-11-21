@@ -1,4 +1,5 @@
 import { useMemo, useRef } from 'react';
+import { useHydrated } from '@utils/useHydrated';
 import type { Achievement, AchievementCatalogItem, AchievementProgress } from '@types';
 
 interface AchievementShowcaseProps {
@@ -181,15 +182,19 @@ function AchievementIcon({ icon, muted = false }: Readonly<{ icon: string; muted
 	);
 }
 
-function formatUnlockedDate(unlockedAt: string) {
+// The server renders in UTC and so does hydration; the viewer's own time zone comes after mounting.
+function useUnlockedDate(unlockedAt: string) {
+	const hydrated = useHydrated();
 	return new Date(unlockedAt).toLocaleDateString('en-US', {
 		month: 'short',
 		day: 'numeric',
 		year: 'numeric',
+		timeZone: hydrated ? undefined : 'UTC',
 	});
 }
 
 function LatestAchievement({ achievement }: Readonly<{ achievement: Achievement }>) {
+	const unlockedDate = useUnlockedDate(achievement.unlockedAt);
 	return (
 		<div className="flex items-center gap-4 min-w-0 sm:pl-6 sm:border-l border-t sm:border-t-0 pt-4 sm:pt-0 border-warning/20">
 			<AchievementIcon icon={achievement.icon} />
@@ -197,7 +202,7 @@ function LatestAchievement({ achievement }: Readonly<{ achievement: Achievement 
 				<span className="text-xs uppercase tracking-wide text-warning/80">Latest unlock</span>
 				<h3 className="font-bold leading-tight truncate">{achievement.name}</h3>
 				<p className="text-xs text-base-content/50 truncate">
-					{achievement.description} · {formatUnlockedDate(achievement.unlockedAt)}
+					{achievement.description} · {unlockedDate}
 				</p>
 			</div>
 		</div>
@@ -205,7 +210,7 @@ function LatestAchievement({ achievement }: Readonly<{ achievement: Achievement 
 }
 
 function AchievementCard({ achievement }: Readonly<{ achievement: Achievement }>) {
-	const unlockedDate = formatUnlockedDate(achievement.unlockedAt);
+	const unlockedDate = useUnlockedDate(achievement.unlockedAt);
 
 	return (
 		<div className="group relative overflow-hidden rounded-2xl bg-base-200/80 border border-base-300 hover:border-warning/30 transition-all duration-300 hover:shadow-lg hover:shadow-warning/5">
