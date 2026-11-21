@@ -400,6 +400,22 @@ describe('Ranking', () => {
     });
   });
 
+  describe('filters', () => {
+    it('spans the full width on mobile and caps the width from md up', async () => {
+      mockFetch({ stats: [...cardDuelists, ...tableDuelists] });
+
+      const { container, findByText } = render(<Ranking />);
+
+      expect(await findByText('RatedCardDuelist')).toBeTruthy();
+      const selects = container.querySelectorAll('#section-ranking select');
+      expect(selects).toHaveLength(3);
+      selects.forEach((select) => {
+        expect(select).toHaveClass('w-full', 'md:max-w-xs');
+        expect(select).not.toHaveClass('max-w-xs');
+      });
+    });
+  });
+
   describe('vortex', () => {
     it('draws the vortex behind the podium', async () => {
       mockFetch({ stats: [...cardDuelists, ...tableDuelists] });
