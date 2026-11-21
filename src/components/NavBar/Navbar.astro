@@ -167,7 +167,7 @@ const getBadgeClass = (item: MenuItemWithBadge) => item.badgeClass ?? 'text-prim
 				}
 			</ul>
 		</div>
-		<a href='/'><img src='/logo.svg' alt='logo' class='h-12 w-auto cursor-pointer' loading='lazy' decoding='async' fetchpriority='low'/></a>
+		<a href='/' class='lg:shrink-0'><img src='/logo.svg' alt='logo' width='184' height='34' class='h-8.5 w-auto cursor-pointer' loading='lazy' decoding='async' fetchpriority='low'/></a>
 	</div>
 	<div class='navbar-center hidden lg:flex'>
 		<ul class='menu menu-horizontal px-1'>
@@ -254,12 +254,12 @@ const getBadgeClass = (item: MenuItemWithBadge) => item.badgeClass ?? 'text-prim
 				<li><a id='button-navbar-logout' data-umami-event='navbar-click-logout'>Logout</a></li>
 			</ul>
 		</div>
+		<Modal id='signin' open='Login' showButtons={false}>
+			<SignInForm dialog='signin' slot='main' client:load />
+		</Modal>
+		<Modal id='signup' open='Register' showButtons={false}>
+			<SignUpForm dialog='signup' slot='main' client:load />
+		</Modal>
 	</div>
 	<SettingsDialog />
-	<Modal id='signin' open='Login' showButtons={false}>
-		<SignInForm dialog='signin' slot='main' client:load />
-	</Modal>
-	<Modal id='signup' open='Register' showButtons={false}>
-		<SignUpForm dialog='signup' slot='main' client:load />
-	</Modal>
 </nav>
