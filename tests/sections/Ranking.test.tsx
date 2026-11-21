@@ -435,6 +435,18 @@ describe('Ranking', () => {
       // The podium vortex is positioned and reaches up under the filters; they must stack above it.
       expect(selects[0].parentElement).toHaveClass('relative', 'z-10');
     });
+
+    it('gives the select dropdowns an opaque background over the translucent pill', async () => {
+      mockFetch({ stats: [...cardDuelists, ...tableDuelists] });
+
+      const { container, findByText } = render(<Ranking />);
+
+      expect(await findByText('RatedCardDuelist')).toBeTruthy();
+      // DaisyUI's customizable picker inherits the select's background, which is bg-white/10 here.
+      container.querySelectorAll('#section-ranking select').forEach((select) => {
+        expect(select).toHaveClass('[&::picker(select)]:bg-base-300');
+      });
+    });
   });
 
   describe('vortex', () => {

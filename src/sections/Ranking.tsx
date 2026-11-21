@@ -24,7 +24,7 @@ const GLOBAL_BAN_LIST = 'Global';
 
 // Native selects (so phones open their own picker), styled as pills to match the rest of the home.
 const PILL_SELECT =
-  'select h-10 w-auto rounded-full border-white/20 bg-white/10 pl-4 pr-9 text-sm font-bold text-white focus:outline-primary';
+  'select h-10 w-auto rounded-full border-white/20 bg-white/10 pl-4 pr-9 text-sm font-bold text-white focus:outline-primary [&::picker(select)]:border-white/15 [&::picker(select)]:bg-base-300';
 
 const SORT_OPTIONS: { value: SortBy; label: string }[] = [
   { value: 'points', label: 'Points' },
