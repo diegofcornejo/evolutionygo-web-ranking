@@ -95,7 +95,9 @@ function Progress({ view }: Readonly<{ view: TierProgressView }>) {
 export default function RankCard({ rating, others, ladder, season, banListName, userId, username }: Readonly<Props>) {
 	const tier = rating?.tier ?? null;
 	const ranked = others.filter((other): other is DuelistRating & { tier: DuelistTier } => !!other.tier);
-	if (!tier && ranked.length === 0) return null;
+	// Not null: with both the React and Svelte renderers loaded, Astro cannot server-render a React
+	// component that returns null and fails the whole profile page ("Unable to render RankCard").
+	if (!tier && ranked.length === 0) return <></>;
 
 	const view = tier ? tierProgressView(tier, ladder) : null;
 	const elo = rating?.rating ?? tier?.rating;
