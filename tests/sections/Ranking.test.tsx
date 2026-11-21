@@ -543,8 +543,11 @@ describe('Ranking', () => {
 
       expect(await findByText('RatedDuelist')).toBeTruthy();
       expect([...container.querySelectorAll('thead th')].map((th) => th.textContent)).not.toContain('Elo');
-      expect(sortButtons(container).map((button) => button.textContent)).toEqual(['Points']);
+      // Elo stays visible but disabled in Global, which has no Elo ladder.
+      expect(sortButtons(container).map((button) => button.textContent)).toEqual(['Points', 'Elo']);
       expect(sortButtons(container)[0]).toHaveAttribute('aria-pressed', 'true');
+      expect(sortButtons(container)[1]).toBeDisabled();
+      expect(sortButtons(container)[1]).toHaveAttribute('aria-pressed', 'false');
     });
 
     it('resets an Elo sort to points when switching to Global', async () => {
@@ -554,7 +557,7 @@ describe('Ranking', () => {
 
       expect(await findByText('RatedDuelist')).toBeTruthy();
       fireEvent.change(banListSelect(container), { target: { value: 'Goat Format' } });
-      await waitFor(() => expect(sortButtons(container)).toHaveLength(2));
+      await waitFor(() => expect(sortButtons(container)[1]).toBeEnabled());
       fireEvent.click(sortButtons(container)[1]);
       await waitFor(() => {
         expect(fetchMock.mock.calls.some(([url]) => String(url).includes('sortBy=rating'))).toBe(true);
@@ -583,7 +586,7 @@ describe('Ranking', () => {
       });
 
       fireEvent.change(banListSelect(container), { target: { value: 'Goat Format' } });
-      await waitFor(() => expect(sortButtons(container)).toHaveLength(2));
+      await waitFor(() => expect(sortButtons(container)[1]).toBeEnabled());
       expect(sortButtons(container).map((button) => button.textContent)).toEqual(['Points', 'Elo']);
 
       fireEvent.click(sortButtons(container)[1]);

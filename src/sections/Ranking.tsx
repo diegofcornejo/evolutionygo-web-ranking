@@ -216,14 +216,16 @@ export default function Ranking({ weekly = null }: Readonly<{ weekly?: WeeklyDue
           ))}
         </select>
         <div role='group' aria-label='Sort by' className='flex h-10 items-center rounded-full border border-white/20 bg-white/10 p-1'>
-          {SORT_OPTIONS.filter((option) => option.value === 'points' || !isGlobal).map((option) => (
+          {SORT_OPTIONS.map((option) => (
             <button
               key={option.value}
               type='button'
               aria-pressed={sortBy === option.value}
+              // Global has no Elo ladder, so Elo stays visible but cannot be picked there.
+              disabled={option.value === 'rating' && isGlobal}
               onClick={() => setSortBy(option.value)}
-              className={`h-8 rounded-full px-4 text-sm font-bold transition-colors ${
-                sortBy === option.value ? 'bg-primary text-primary-content' : 'text-white/80 hover:text-white'
+              className={`h-8 rounded-full px-4 text-sm font-bold transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
+                sortBy === option.value ? 'bg-primary text-primary-content' : 'text-white/80 enabled:hover:text-white'
               }`}
             >
               {option.label}
