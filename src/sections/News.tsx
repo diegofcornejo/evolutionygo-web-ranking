@@ -1,6 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
+import type { FocusEvent } from 'react';
 import { A11y, Autoplay, Keyboard, Navigation, Pagination } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
+import type { Swiper as SwiperInstance } from 'swiper';
 import Banner from '@components/Banner.tsx';
 import type { News } from '@types';
 
@@ -23,6 +25,58 @@ function usePrefersReducedMotion() {
 	}, []);
 
 	return prefersReducedMotion;
+}
+
+type AutoplayHandle = Pick<SwiperInstance, 'autoplay'>;
+
+const isOnSlide = (node: EventTarget | null) => node instanceof Element && node.closest('[data-news-slide]') !== null;
+
+// Swiper only pauses autoplay on hover, so a slide could move away while a keyboard user is
+// reading its link. Pause while focus is on a slide, and let the visitor stop autoplay outright.
+function useAutoplayControl(prefersReducedMotion: boolean) {
+	const swiperRef = useRef<AutoplayHandle | null>(null);
+	const focusOnSlide = useRef(false);
+	const [paused, setPaused] = useState(false);
+
+	const onSwiper = (swiper: AutoplayHandle) => {
+		swiperRef.current = swiper;
+	};
+
+	const onFocus = (event: FocusEvent<HTMLElement>) => {
+		if (prefersReducedMotion || !isOnSlide(event.target)) return;
+		focusOnSlide.current = true;
+		swiperRef.current?.autoplay?.stop();
+	};
+
+	const onBlur = (event: FocusEvent<HTMLElement>) => {
+		if (prefersReducedMotion || !focusOnSlide.current || isOnSlide(event.relatedTarget)) return;
+		focusOnSlide.current = false;
+		if (!paused) swiperRef.current?.autoplay?.start();
+	};
+
+	const togglePaused = () => {
+		if (paused) {
+			setPaused(false);
+			if (!focusOnSlide.current) swiperRef.current?.autoplay?.start();
+		} else {
+			setPaused(true);
+			swiperRef.current?.autoplay?.stop();
+		}
+	};
+
+	return { paused, onSwiper, onFocus, onBlur, togglePaused, showToggle: !prefersReducedMotion };
+}
+
+function PauseIcon({ paused }: Readonly<{ paused: boolean }>) {
+	return paused ? (
+		<svg aria-hidden="true" className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+			<path d="M8 5.14v14l11-7z" />
+		</svg>
+	) : (
+		<svg aria-hidden="true" className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+			<path d="M6 5h4v14H6zm8 0h4v14h-4z" />
+		</svg>
+	);
 }
 
 const news: News[] = [
@@ -71,11 +125,28 @@ const news: News[] = [
 type Variant = 'full' | 'compact';
 
 function CompactNews({ prefersReducedMotion }: Readonly<{ prefersReducedMotion: boolean }>) {
+	const headingId = useId();
+	const autoplay = useAutoplayControl(prefersReducedMotion);
 	return (
-		<section aria-label="Latest news" className="card flex h-full flex-col overflow-hidden border border-white/10 bg-base-300 shadow-2xl lg:absolute lg:inset-0">
+		<section
+			aria-labelledby={headingId}
+			className="card flex h-full flex-col overflow-hidden border border-white/10 bg-base-300 shadow-2xl lg:absolute lg:inset-0"
+			onBlur={autoplay.onBlur}
+			onFocus={autoplay.onFocus}
+		>
 			<div className="flex items-center justify-between px-5 pt-4">
-				<p className="text-sm font-semibold uppercase tracking-[0.18em] text-white/70">Latest news</p>
+				<p id={headingId} className="text-sm font-semibold uppercase tracking-[0.18em] text-white/70">Latest news</p>
 				<div className="flex gap-2">
+					{autoplay.showToggle && (
+						<button
+							aria-label={autoplay.paused ? 'Play news' : 'Pause news'}
+							className="btn btn-circle btn-ghost btn-sm border border-white/15"
+							onClick={autoplay.togglePaused}
+							type="button"
+						>
+							<PauseIcon paused={autoplay.paused} />
+						</button>
+					)}
 					<button aria-label="Previous news item" className="news-compact-prev btn btn-circle btn-ghost btn-sm border border-white/15" type="button">
 						<svg aria-hidden="true" className="h-4 w-4" fill="none" viewBox="0 0 24 24">
 							<path d="m15 18-6-6 6-6" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
@@ -89,8 +160,7 @@ function CompactNews({ prefersReducedMotion }: Readonly<{ prefersReducedMotion: 
 				</div>
 			</div>
 			<Swiper
-				aria-label="Latest news"
-				className="min-h-0 w-full flex-1 pb-10 [&_.swiper-pagination]:bottom-3 [&_.swiper-pagination-bullet]:h-1.5 [&_.swiper-pagination-bullet]:w-4 [&_.swiper-pagination-bullet]:rounded-full [&_.swiper-pagination-bullet]:bg-base-content/40 [&_.swiper-pagination-bullet]:opacity-100 [&_.swiper-pagination-bullet-active]:w-7 [&_.swiper-pagination-bullet-active]:bg-primary"
+				className="min-h-0 w-full flex-1 [&_.swiper-pagination]:pointer-events-none! [&_.swiper-pagination]:bottom-3! [&_.swiper-pagination-bullet]:pointer-events-auto! [&_.swiper-pagination-bullet]:h-1.5! [&_.swiper-pagination-bullet]:w-4! [&_.swiper-pagination-bullet]:rounded-full! [&_.swiper-pagination-bullet]:bg-base-content/70! [&_.swiper-pagination-bullet]:opacity-100! [&_.swiper-pagination-bullet-active]:w-7! [&_.swiper-pagination-bullet-active]:bg-primary!"
 				modules={[A11y, Autoplay, Keyboard, Navigation, Pagination]}
 				slidesPerView={1}
 				autoplay={prefersReducedMotion ? false : {
@@ -110,27 +180,32 @@ function CompactNews({ prefersReducedMotion }: Readonly<{ prefersReducedMotion: 
 				pagination={{
 					clickable: true,
 				}}
+				onSwiper={autoplay.onSwiper}
 				speed={prefersReducedMotion ? 0 : 500}
 			>
-				{news.map((newsItem) => (
+				{news.map((newsItem, index) => (
 					<SwiperSlide key={newsItem.id}>
-						<article aria-labelledby={`news-compact-${newsItem.id}`} className="flex h-full flex-col gap-3 px-5 pt-3">
+						<article aria-labelledby={`news-compact-${newsItem.id}`} className="group relative flex h-full flex-col gap-3 px-5 pt-3 pb-9" data-news-slide>
 							<img
-								alt={newsItem.title}
+								alt=""
 								className="aspect-[16/7] w-full rounded-lg object-cover lg:aspect-auto lg:min-h-0 lg:flex-1"
 								decoding="async"
-								loading="lazy"
+								loading={index === 0 ? 'eager' : 'lazy'}
 								src={newsItem.image}
 							/>
 							<h2 id={`news-compact-${newsItem.id}`} className="line-clamp-2 text-xl font-bold leading-7 text-white">
-								{newsItem.title}
+								{newsItem.buttonLink ? (
+									<a
+										className="rounded-sm after:absolute after:inset-0 after:content-[''] group-hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+										href={newsItem.buttonLink}
+									>
+										{newsItem.title}
+									</a>
+								) : (
+									newsItem.title
+								)}
 							</h2>
 							<p className="line-clamp-3 text-sm leading-relaxed text-white/80">{newsItem.description}</p>
-							{newsItem.buttonLink && newsItem.buttonText && (
-								<a className="btn btn-primary btn-sm self-start" href={newsItem.buttonLink}>
-									{newsItem.buttonText}
-								</a>
-							)}
 						</article>
 					</SwiperSlide>
 				))}
@@ -141,14 +216,14 @@ function CompactNews({ prefersReducedMotion }: Readonly<{ prefersReducedMotion: 
 
 export default function NewsSection({ variant = 'full' }: Readonly<{ variant?: Variant }>) {
 	const prefersReducedMotion = usePrefersReducedMotion();
+	const autoplay = useAutoplayControl(prefersReducedMotion);
 	if (variant === 'compact') {
 		return <CompactNews prefersReducedMotion={prefersReducedMotion} />;
 	}
 	return (
-		<section aria-label="Latest news" className="relative mx-4 my-10">
+		<section aria-label="Latest news" className="relative mx-4 my-10" onBlur={autoplay.onBlur} onFocus={autoplay.onFocus}>
 			<Swiper
-				aria-label="Latest news"
-				className="pb-10 [&_.swiper-pagination-bullet]:h-1.5 [&_.swiper-pagination-bullet]:w-6 [&_.swiper-pagination-bullet]:rounded-full [&_.swiper-pagination-bullet]:bg-base-content/40 [&_.swiper-pagination-bullet]:opacity-100 [&_.swiper-pagination-bullet]:transition-all [&_.swiper-pagination-bullet]:duration-300 [&_.swiper-pagination-bullet-active]:w-10 [&_.swiper-pagination-bullet-active]:bg-primary"
+				className="pb-10! [&_.swiper-pagination-bullet]:h-1.5! [&_.swiper-pagination-bullet]:w-6! [&_.swiper-pagination-bullet]:rounded-full! [&_.swiper-pagination-bullet]:bg-base-content/70! [&_.swiper-pagination-bullet]:opacity-100! [&_.swiper-pagination-bullet]:transition-all! [&_.swiper-pagination-bullet]:duration-300! [&_.swiper-pagination-bullet-active]:w-10! [&_.swiper-pagination-bullet-active]:bg-primary!"
 				modules={[A11y, Autoplay, Keyboard, Navigation, Pagination]}
 				slidesPerView={1}
 				autoplay={prefersReducedMotion ? false : {
@@ -169,18 +244,21 @@ export default function NewsSection({ variant = 'full' }: Readonly<{ variant?: V
 				pagination={{
 					clickable: true,
 				}}
+				onSwiper={autoplay.onSwiper}
 				speed={prefersReducedMotion ? 0 : 650}
 			>
 				{news.map((newsItem) => (
 					<SwiperSlide key={newsItem.id}>
-						<Banner
-							id={newsItem.id}
-							image={newsItem.image}
-							title={newsItem.title}
-							description={newsItem.description}
-							buttonLink={newsItem.buttonLink}
-							buttonText={newsItem.buttonText}
-						/>
+						<div className="h-full" data-news-slide>
+							<Banner
+								id={newsItem.id}
+								image={newsItem.image}
+								title={newsItem.title}
+								description={newsItem.description}
+								buttonLink={newsItem.buttonLink}
+								buttonText={newsItem.buttonText}
+							/>
+						</div>
 					</SwiperSlide>
 				))}
 			</Swiper>
@@ -204,6 +282,16 @@ export default function NewsSection({ variant = 'full' }: Readonly<{ variant?: V
 					</svg>
 				</button>
 			</div>
+			{autoplay.showToggle && (
+				<button
+					aria-label={autoplay.paused ? 'Play news' : 'Pause news'}
+					className="btn btn-circle btn-ghost btn-sm absolute bottom-0 right-2 z-20 border border-white/15 bg-black/45 text-white sm:right-4"
+					onClick={autoplay.togglePaused}
+					type="button"
+				>
+					<PauseIcon paused={autoplay.paused} />
+				</button>
+			)}
 		</section>
 	);
 }
