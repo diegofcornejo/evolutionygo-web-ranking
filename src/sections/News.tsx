@@ -72,7 +72,7 @@ type Variant = 'full' | 'compact';
 
 function CompactNews({ prefersReducedMotion }: Readonly<{ prefersReducedMotion: boolean }>) {
 	return (
-		<section aria-label="Latest news" className="card flex h-full flex-col overflow-hidden border border-white/10 bg-base-300 shadow-2xl">
+		<section aria-label="Latest news" className="card flex h-full flex-col overflow-hidden border border-white/10 bg-base-300 shadow-2xl lg:absolute lg:inset-0">
 			<div className="flex items-center justify-between px-5 pt-4">
 				<p className="text-sm font-semibold uppercase tracking-[0.18em] text-white/70">Latest news</p>
 				<div className="flex gap-2">
@@ -90,7 +90,7 @@ function CompactNews({ prefersReducedMotion }: Readonly<{ prefersReducedMotion: 
 			</div>
 			<Swiper
 				aria-label="Latest news"
-				className="w-full flex-1 pb-10 [&_.swiper-pagination]:bottom-3 [&_.swiper-pagination-bullet]:h-1.5 [&_.swiper-pagination-bullet]:w-4 [&_.swiper-pagination-bullet]:rounded-full [&_.swiper-pagination-bullet]:bg-base-content/40 [&_.swiper-pagination-bullet]:opacity-100 [&_.swiper-pagination-bullet-active]:w-7 [&_.swiper-pagination-bullet-active]:bg-primary"
+				className="min-h-0 w-full flex-1 pb-10 [&_.swiper-pagination]:bottom-3 [&_.swiper-pagination-bullet]:h-1.5 [&_.swiper-pagination-bullet]:w-4 [&_.swiper-pagination-bullet]:rounded-full [&_.swiper-pagination-bullet]:bg-base-content/40 [&_.swiper-pagination-bullet]:opacity-100 [&_.swiper-pagination-bullet-active]:w-7 [&_.swiper-pagination-bullet-active]:bg-primary"
 				modules={[A11y, Autoplay, Keyboard, Navigation, Pagination]}
 				slidesPerView={1}
 				autoplay={prefersReducedMotion ? false : {
@@ -114,10 +114,10 @@ function CompactNews({ prefersReducedMotion }: Readonly<{ prefersReducedMotion: 
 			>
 				{news.map((newsItem) => (
 					<SwiperSlide key={newsItem.id}>
-						<article aria-labelledby={`news-compact-${newsItem.id}`} className="flex flex-col gap-3 px-5 pt-3">
+						<article aria-labelledby={`news-compact-${newsItem.id}`} className="flex h-full flex-col gap-3 px-5 pt-3">
 							<img
 								alt={newsItem.title}
-								className="aspect-[16/7] w-full rounded-lg object-cover"
+								className="aspect-[16/7] w-full rounded-lg object-cover lg:aspect-auto lg:min-h-0 lg:flex-1"
 								decoding="async"
 								loading="lazy"
 								src={newsItem.image}

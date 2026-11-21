@@ -26,19 +26,19 @@ const highlights = [
 		class="evoduel-mark pointer-events-none absolute -z-10 hidden sm:block"
 		decoding="async"
 	/>
-	<div class="flex h-full flex-col justify-center gap-4 p-6 sm:p-8 lg:p-10">
+	<div class="flex h-full flex-col justify-center gap-3 p-5 sm:gap-4 sm:p-8 lg:p-10">
 		<p class="text-sm font-semibold uppercase tracking-[0.18em] text-white/70">Evolution YGO · Season {season}</p>
 		<div class="flex flex-wrap items-center gap-3">
-			<h1 id="evoduel-title" class="text-5xl font-bold leading-none text-white sm:text-6xl">EvoDuel</h1>
+			<h1 id="evoduel-title" class="text-4xl font-bold leading-none text-white sm:text-6xl">EvoDuel</h1>
 			<span class="badge badge-outline border-white/30 text-white/80">v{EVODUEL_VERSION}</span>
 		</div>
-		<p class="max-w-xl text-lg leading-relaxed text-white/85 [text-wrap:pretty]">
+		<p class="max-w-xl text-base leading-relaxed text-white/85 [text-wrap:pretty] sm:text-lg">
 			YGO duels in your browser. Against players or the AI, on phone or desktop.
 		</p>
-		<ul class="flex max-w-2xl flex-wrap gap-2" aria-label="What EvoDuel offers">
+		<ul class="flex max-w-2xl flex-wrap gap-1.5 sm:gap-2" aria-label="What EvoDuel offers">
 			{
 				highlights.map((highlight) => (
-					<li class="flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-sm text-white">
+					<li class="flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-2.5 py-0.5 text-xs text-white sm:px-3 sm:py-1 sm:text-sm">
 						<Icon name={highlight.icon} aria-hidden="true" class="text-base" />
 						{highlight.label}
 					</li>
@@ -54,7 +54,7 @@ const highlights = [
 				Other clients
 			</a>
 		</div>
-		<p class="text-sm text-white/70">Play without an account. Sign in to earn rewards.</p>
+		<p class="text-xs text-white/70 sm:text-sm">Play without an account. Sign in to earn rewards.</p>
 	</div>
 </section>
 

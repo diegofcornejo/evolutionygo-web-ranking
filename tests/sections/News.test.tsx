@@ -82,6 +82,13 @@ describe('NewsSection compact variant', () => {
     expect(screen.getByRole('link', { name: /Start climbing/ })).toHaveAttribute('href', '#section-ranking');
   });
 
+  it('fills its grid cell on desktop instead of sizing the row', () => {
+    render(<NewsSection variant="compact" />);
+
+    const card = screen.getByRole('region', { name: 'Latest news' });
+    expect(card).toHaveClass('lg:absolute', 'lg:inset-0');
+  });
+
   it('clamps descriptions so every slide keeps one height', () => {
     render(<NewsSection variant="compact" />);
 

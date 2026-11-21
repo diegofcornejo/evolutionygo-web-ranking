@@ -164,8 +164,26 @@ describe('index.astro page', () => {
     expect(result).toMatch(/data-layout-keywords="[^"]*\bEvoDuel\b[^"]*"/);
   });
 
+  it('puts the news card before the marquee in the DOM so keyboard order follows the desktop row', async () => {
+    const result = await renderIndex('http://localhost/?edition=off');
+    const title = result.indexOf('</h1>');
+    const news = result.indexOf('data-home-news');
+    const live = result.indexOf('component-url="@sections/Live.svelte"');
+
+    expect(title).toBeGreaterThan(-1);
+    expect(news).toBeGreaterThan(title);
+    expect(live).toBeGreaterThan(news);
+    expect(result).toMatch(/data-home-news[^>]*class="[^"]*\border-last\b[^"]*\blg:order-none\b/);
+  });
+
+  it('lets the hero set the desktop row height so the news card cannot push the marquee', async () => {
+    const result = await renderIndex('http://localhost/?edition=off');
+
+    expect(result).toMatch(/data-home-news[^>]*class="[^"]*\blg:relative\b/);
+  });
+
   it('shows the live marquee right after the title, before the news', async () => {
-    for (const edition of ['off', 'halloween', 'muertos', 'christmas', 'newyear']) {
+    for (const edition of ['halloween', 'muertos', 'christmas', 'newyear']) {
       const result = await renderIndex(`http://localhost/?edition=${edition}`);
       const title = result.indexOf('</h1>');
       const live = result.indexOf('component-url="@sections/Live.svelte"');

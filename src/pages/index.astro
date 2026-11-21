@@ -59,15 +59,15 @@ const keywords = [
 					<News client:only='react' />
 				</Fragment>
 			) : (
-				<div class='mx-4 mt-6 mb-10 grid gap-4 lg:grid-cols-[minmax(0,1.8fr)_minmax(0,1fr)]'>
+				<div class='mx-4 mt-4 mb-10 grid gap-4 sm:mt-6 lg:grid-cols-[minmax(0,1.8fr)_minmax(0,1fr)]'>
 					<div class='lg:col-start-1 lg:row-start-1'>
 						<EvoDuelHero season={currentSeason} />
 					</div>
+					<div data-home-news class='order-last min-w-0 lg:relative lg:order-none lg:col-start-2 lg:row-start-1 lg:min-h-[24rem]'>
+						<News variant='compact' client:only='react' />
+					</div>
 					<div class='min-w-0 lg:col-span-2 lg:row-start-2'>
 						<Live client:only='svelte' />
-					</div>
-					<div data-home-news class='min-w-0 lg:col-start-2 lg:row-start-1 lg:min-h-[24rem]'>
-						<News variant='compact' client:only='react' />
 					</div>
 				</div>
 			)
