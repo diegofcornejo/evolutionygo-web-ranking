@@ -93,7 +93,7 @@ describe('DuelistTradingCard', () => {
     expect(screen.getByText('PTS/212').parentElement).toHaveClass('flex-wrap');
     expect(container.querySelector('[data-initials]')!.parentElement).toHaveClass('min-h-12');
     // The frame is a grid so its content's minimum height grows the card instead of spilling out.
-    expect(screen.getByRole('link')).toHaveClass('grid');
+    expect(screen.getByRole('link')).toHaveClass('grid', 'grid-cols-1');
   });
 
   it('renders the weekly variant', () => {

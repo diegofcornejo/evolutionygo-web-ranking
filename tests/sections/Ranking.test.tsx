@@ -2,6 +2,7 @@ import { render, fireEvent, waitFor, within } from '@testing-library/react';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import type { Duelist } from '@types';
 import Ranking from '@sections/Ranking';
+import { parseWeeklyDuelist } from '@utils/weeklyDuelist';
 
 vi.mock('@stores/sessionStore', () => ({
   getSession: vi.fn(() => ({ isLoggedIn: false })),
@@ -400,58 +401,71 @@ describe('Ranking', () => {
   });
 
   describe('duelist of the week', () => {
-    it('shows the weekly card after the podium', async () => {
-      mockFetch({ stats: [...cardDuelists, ...tableDuelists] });
+    const weekly = parseWeeklyDuelist([weeklyItem])!;
 
-      const { container, findByText } = render(<Ranking />);
+    it('shows the weekly card after the podium, from its prop, without fetching it', async () => {
+      const fetchMock = mockFetch({ stats: [...cardDuelists, ...tableDuelists] });
+
+      const { container, findByText } = render(<Ranking weekly={weekly} />);
 
       expect(await findByText('DUELIST OF THE WEEK')).toBeTruthy();
       const third = container.querySelector('[data-place="3"]')!;
-      const weekly = container.querySelector('[data-weekly]')!;
-      expect(third.compareDocumentPosition(weekly) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-      expect(within(weekly as HTMLElement).getByText('[Nov 9 – Nov 15]')).toBeTruthy();
-      expect(weekly.closest('li')).toHaveClass('lg:col-start-5');
-      expect(weekly.closest('li')).not.toHaveClass('md:col-start-5');
+      const weeklyCard = container.querySelector('[data-weekly]')!;
+      expect(third.compareDocumentPosition(weeklyCard) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+      expect(within(weeklyCard as HTMLElement).getByText('[Nov 9 – Nov 15]')).toBeTruthy();
+      expect(weeklyCard.closest('li')).toHaveClass('lg:col-start-5');
+      expect(fetchMock.mock.calls.some(([url]) => String(url).includes('player-of-the-week'))).toBe(false);
     });
 
-    it('hides the weekly card when the endpoint fails', async () => {
-      mockFetch({ stats: [...cardDuelists, ...tableDuelists], weekly: () => Promise.reject(new Error('down')) });
-
-      const { container, findByText } = render(<Ranking />);
-
-      expect(await findByText('RatedCardDuelist')).toBeTruthy();
-      await waitFor(() => expect(container.querySelector('[data-weekly]')).toBeNull());
-      expect(container.querySelector('[data-podium-divider]')).toBeNull();
-    });
-
-    it('hides the weekly card when the endpoint is empty', async () => {
-      mockFetch({ stats: [...cardDuelists, ...tableDuelists], weekly: [] });
+    it('renders no weekly card without the prop', async () => {
+      mockFetch({ stats: [...cardDuelists, ...tableDuelists] });
 
       const { container, findByText } = render(<Ranking />);
 
       expect(await findByText('RatedCardDuelist')).toBeTruthy();
       expect(container.querySelector('[data-weekly]')).toBeNull();
+      expect(container.querySelector('[data-podium-divider]')).toBeNull();
     });
 
-    it('fetches the weekly player once, not on filter changes', async () => {
-      const fetchMock = mockFetch({ stats: [...cardDuelists, ...tableDuelists] });
+    it('waits for the leaderboard before showing the cards, so nothing shifts when it lands', async () => {
+      const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+        const url = String(input);
+        if (url.includes('/ban-lists/grouped')) return jsonResponse(groupedBanLists);
+        if (url.includes('/ban-lists')) return jsonResponse(flatBanLists);
+        return new Promise(() => {});
+      });
+      vi.stubGlobal('fetch', fetchMock);
 
-      const { container, findByText } = render(<Ranking />);
+      const { container } = render(<Ranking weekly={weekly} />);
+
+      await waitFor(() => expect(fetchMock.mock.calls.some(([url]) => String(url).includes('/stats/'))).toBe(true));
+      expect(container.querySelector('[data-weekly]')).toBeNull();
+    });
+
+    it('centers the weekly card when the podium is empty', async () => {
+      mockFetch({ stats: [] });
+
+      const { container, findByText } = render(<Ranking weekly={weekly} />);
 
       expect(await findByText('DUELIST OF THE WEEK')).toBeTruthy();
-      fireEvent.change(banListSelect(container), { target: { value: 'Goat Format' } });
-      fireEvent.change(container.querySelector('select[aria-label="Filter by season"]')!, { target: { value: '2' } });
-      await waitFor(() => {
-        expect(fetchMock.mock.calls.some(([url]) => String(url).includes('season=2'))).toBe(true);
-      });
-      const weeklyCalls = fetchMock.mock.calls.filter(([url]) => String(url).includes('player-of-the-week'));
-      expect(weeklyCalls).toHaveLength(1);
+      expect(container.querySelector('[data-weekly]')!.closest('li')).not.toHaveClass('lg:col-start-5');
+      expect(container.querySelector('[data-podium-divider]')).toBeNull();
+    });
+
+    it('keeps the podium width fixed per breakpoint whether or not there is a weekly card', async () => {
+      mockFetch({ stats: [...cardDuelists, ...tableDuelists] });
+
+      const { container, findByText } = render(<Ranking weekly={weekly} />);
+
+      expect(await findByText('DUELIST OF THE WEEK')).toBeTruthy();
+      expect(container.querySelector('[aria-label="Top three duelists"]')).toHaveClass('max-w-4xl', 'lg:max-w-6xl');
     });
 
     it('shows the weekly card even when that player is in the podium', async () => {
-      mockFetch({ stats: [...cardDuelists, ...tableDuelists], weekly: [{ ...weeklyItem, userId: '1', username: 'RatedCardDuelist' }] });
+      mockFetch({ stats: [...cardDuelists, ...tableDuelists] });
+      const samePlayer = parseWeeklyDuelist([{ ...weeklyItem, userId: '1', username: 'RatedCardDuelist' }])!;
 
-      const { container, findByText } = render(<Ranking />);
+      const { container, findByText } = render(<Ranking weekly={samePlayer} />);
 
       expect(await findByText('DUELIST OF THE WEEK')).toBeTruthy();
       expect(container.querySelector('[data-place="1"]')).not.toBeNull();

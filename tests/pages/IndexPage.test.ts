@@ -1,6 +1,6 @@
 /// <reference types="vitest" />
 /// <reference types="astro/client" />
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import reactRenderer from '@astrojs/react/server.js';
 import svelteRenderer from '@astrojs/svelte/server.js';
 import { experimental_AstroContainer } from 'astro/container';
@@ -65,7 +65,48 @@ const renderIndex = async (url: string, { withMeta = false } = {}) => {
   return withMeta ? html : stripLayoutMeta(html);
 };
 
+const weeklyItem = {
+  userId: 'w1',
+  username: 'WeeklyDuelist',
+  points: '27',
+  wins: '19',
+  losses: '5',
+  from: '2026-11-09T00:00:00.000Z',
+  to: '2026-11-15T00:00:00.000Z',
+};
+
+const stubWeekly = (respond: () => Promise<unknown>) =>
+  vi.stubGlobal('fetch', vi.fn(async (input: RequestInfo | URL) => {
+    if (String(input).includes('/stats/player-of-the-week')) return respond();
+    throw new Error(`Unexpected request: ${String(input)}`);
+  }));
+
+const rankingIsland = (html: string) => html.match(/<astro-island[^>]*component-url="@sections\/Ranking"[^>]*>/)?.[0] ?? '';
+
 describe('index.astro page', () => {
+  beforeEach(() => {
+    stubWeekly(async () => ({ ok: true, json: async () => [weeklyItem] }));
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('fetches the duelist of the week on the server and hands it to the ranking', async () => {
+    const result = await renderIndex('http://localhost/?edition=off');
+
+    expect(rankingIsland(result)).toContain('WeeklyDuelist');
+  });
+
+  it('renders the ranking without a weekly card when that request fails', async () => {
+    stubWeekly(async () => { throw new Error('down'); });
+
+    const result = await renderIndex('http://localhost/?edition=off');
+
+    expect(rankingIsland(result)).not.toBe('');
+    expect(rankingIsland(result)).not.toContain('WeeklyDuelist');
+  });
+
   it('renders the home sections', async () => {
     const result = await renderIndex('http://localhost/?edition=off');
 

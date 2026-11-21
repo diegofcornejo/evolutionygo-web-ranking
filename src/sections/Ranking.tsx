@@ -4,7 +4,6 @@ import Rating from '@components/Rating';
 import type { Duelist } from '@types';
 import type { BanListSelectorOption } from '@utils/banListSelector';
 import { formatWinRate, winRateStars } from '@utils/winRate';
-import { parseWeeklyDuelist } from '@utils/weeklyDuelist';
 import type { WeeklyDuelist } from '@utils/weeklyDuelist';
 import { banlists } from '@stores/banlistsStore';
 import { getSession } from '@stores/sessionStore';
@@ -38,32 +37,22 @@ const buildUserStatsUrl = (apiUrl: string, userId: string, season: string, banLi
   return `${baseUrl}&banListName=${banList}`;
 };
 
-export default function Ranking() {
+// The duelist of the week is fetched on the server (index.astro) so it is there from the first render.
+export default function Ranking({ weekly = null }: Readonly<{ weekly?: WeeklyDuelist | null }>) {
   const [duelists, setDuelists] = useState<Duelist[]>([]);
   const [topDuelists, setTopDuelists] = useState<Duelist[]>([]);
 	const [season, setSeason] = useState<string>(import.meta.env.PUBLIC_DEFAULT_SEASON);
 	const [banList, setBanList] = useState<string>(import.meta.env.PUBLIC_DEFAULT_BAN_LIST);
 	const [banListOptions, setBanListOptions] = useState<BanListSelectorOption[]>([]);
 	const isGlobal = banList === GLOBAL_BAN_LIST;
+	// With no podium (empty ladder) the weekly card is centered instead of sitting in the fifth column.
+	const weeklyBeside = !!weekly && topDuelists.length > 0;
 	const [sortBy, setSortBy] = useState<SortBy>('points');
 	const [currentUser, setCurrentUser] = useState<{ id: string; username: string } | null>(null);
 	const [currentUserStats, setCurrentUserStats] = useState<Duelist | null>(null);
 	const API_URL = import.meta.env.PUBLIC_API_URL;
-	const [weekly, setWeekly] = useState<WeeklyDuelist | null>(null);
-
-	// The duelist of the week is global and weekly: fetched once, not on filter changes.
-	useEffect(() => {
-		const fetchWeekly = async () => {
-			try {
-				const response = await fetch(`${API_URL}/stats/player-of-the-week`);
-				if (!response.ok) return;
-				setWeekly(parseWeeklyDuelist(await response.json()));
-			} catch (error) {
-				console.error('Error fetching the duelist of the week:', error);
-			}
-		};
-		fetchWeekly();
-	}, [API_URL]);
+	// Cards wait for the first leaderboard response so the podium row never reflows when it lands.
+	const [leaderboardLoaded, setLeaderboardLoaded] = useState(false);
 
 	
 	useEffect(() => {
@@ -185,6 +174,7 @@ export default function Ranking() {
       const data = await response.json();
       setTopDuelists(data.slice(0, 3));
       setDuelists(data.slice(3));
+      setLeaderboardLoaded(true);
     };
 
     fetchDuelists();
@@ -244,11 +234,12 @@ export default function Ranking() {
           ))}
         </div>
       ) : null}
+      {leaderboardLoaded && (
       <ul
         aria-label='Top three duelists'
-        className={`mx-auto mt-16 grid grid-cols-2 items-end gap-x-4 gap-y-8 p-0 sm:gap-x-6 md:gap-x-8 ${
-          weekly ? 'max-w-6xl md:grid-cols-3 lg:grid-cols-[1fr_1.15fr_1fr_auto_1fr]' : 'max-w-4xl md:grid-cols-3'
-        }`}
+        className={`mx-auto mt-16 grid max-w-4xl grid-cols-2 items-end gap-x-4 gap-y-8 p-0 sm:gap-x-6 md:grid-cols-3 md:gap-x-8 ${
+          weekly ? 'lg:max-w-6xl' : ''
+        } ${weeklyBeside ? 'lg:grid-cols-[1fr_1.15fr_1fr_auto_1fr]' : ''}`}
       >
         {topDuelists.map((duelist: Duelist, index: number) => (
           <li key={duelist.userId} className={PODIUM_SLOT[index]}>
@@ -265,12 +256,18 @@ export default function Ranking() {
         ))}
         {weekly && (
           <>
+            {weeklyBeside && (
+              <li
+                aria-hidden='true'
+                data-podium-divider
+                className='hidden w-px self-stretch bg-gradient-to-b from-transparent via-base-content/20 to-transparent lg:col-start-4 lg:row-start-1 lg:block'
+              />
+            )}
             <li
-              aria-hidden='true'
-              data-podium-divider
-              className='hidden w-px self-stretch bg-gradient-to-b from-transparent via-base-content/20 to-transparent lg:col-start-4 lg:row-start-1 lg:block'
-            />
-            <li className='col-span-2 mx-auto w-[48%] md:col-span-3 md:w-[30%] lg:col-span-1 lg:col-start-5 lg:row-start-1 lg:w-[86%]'>
+              className={`col-span-2 mx-auto w-[48%] md:col-span-3 md:w-[30%] ${
+                weeklyBeside ? 'lg:col-span-1 lg:col-start-5 lg:row-start-1 lg:w-[86%]' : 'lg:w-[22%]'
+              }`}
+            >
               <DuelistTradingCard
                 {...weekly.duelist}
                 place={1}
@@ -283,6 +280,7 @@ export default function Ranking() {
           </>
         )}
       </ul>
+      )}
       {getDisplayDuelists().length > 0 && (
       <div className='overflow-x-auto mt-8'>
         <table className='table table-zebra bg-base-300'>

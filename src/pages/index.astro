@@ -14,8 +14,22 @@ import WinterHero from '@components/Christmas/WinterHero.astro';
 import NewYearHero from '@components/NewYear/NewYearHero.astro';
 import EvoDuelHero from '@components/EvoDuel/EvoDuelHero.astro';
 import { EDITION_PARAM, getSeasonalEdition } from '@utils/seasonalEdition';
+import { parseWeeklyDuelist } from '@utils/weeklyDuelist';
+
+// Server-side, like the old strip, so the ranking has it from the first render and nothing reflows.
+const fetchWeeklyDuelist = async () => {
+	try {
+		const response = await fetch(`${import.meta.env.PUBLIC_API_URL}/stats/player-of-the-week`, { cache: 'no-store' });
+		if (!response.ok) return null;
+		return parseWeeklyDuelist(await response.json());
+	} catch (error) {
+		console.error('Error fetching the duelist of the week:', error);
+		return null;
+	}
+};
 
 const currentSeason = import.meta.env.PUBLIC_DEFAULT_SEASON;
+const weeklyDuelist = await fetchWeeklyDuelist();
 const edition = getSeasonalEdition(new Date(), Astro.url.searchParams.get(EDITION_PARAM));
 const EditionHero = edition && { halloween: ShadowRealmHero, muertos: OfrendaHero, christmas: WinterHero, newyear: NewYearHero }[edition];
 const title = `Evolution YGO Season ${currentSeason}`;
@@ -71,7 +85,7 @@ const keywords = [
 				</div>
 			)
 		}
-		<Ranking client:load />
+		<Ranking weekly={weeklyDuelist} client:load />
 		<Features />
 		<Download />
 		<Faqs />
