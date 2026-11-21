@@ -77,6 +77,14 @@ describe('DuelistTradingCard', () => {
     expect(screen.getByLabelText('Level 1')).toBeInTheDocument();
   });
 
+  it('builds the art initials from names that contain spaces', () => {
+    const { container } = render(
+      <DuelistTradingCard {...fuku} username="K R O N N O" banListName="TCG" season="7" place={3} showElo />
+    );
+
+    expect(container.querySelector('[data-initials]')).toHaveTextContent('KR');
+  });
+
   it('truncates a long name and keeps it in the title', () => {
     render(
       <DuelistTradingCard {...fuku} username="AVeryLongDuelistName (You)" banListName="TCG" season="7" place={3} showElo />

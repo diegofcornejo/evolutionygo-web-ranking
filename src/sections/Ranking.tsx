@@ -229,7 +229,7 @@ export default function Ranking() {
       ) : null}
       <ul
         aria-label='Top three duelists'
-        className='mx-auto mt-12 grid max-w-4xl grid-cols-2 items-end gap-x-4 gap-y-8 p-0 sm:gap-x-6 md:grid-cols-3 md:gap-x-8'
+        className='mx-auto mt-16 grid max-w-4xl grid-cols-2 items-end gap-x-4 gap-y-8 p-0 sm:gap-x-6 md:grid-cols-3 md:gap-x-8'
       >
         {topDuelists.map((duelist: Duelist, index: number) => (
           <li key={duelist.userId} className={PODIUM_SLOT[index]}>

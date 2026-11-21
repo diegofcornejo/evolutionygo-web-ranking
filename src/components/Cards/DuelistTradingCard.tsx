@@ -30,7 +30,7 @@ const BADGE_RING: Record<Place, string> = {
 
 const MAX_TILT_DEG = 8;
 
-const initials = (username: string) => username.replace(/\s*\(You\)$/, '').slice(0, 2).toUpperCase();
+const initials = (username: string) => username.replace(/\s*\(You\)$/, '').replace(/\s+/g, '').slice(0, 2).toUpperCase();
 
 export default function DuelistTradingCard({
 	userId,
@@ -100,6 +100,7 @@ export default function DuelistTradingCard({
 				<div className="relative min-h-0 flex-1 overflow-hidden rounded-md border-2 border-black/60 bg-[radial-gradient(circle_at_50%_38%,rgba(255,255,255,0.32),transparent_58%),linear-gradient(160deg,#2b1250,#14203f)]">
 					<span
 						aria-hidden="true"
+						data-initials
 						className={`absolute inset-0 grid place-items-center font-black text-white [text-shadow:0_3px_12px_rgba(0,0,0,0.65)] ${featured ? 'text-6xl sm:text-7xl' : 'text-4xl sm:text-5xl'}`}
 					>
 						{initials(username)}
