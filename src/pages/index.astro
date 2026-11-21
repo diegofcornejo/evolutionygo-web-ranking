@@ -13,13 +13,14 @@ import ShadowRealmHero from '@components/Halloween/ShadowRealmHero.astro';
 import OfrendaHero from '@components/DiaDeMuertos/OfrendaHero.astro';
 import WinterHero from '@components/Christmas/WinterHero.astro';
 import NewYearHero from '@components/NewYear/NewYearHero.astro';
+import EvoDuelHero from '@components/EvoDuel/EvoDuelHero.astro';
 import { EDITION_PARAM, getSeasonalEdition } from '@utils/seasonalEdition';
 
 const currentSeason = import.meta.env.PUBLIC_DEFAULT_SEASON;
 const edition = getSeasonalEdition(new Date(), Astro.url.searchParams.get(EDITION_PARAM));
 const EditionHero = edition && { halloween: ShadowRealmHero, muertos: OfrendaHero, christmas: WinterHero, newyear: NewYearHero }[edition];
 const title = `Evolution YGO Season ${currentSeason}`;
-const description = `Play Yu-Gi-Oh! online for free on Evolution YGO Season ${currentSeason}. Compatible with EDOPro, Koishi, and YGO Mobile. Join competitive rankings, participate in tournaments, and duel players worldwide!`;
+const description = `Play Yu-Gi-Oh! online for free on Evolution YGO Season ${currentSeason}. Compatible with EDOPro, Koishi, and YGO Mobile. Join competitive rankings, participate in tournaments, and duel players worldwide! Play instantly in your browser with EvoDuel.`;
 
 const keywords = [
 	'Yu-Gi-Oh online',
@@ -35,6 +36,7 @@ const keywords = [
 	'Yu-Gi-Oh tournaments',
 	`Season ${currentSeason}`,
 	'Evolution YGO',
+	'EvoDuel',
 	'Evolution Server',
 	'duel links alternative',
 	'master duel alternative'
@@ -48,19 +50,28 @@ const keywords = [
 	image="/banners/banner1.webp"
 >
 	<main class='w-full text-[white] text-xl leading-[1.6] mx-auto'>
+		<RoomsWebSocketListener client:only='react' />
 		{
 			EditionHero ? (
-				<EditionHero season={currentSeason} />
+				<Fragment>
+					<EditionHero season={currentSeason} />
+					<Live client:only='svelte' />
+					<News client:only='react' />
+				</Fragment>
 			) : (
-				<h1 class='text-4xl sm:text-5xl font-bold leading-none text-center mb-[1em] max-w-sm md:max-w-full pt-[1em]'>
-					<span class='text-gradient'> {title} </span>
-				</h1>
+				<div class='mx-4 mt-6 mb-10 grid gap-4 lg:grid-cols-[minmax(0,1.8fr)_minmax(0,1fr)]'>
+					<div class='lg:col-start-1 lg:row-start-1'>
+						<EvoDuelHero season={currentSeason} />
+					</div>
+					<div class='min-w-0 lg:col-span-2 lg:row-start-2'>
+						<Live client:only='svelte' />
+					</div>
+					<div data-home-news class='min-w-0 lg:col-start-2 lg:row-start-1 lg:min-h-[24rem]'>
+						<News variant='compact' client:only='react' />
+					</div>
+				</div>
 			)
 		}
-		<RoomsWebSocketListener client:only='react' />
-		{!EditionHero && <News client:only='react' />}
-		<Live client:only='svelte' />
-		{EditionHero && <News client:only='react' />}
 		<DuelistOfTheWeek />
 		<Ranking client:load />
 		<Features />

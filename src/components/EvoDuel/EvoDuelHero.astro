@@ -1,0 +1,73 @@
+---
+import { Icon } from 'astro-icon/components';
+import { EVODUEL_URL, EVODUEL_VERSION } from '@utils/evoDuel';
+
+interface Props {
+	season: string;
+}
+
+const { season } = Astro.props;
+
+const highlights = [
+	{ label: 'Duel the AI', icon: 'mdi:robot-outline' },
+	{ label: 'Phone & desktop', icon: 'mdi:cellphone-link' },
+	{ label: 'No install', icon: 'mdi:lightning-bolt-outline' },
+	{ label: 'Daily missions', icon: 'mdi:target' },
+	{ label: 'Essence & shop', icon: 'mdi:diamond-stone' },
+	{ label: 'Cosmetics & emotes', icon: 'mdi:emoticon-cool-outline' },
+];
+---
+
+<section aria-labelledby="evoduel-title" class="evoduel-hero card relative isolate h-full overflow-hidden border border-white/10 shadow-2xl">
+	<img
+		src="/favicon.svg"
+		alt=""
+		aria-hidden="true"
+		class="evoduel-mark pointer-events-none absolute -z-10 hidden sm:block"
+		decoding="async"
+	/>
+	<div class="flex h-full flex-col justify-center gap-4 p-6 sm:p-8 lg:p-10">
+		<p class="text-sm font-semibold uppercase tracking-[0.18em] text-white/70">Evolution YGO · Season {season}</p>
+		<div class="flex flex-wrap items-center gap-3">
+			<h1 id="evoduel-title" class="text-5xl font-bold leading-none text-white sm:text-6xl">EvoDuel</h1>
+			<span class="badge badge-outline border-white/30 text-white/80">v{EVODUEL_VERSION}</span>
+		</div>
+		<p class="max-w-xl text-lg leading-relaxed text-white/85 [text-wrap:pretty]">
+			YGO duels in your browser. Against players or the AI, on phone or desktop.
+		</p>
+		<ul class="flex max-w-2xl flex-wrap gap-2" aria-label="What EvoDuel offers">
+			{
+				highlights.map((highlight) => (
+					<li class="flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-sm text-white">
+						<Icon name={highlight.icon} aria-hidden="true" class="text-base" />
+						{highlight.label}
+					</li>
+				))
+			}
+		</ul>
+		<div class="flex flex-wrap items-center gap-3 pt-1">
+			<a class="btn btn-primary sm:btn-lg" href={EVODUEL_URL} data-umami-event="home-click-evoduel-play">
+				<Icon name="mdi:play" aria-hidden="true" class="text-xl" />
+				Play now
+			</a>
+			<a class="btn btn-ghost border-white/25 text-white sm:btn-lg" href="#section-download" data-umami-event="home-click-other-clients">
+				Other clients
+			</a>
+		</div>
+		<p class="text-sm text-white/70">Play without an account. Sign in to earn rewards.</p>
+	</div>
+</section>
+
+<style>
+	.evoduel-hero {
+		background: linear-gradient(135deg, #1b2a64 0%, #33206d 55%, #561a78 100%);
+	}
+
+	.evoduel-mark {
+		right: -3rem;
+		top: 50%;
+		height: 130%;
+		transform: translateY(-50%) rotate(-8deg);
+		opacity: 0.14;
+	}
+</style>

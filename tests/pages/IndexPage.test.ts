@@ -68,7 +68,7 @@ describe('index.astro page', () => {
   it('renders the home sections', async () => {
     const result = await renderIndex('http://localhost/?edition=off');
 
-    expect(result).toContain('Evolution YGO Season');
+    expect(result).toMatch(/Evolution YGO · Season \d+/);
     expect(result).not.toContain('shadow-realm-title');
     expect(result).toContain('component-url="@sections/Live.svelte"');
     expect(result).toContain('MockReactSection');
@@ -124,6 +124,44 @@ describe('index.astro page', () => {
     expect(result).toContain('id="newyear-title"');
     expect(result).toContain('data-countdown');
     expect(result).toContain('data-fireworks');
+  });
+
+  it('opens with the EvoDuel block outside editions', async () => {
+    const result = await renderIndex('http://localhost/?edition=off');
+
+    expect(result).toMatch(/<h1[^>]*>\s*EvoDuel\s*<\/h1>/);
+    expect(result).toMatch(/Evolution YGO · Season \d+/);
+    expect(result).toContain('YGO duels in your browser. Against players or the AI, on phone or desktop.');
+    for (const highlight of ['Duel the AI', 'Phone &amp; desktop', 'No install', 'Daily missions', 'Essence &amp; shop', 'Cosmetics &amp; emotes']) {
+      expect(result).toContain(highlight);
+    }
+    expect(result).toContain('Play without an account. Sign in to earn rewards.');
+    expect(result).toMatch(/<a[^>]*href="https:\/\/evoduel.com"[^>]*data-umami-event="home-click-evoduel-play"/);
+    expect(result).toMatch(/<a[^>]*href="#section-download"[^>]*data-umami-event="home-click-other-clients"/);
+    const hero = result.match(/<section[^>]*aria-labelledby="evoduel-title"[\s\S]*?<\/section>/)?.[0] ?? '';
+    expect(hero).toContain('EvoDuel');
+    expect(hero).not.toContain('Play Yu-Gi-Oh!');
+  });
+
+  it('reserves the news card height so the marquee does not jump on hydration', async () => {
+    const result = await renderIndex('http://localhost/?edition=off');
+
+    expect(result).toMatch(/data-home-news[^>]*class="[^"]*lg:min-h-/);
+  });
+
+  it('keeps the edition branch free of the EvoDuel block', async () => {
+    const result = await renderIndex('http://localhost/?edition=christmas');
+
+    expect(result).not.toContain('Daily missions');
+    expect(result).not.toContain('data-home-news');
+    expect(result).toContain('id="winter-title"');
+  });
+
+  it('names EvoDuel in the home description and keywords', async () => {
+    const result = await renderIndex('http://localhost/?edition=off');
+
+    expect(result).toMatch(/data-layout-description="[^"]*Play instantly in your browser with EvoDuel\.[^"]*"/);
+    expect(result).toMatch(/data-layout-keywords="[^"]*\bEvoDuel\b[^"]*"/);
   });
 
   it('shows the live marquee right after the title, before the news', async () => {
