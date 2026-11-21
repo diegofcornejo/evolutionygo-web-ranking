@@ -432,7 +432,7 @@ describe('Ranking', () => {
       });
       expect(selects[0].parentElement).toHaveClass('flex-wrap');
       expect(selects[0].parentElement).not.toHaveClass('flex-col');
-      // The podium vortex is positioned and reaches up under the filters; they must stack above it.
+      // The podium darkness is positioned and reaches up under the filters; they must stack above it.
       expect(selects[0].parentElement).toHaveClass('relative', 'z-10');
     });
 
@@ -449,8 +449,8 @@ describe('Ranking', () => {
     });
   });
 
-  describe('vortex', () => {
-    it('draws the vortex behind the podium', async () => {
+  describe('darkness', () => {
+    it('draws the darkness behind the podium', async () => {
       mockFetch({ stats: [...cardDuelists, ...tableDuelists] });
 
       const { container, findByText } = render(<Ranking />);
@@ -458,19 +458,20 @@ describe('Ranking', () => {
       expect(await findByText('RatedCardDuelist')).toBeTruthy();
       // Centered on the #1 card, behind it, wherever the row puts that card.
       const firstSlot = container.querySelector('[data-place="1"]')!.closest('li')!;
-      const vortex = firstSlot.querySelector('[data-podium-vortex]')!;
-      expect(vortex).not.toBeNull();
-      expect(vortex.compareDocumentPosition(firstSlot.querySelector('[data-place="1"]')!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-      expect(container.querySelectorAll('[data-podium-vortex]')).toHaveLength(1);
+      const darkness = firstSlot.querySelector('[data-podium-darkness]')!;
+      expect(darkness).not.toBeNull();
+      expect(darkness.compareDocumentPosition(firstSlot.querySelector('[data-place="1"]')!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+      expect(container.querySelectorAll('[data-podium-darkness]')).toHaveLength(1);
+      expect(container.querySelector('[data-podium-vortex]')).toBeNull();
     });
 
-    it('draws no vortex when the podium is empty', async () => {
+    it('draws no darkness when the podium is empty', async () => {
       mockFetch({ stats: [] });
 
       const { container } = render(<Ranking />);
 
       await waitFor(() => expect(container.querySelector('[aria-label="Top three duelists"]')).not.toBeNull());
-      expect(container.querySelector('[data-podium-vortex]')).toBeNull();
+      expect(container.querySelector('[data-podium-darkness]')).toBeNull();
     });
   });
 

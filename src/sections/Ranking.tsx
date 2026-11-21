@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import DuelistTradingCard from '@components/Cards/DuelistTradingCard';
-import PodiumVortex from '@components/PodiumVortex';
+import PodiumDarkness from '@components/PodiumDarkness';
 import Rating from '@components/Rating';
 import type { Duelist } from '@types';
 import type { BanListSelectorOption } from '@utils/banListSelector';
@@ -263,7 +263,7 @@ export default function Ranking({ weekly = null }: Readonly<{ weekly?: WeeklyDue
       >
         {topDuelists.map((duelist: Duelist, index: number) => (
           <li key={duelist.userId} className={`relative ${PODIUM_SLOT[index]}`}>
-            {index === 0 && <PodiumVortex />}
+            {index === 0 && <PodiumDarkness />}
             <DuelistTradingCard
               {...duelist}
               username={getDisplayName(duelist)}

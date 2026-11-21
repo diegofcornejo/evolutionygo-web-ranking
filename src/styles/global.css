@@ -137,12 +137,40 @@
 	--color-bronze: #CD7F32;
 	--color-transparent: transparent;
 	--animate-foil: foil-sweep 4.5s linear infinite;
-	--animate-vortex: vortex-spin 90s linear infinite;
-	--animate-vortex-reverse: vortex-spin 140s linear infinite reverse;
+	--animate-fog-a: fog-a 13s ease-in-out infinite alternate;
+	--animate-fog-b: fog-b 16s ease-in-out infinite alternate;
+	--animate-fog-c: fog-c 20s ease-in-out infinite alternate;
+	--animate-mist: mist-drift 28s linear infinite alternate;
+	--animate-glow-breathe: glow-breathe 5s ease-in-out infinite;
 
-	@keyframes vortex-spin {
+	@keyframes fog-a {
 		to {
-			transform: rotate(1turn);
+			transform: translate(32%, -8%);
+		}
+	}
+
+	@keyframes fog-b {
+		to {
+			transform: translate(-36%, 6%);
+		}
+	}
+
+	@keyframes fog-c {
+		to {
+			transform: translate(26%, 10%);
+		}
+	}
+
+	@keyframes mist-drift {
+		to {
+			transform: translateX(-16%);
+		}
+	}
+
+	@keyframes glow-breathe {
+		50% {
+			opacity: 0.6;
+			transform: scale(1.06);
 		}
 	}
 
