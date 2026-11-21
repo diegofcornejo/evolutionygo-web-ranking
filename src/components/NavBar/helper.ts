@@ -71,4 +71,15 @@ const setTheme = () => {
 	document.getElementById('button-navbar-theme').addEventListener('change', toggleTheme);
 }
 
-export { update, updateUser, setTheme, handleLogout, logout, handleOpenSettings };
+// <details> submenus only close from their own <summary>, so close them when the visitor
+// clicks elsewhere, picks one of their links, or presses Escape (target null).
+const closeNavGroups = (target: EventTarget | null, root: ParentNode = document) => {
+	const element = target instanceof Element ? target : null;
+	root.querySelectorAll<HTMLDetailsElement>('details[data-nav-group][open]').forEach((group) => {
+		const inside = !!element && group.contains(element);
+		const choseLink = inside && !!element.closest('[data-nav-link]');
+		if (!inside || choseLink) group.open = false;
+	});
+};
+
+export { update, updateUser, setTheme, handleLogout, logout, handleOpenSettings, closeNavGroups };

@@ -19,7 +19,7 @@ const getBadgeClass = (item: MenuItemWithBadge) => item.badgeClass ?? 'text-prim
 
 <script>
 	import { session, currentNavPath, setNavPath } from '@stores/sessionStore';
-	import { update, updateUser, setTheme, handleLogout, handleOpenSettings } from './helper';
+	import { update, updateUser, setTheme, handleLogout, handleOpenSettings, closeNavGroups } from './helper';
 
 	const normalizePath = (href: string | null): { path: string; hash: string } | null => {
 		if (!href || href.startsWith('http')) return null;
@@ -91,6 +91,11 @@ const getBadgeClass = (item: MenuItemWithBadge) => item.badgeClass ?? 'text-prim
 	});
 
 	window.addEventListener('hashchange', refreshActiveNav);
+
+	document.addEventListener('click', (event) => closeNavGroups(event.target));
+	document.addEventListener('keydown', (event) => {
+		if (event.key === 'Escape') closeNavGroups(null);
+	});
 
 	document.addEventListener('click', (event) => {
 		const link = (event.target as Element | null)?.closest?.('[data-nav-link]');

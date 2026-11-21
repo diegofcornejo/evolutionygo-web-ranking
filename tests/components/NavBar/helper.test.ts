@@ -5,7 +5,8 @@ import {
   handleOpenSettings,
   update,
   updateUser,
-  setTheme
+  setTheme,
+  closeNavGroups
 } from '@components/NavBar/helper';
 import { getSession, updateSession } from '@stores/sessionStore';
 import { theme } from '@stores/themeStore';
@@ -247,3 +248,44 @@ describe('NavBar Helper Functions', () => {
     });
   });
 }); 
+describe('closeNavGroups', () => {
+  const mountMenu = () => {
+    document.body.innerHTML = `
+      <nav>
+        <details data-nav-group open>
+          <summary data-nav-parent>Social</summary>
+          <ul><li><a data-nav-link href="https://discord.gg/x">Discord</a></li></ul>
+        </details>
+      </nav>
+      <main><p id="outside">Page</p></main>`;
+    return document.querySelector('details') as HTMLDetailsElement;
+  };
+
+  afterEach(() => {
+    document.body.innerHTML = '';
+  });
+
+  it('closes an open submenu when the click lands outside it', () => {
+    const group = mountMenu();
+    closeNavGroups(document.getElementById('outside'));
+    expect(group.open).toBe(false);
+  });
+
+  it('keeps the submenu open when the click lands on its own toggle', () => {
+    const group = mountMenu();
+    closeNavGroups(group.querySelector('summary'));
+    expect(group.open).toBe(true);
+  });
+
+  it('closes the submenu once one of its links is chosen', () => {
+    const group = mountMenu();
+    closeNavGroups(group.querySelector('a'));
+    expect(group.open).toBe(false);
+  });
+
+  it('closes every submenu when called without a target, as Escape does', () => {
+    const group = mountMenu();
+    closeNavGroups(null);
+    expect(group.open).toBe(false);
+  });
+});
