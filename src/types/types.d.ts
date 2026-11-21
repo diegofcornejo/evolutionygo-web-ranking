@@ -1,6 +1,6 @@
 export type { News } from './New';
 export type { Session } from './Session';
-export type { Duelist, DuelistTier, TierId } from './Duelist';
+export type { Duelist, DuelistRating, DuelistTier, RankedTier, TierId, TierProgress } from './Duelist';
 export type { MenuItem } from './MenuItem';
 export type { Match } from './Match';
 export type { CrewMember } from './CrewMember';
