@@ -94,6 +94,33 @@ describe('DuelistTradingCard', () => {
     expect(container.querySelector('[data-initials]')!.parentElement).toHaveClass('min-h-12');
   });
 
+  it('renders the weekly variant', () => {
+    render(
+      <DuelistTradingCard
+        {...fuku}
+        tier={null}
+        points={27}
+        wins={19}
+        losses={5}
+        winRate={79.17}
+        banListName="Global"
+        season="7"
+        place={1}
+        showElo={false}
+        weekly={{ from: '2026-11-09T00:00:00.000Z', to: '2026-11-15T00:00:00.000Z' }}
+      />
+    );
+
+    const card = screen.getByRole('link');
+    expect(card).toHaveAttribute('data-weekly');
+    expect(card).toHaveAttribute('href', '/duelists/u1/Global?username=Fuku&season=7');
+    expect(screen.getByText('DUELIST OF THE WEEK')).toBeInTheDocument();
+    expect(screen.getByText('[Nov 9 – Nov 15]')).toBeInTheDocument();
+    expect(screen.getByText('PTS/27')).toBeInTheDocument();
+    expect(screen.queryByText(/WIN%\//)).toBeNull();
+    expect(screen.queryByLabelText(/^Rank /)).toBeNull();
+  });
+
   it('truncates a long name and keeps it in the title', () => {
     render(
       <DuelistTradingCard {...fuku} username="AVeryLongDuelistName (You)" banListName="TCG" season="7" place={3} showElo />

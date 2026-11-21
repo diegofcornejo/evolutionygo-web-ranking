@@ -4,6 +4,7 @@ import type { Duelist } from '@types';
 import { cardLevel } from '@utils/tier';
 import { formatWinRate } from '@utils/winRate';
 import { usePrefersReducedMotion } from '@utils/usePrefersReducedMotion';
+import { formatWeekRange } from '@utils/weeklyDuelist';
 
 type Place = 1 | 2 | 3;
 
@@ -13,6 +14,8 @@ interface Props extends Duelist {
 	place: Place;
 	featured?: boolean;
 	showElo: boolean;
+	/** Turns the card into the global, weekly "Duelist of the week" card: holo frame, ribbon, week range. */
+	weekly?: { from: string; to: string };
 }
 
 // Our own frame, in the spirit of a trading card: gold, silver and bronze by place.
@@ -27,6 +30,9 @@ const BADGE_RING: Record<Place, string> = {
 	2: 'border-[#e2e8f0]',
 	3: 'border-[#fdba74]',
 };
+
+// The weekly card is global and does not follow the filters, so it gets its own holographic frame.
+const WEEKLY_FRAME = 'bg-[conic-gradient(from_200deg,#22d3ee,#a78bfa,#f472b6,#facc15,#22d3ee)]';
 
 const MAX_TILT_DEG = 8;
 
@@ -47,11 +53,13 @@ export default function DuelistTradingCard({
 	place,
 	featured = false,
 	showElo,
+	weekly,
 }: Readonly<Props>) {
 	const cardRef = useRef<HTMLAnchorElement>(null);
 	const reduceMotion = usePrefersReducedMotion();
 	const level = cardLevel({ tier, winRate });
-	const typeLine = tier ? `[Duelist / ${tier.name}]` : '[Duelist]';
+	const typeLine = weekly ? `[${formatWeekRange(weekly.from, weekly.to)}]` : tier ? `[Duelist / ${tier.name}]` : '[Duelist]';
+	const frame = weekly ? WEEKLY_FRAME : `bg-gradient-to-br ${FRAMES[place]}`;
 
 	const setTilt = (x: number, y: number) => {
 		cardRef.current?.style.setProperty('--tilt-x', `${x}deg`);
@@ -73,18 +81,24 @@ export default function DuelistTradingCard({
 		<a
 			ref={cardRef}
 			href={`/duelists/${userId}/${banListName}?username=${username}&season=${season}`}
-			data-place={place}
+			{...(weekly ? { 'data-weekly': '' } : { 'data-place': place })}
 			data-tilt={reduceMotion ? 'off' : 'on'}
 			onPointerMove={onPointerMove}
 			onPointerLeave={onPointerLeave}
-			className={`group relative block aspect-[59/86] w-full rounded-xl bg-gradient-to-br ${FRAMES[place]} p-2 shadow-[0_18px_40px_-12px_rgba(0,0,0,0.7)] outline-offset-4 transition-transform duration-200 ease-out [transform:perspective(900px)_rotateX(var(--tilt-x,0deg))_rotateY(var(--tilt-y,0deg))] focus-visible:outline-2 focus-visible:outline-primary motion-reduce:transition-none`}
+			className={`group relative block aspect-[59/86] w-full rounded-xl ${frame} p-2 shadow-[0_18px_40px_-12px_rgba(0,0,0,0.7)] outline-offset-4 transition-transform duration-200 ease-out [transform:perspective(900px)_rotateX(var(--tilt-x,0deg))_rotateY(var(--tilt-y,0deg))] focus-visible:outline-2 focus-visible:outline-primary motion-reduce:transition-none`}
 		>
-			<span
-				aria-label={`Rank ${place}`}
-				className={`absolute -top-3 -left-3 z-10 grid h-9 w-9 place-items-center rounded-full border-2 ${BADGE_RING[place]} bg-base-300 text-base font-black text-white shadow-lg`}
-			>
-				{place}
-			</span>
+			{weekly ? (
+				<span className="absolute -top-3 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-full border border-cyan-300 bg-cyan-900 px-2.5 py-0.5 text-[10px] font-extrabold tracking-wider text-cyan-50 shadow-lg sm:text-xs">
+					DUELIST OF THE WEEK
+				</span>
+			) : (
+				<span
+					aria-label={`Rank ${place}`}
+					className={`absolute -top-3 -left-3 z-10 grid h-9 w-9 place-items-center rounded-full border-2 ${BADGE_RING[place]} bg-base-300 text-base font-black text-white shadow-lg`}
+				>
+					{place}
+				</span>
+			)}
 			<div className="flex h-full flex-col gap-1.5 rounded-lg ring-1 ring-black/40">
 				<div className="flex items-center justify-between gap-2 rounded-md bg-black/55 px-2.5 py-1.5">
 					<span title={username} className={`truncate font-extrabold text-white ${featured ? 'text-lg' : 'text-sm sm:text-base'}`}>
@@ -121,7 +135,7 @@ export default function DuelistTradingCard({
 					</p>
 					<div className="mt-1.5 flex flex-wrap items-center justify-end gap-x-3 gap-y-0.5 border-t border-[#2a2014]/50 pt-1 text-xs font-extrabold sm:text-sm">
 						<span>PTS/{points}</span>
-						{showElo ? (
+						{weekly ? null : showElo ? (
 							<span className="flex items-center gap-1">
 								<span>ELO/{rating == null ? '—' : Math.round(rating)}</span>
 								{provisional && rating != null ? (
