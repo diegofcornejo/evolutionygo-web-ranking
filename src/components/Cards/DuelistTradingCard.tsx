@@ -5,6 +5,7 @@ import { cardLevel } from '@utils/tier';
 import { formatWinRate } from '@utils/winRate';
 import { usePrefersReducedMotion } from '@utils/usePrefersReducedMotion';
 import { formatWeekRange } from '@utils/weeklyDuelist';
+import TierEmblem from '@components/TierEmblem';
 
 type Place = 1 | 2 | 3;
 
@@ -104,9 +105,13 @@ export default function DuelistTradingCard({
 					<span title={username} className={`truncate font-extrabold text-white ${featured ? 'text-lg' : 'text-sm sm:text-base'}`}>
 						{username}
 					</span>
-					<span aria-hidden="true" className="grid h-6 w-6 shrink-0 place-items-center rounded-full border border-white/40 bg-black/60 text-xs text-amber-200">
-						★
-					</span>
+					{tier ? (
+						<TierEmblem tier={tier.id} className="h-7 w-7 drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]" />
+					) : (
+						<span aria-hidden="true" className="grid h-6 w-6 shrink-0 place-items-center rounded-full border border-white/40 bg-black/60 text-xs text-amber-200">
+							★
+						</span>
+					)}
 				</div>
 				<div role="img" aria-label={`Level ${level}`} className="flex justify-end gap-0.5 px-1 text-xs leading-none text-amber-300 sm:text-sm">
 					{'★'.repeat(level)}

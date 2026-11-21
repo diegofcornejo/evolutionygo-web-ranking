@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import DuelistTradingCard from '@components/Cards/DuelistTradingCard';
 import PodiumDarkness, { PodiumGlow } from '@components/PodiumDarkness';
+import TierEmblem from '@components/TierEmblem';
 import Rating from '@components/Rating';
 import type { Duelist } from '@types';
 import type { BanListSelectorOption } from '@utils/banListSelector';
@@ -313,6 +314,7 @@ export default function Ranking({ weekly = null }: Readonly<{ weekly?: WeeklyDue
             <tr>
               <th scope="col" className='max-w-[75px] text-center'>Position</th>
               <th scope="col" className='min-w-[200px]'>Username</th>
+              {!isGlobal && <th scope="col">Rank</th>}
               <th scope="col">Points</th>
               {!isGlobal && <th scope="col">Elo</th>}
               <th scope="col">Games</th>
@@ -342,6 +344,16 @@ export default function Ranking({ weekly = null }: Readonly<{ weekly?: WeeklyDue
                     </div>
                   </a>
                 </td>
+                {!isGlobal && <td>
+                  {duelist.tier ? (
+                    <span className='flex items-center gap-2 font-bold'>
+                      <TierEmblem tier={duelist.tier.id} className='h-7 w-7' />
+                      {duelist.tier.name}
+                    </span>
+                  ) : (
+                    <span className='text-gray-400' aria-label='No rank yet'>—</span>
+                  )}
+                </td>}
                 <td className='font-bold text-lg text-orange-300'>{duelist.points}</td>
                 {!isGlobal && <td>
                   {duelist.rating == null ? (

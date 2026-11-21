@@ -311,8 +311,53 @@ describe('Ranking', () => {
       expect(provisionalRow.getByTitle('Provisional Elo — not enough duels yet')).toBeTruthy();
 
       const unratedRow = within(rows[3] as HTMLElement);
-      expect(unratedRow.getByLabelText('No Elo on this ladder')).toBeTruthy();
-      expect(unratedRow.getByText('—')).toBeTruthy();
+      expect(unratedRow.getByLabelText('No Elo on this ladder')).toHaveTextContent('—');
+    });
+  });
+
+  describe('Rank column', () => {
+    const rankedRows: Duelist[] = [
+      buildDuelist({ userId: '5', username: 'GoldDuelist', position: 5, tier: { id: 'gold', name: 'Gold' } }),
+      buildDuelist({ userId: '6', username: 'UnrankedDuelist', position: 6, tier: null }),
+    ];
+
+    it('shows a Rank column with the tier on ladders', async () => {
+      mockFetch({ stats: [...cardDuelists, ...rankedRows] });
+
+      const { container, findByText } = render(<Ranking />);
+
+      expect(await findByText('GoldDuelist')).toBeTruthy();
+      fireEvent.change(banListSelect(container), { target: { value: 'Goat Format' } });
+      await waitFor(() => expect(container.querySelector('thead')?.textContent).toContain('Rank'));
+
+      const headers = [...container.querySelectorAll('thead th')].map((th) => th.textContent);
+      expect(headers.indexOf('Rank')).toBe(headers.indexOf('Username') + 1);
+      const goldRow = within(container.querySelectorAll('tbody tr')[1] as HTMLElement);
+      expect(goldRow.getByText('Gold')).toBeTruthy();
+      expect(goldRow.getByText('Gold').closest('td')!.querySelector('svg[data-tier-emblem="gold"]')).not.toBeNull();
+    });
+
+    it('shows a dash for a row without a tier', async () => {
+      mockFetch({ stats: [...cardDuelists, ...rankedRows] });
+
+      const { container, findByText } = render(<Ranking />);
+
+      expect(await findByText('UnrankedDuelist')).toBeTruthy();
+      fireEvent.change(banListSelect(container), { target: { value: 'Goat Format' } });
+      await waitFor(() => expect(container.querySelector('thead')?.textContent).toContain('Rank'));
+
+      const unrankedRow = container.querySelectorAll('tbody tr')[2] as HTMLElement;
+      expect(within(unrankedRow).getByLabelText('No rank yet')).toHaveTextContent('—');
+    });
+
+    it('hides the Rank column in Global', async () => {
+      mockFetch({ stats: [...cardDuelists, ...rankedRows] });
+
+      const { container, findByText } = render(<Ranking />);
+
+      expect(await findByText('GoldDuelist')).toBeTruthy();
+      const headers = [...container.querySelectorAll('thead th')].map((th) => th.textContent);
+      expect(headers).not.toContain('Rank');
     });
   });
 
