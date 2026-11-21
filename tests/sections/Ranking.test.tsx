@@ -462,6 +462,22 @@ describe('Ranking', () => {
     });
   });
 
+  describe('vertical rhythm', () => {
+    it('leaves room above the title, below the eyebrow and above the lifted #1 card', async () => {
+      mockFetch({ stats: [...cardDuelists, ...tableDuelists] });
+
+      const { container, findByText } = render(<Ranking />);
+
+      expect(await findByText('RatedCardDuelist')).toBeTruthy();
+      const header = container.querySelector('#section-ranking h2')!.parentElement!;
+      expect(header).toHaveClass('pt-12', 'md:pt-16');
+      expect(container.querySelector('select[aria-label="Filter by season"]')!.parentElement).toHaveClass('pt-6');
+      // The #1 card is lifted 2rem on desktop, so the podium needs that much more margin there.
+      expect(container.querySelector('[aria-label="Top three duelists"]')).toHaveClass('mt-16', 'md:mt-24');
+      expect(container.querySelector('[data-podium-darkness]')!.parentElement).toHaveClass('pb-16', 'md:pb-20');
+    });
+  });
+
   describe('darkness', () => {
     it('fills the panel behind the title, filters and podium with the darkness', async () => {
       mockFetch({ stats: [...cardDuelists, ...tableDuelists] });

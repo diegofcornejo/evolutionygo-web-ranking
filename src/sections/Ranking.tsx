@@ -198,13 +198,13 @@ export default function Ranking({ weekly = null }: Readonly<{ weekly?: WeeklyDue
 
   return (
     <div className='mx-4' id='section-ranking'>
-      <div className='relative pb-16'>
+      <div className='relative pb-16 md:pb-20'>
       <PodiumDarkness />
-      <div className='relative z-10 flex flex-col items-center gap-1 pt-6 text-center'>
+      <div className='relative z-10 flex flex-col items-center gap-1 pt-12 text-center md:pt-16'>
         <h2 className='text-3xl font-bold md:text-5xl md:leading-[3.5rem]'>{title}</h2>
         <p className='text-sm font-bold uppercase tracking-[0.18em] text-indigo-300'>Season {season} · {banList}</p>
       </div>
-      <div className='relative z-10 flex flex-wrap items-center justify-center gap-2 pt-5'>
+      <div className='relative z-10 flex flex-wrap items-center justify-center gap-2 pt-6'>
         <select className={PILL_SELECT} value={season} onChange={handleSeasonChange} aria-label="Filter by season">
 				{Array.from({ length: Number.parseInt(import.meta.env.PUBLIC_DEFAULT_SEASON) }, (_, index) => (
 					<option key={index} value={index + 1}>
@@ -259,7 +259,7 @@ export default function Ranking({ weekly = null }: Readonly<{ weekly?: WeeklyDue
       <div className='relative isolate -mx-4 overflow-x-clip px-4'>
       <ul
         aria-label='Top three duelists'
-        className={`relative mx-auto mt-16 grid max-w-4xl grid-cols-2 items-end gap-x-4 gap-y-8 p-0 sm:gap-x-6 md:grid-cols-3 md:gap-x-8 ${
+        className={`relative mx-auto mt-16 grid max-w-4xl md:mt-24 grid-cols-2 items-end gap-x-4 gap-y-8 p-0 sm:gap-x-6 md:grid-cols-3 md:gap-x-8 ${
           weekly ? 'lg:max-w-6xl' : ''
         } ${weeklyBeside ? 'lg:grid-cols-[1fr_1.15fr_1fr_auto_1fr]' : ''}`}
       >
