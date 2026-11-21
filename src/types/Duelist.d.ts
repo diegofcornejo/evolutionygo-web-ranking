@@ -1,3 +1,10 @@
+export type TierId = 'rookie' | 'bronze' | 'silver' | 'gold' | 'platinum' | 'diamond' | 'master';
+
+export type DuelistTier = {
+	id: TierId;
+	name: string;
+};
+
 export type Duelist = {
 	userId: string;
 	username: string;
@@ -10,4 +17,5 @@ export type Duelist = {
 	rating?: number | null;
 	peak?: number | null;
 	provisional?: boolean | null;
+	tier?: DuelistTier | null;
 }
