@@ -447,6 +447,19 @@ describe('Ranking', () => {
         expect(select).toHaveClass('[&::picker(select)]:bg-base-300');
       });
     });
+
+    it('shows the pointer cursor on the selects and the enabled sort buttons', async () => {
+      mockFetch({ stats: [...cardDuelists, ...tableDuelists] });
+
+      const { container, findByText, getByRole } = render(<Ranking />);
+
+      expect(await findByText('RatedCardDuelist')).toBeTruthy();
+      container.querySelectorAll('#section-ranking select').forEach((select) => {
+        expect(select).toHaveClass('cursor-pointer');
+      });
+      expect(getByRole('button', { name: 'Points' })).toHaveClass('enabled:cursor-pointer');
+      expect(getByRole('button', { name: 'Elo' })).toHaveClass('enabled:cursor-pointer', 'disabled:cursor-not-allowed');
+    });
   });
 
   describe('darkness', () => {

@@ -24,7 +24,7 @@ const GLOBAL_BAN_LIST = 'Global';
 
 // Native selects (so phones open their own picker), styled as pills to match the rest of the home.
 const PILL_SELECT =
-  'select h-10 w-auto rounded-full border-white/20 bg-white/10 pl-4 pr-9 text-sm font-bold text-white focus:outline-primary [&::picker(select)]:border-white/15 [&::picker(select)]:bg-base-300';
+  'select h-10 w-auto cursor-pointer rounded-full border-white/20 bg-white/10 pl-4 pr-9 text-sm font-bold text-white focus:outline-primary [&::picker(select)]:border-white/15 [&::picker(select)]:bg-base-300';
 
 const SORT_OPTIONS: { value: SortBy; label: string }[] = [
   { value: 'points', label: 'Points' },
@@ -226,7 +226,7 @@ export default function Ranking({ weekly = null }: Readonly<{ weekly?: WeeklyDue
               // Global has no Elo ladder, so Elo stays visible but cannot be picked there.
               disabled={option.value === 'rating' && isGlobal}
               onClick={() => setSortBy(option.value)}
-              className={`h-8 rounded-full px-4 text-sm font-bold transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
+              className={`h-8 rounded-full px-4 text-sm font-bold transition-colors enabled:cursor-pointer disabled:cursor-not-allowed disabled:opacity-40 ${
                 sortBy === option.value ? 'bg-primary text-primary-content' : 'text-white/80 enabled:hover:text-white'
               }`}
             >
