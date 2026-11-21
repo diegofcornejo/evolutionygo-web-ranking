@@ -90,7 +90,7 @@ function CompactNews({ prefersReducedMotion }: Readonly<{ prefersReducedMotion: 
 			</div>
 			<Swiper
 				aria-label="Latest news"
-				className="w-full flex-1 pb-8 [&_.swiper-pagination]:bottom-3 [&_.swiper-pagination-bullet]:h-1.5 [&_.swiper-pagination-bullet]:w-4 [&_.swiper-pagination-bullet]:rounded-full [&_.swiper-pagination-bullet]:bg-base-content/40 [&_.swiper-pagination-bullet]:opacity-100 [&_.swiper-pagination-bullet-active]:w-7 [&_.swiper-pagination-bullet-active]:bg-primary"
+				className="w-full flex-1 pb-10 [&_.swiper-pagination]:bottom-3 [&_.swiper-pagination-bullet]:h-1.5 [&_.swiper-pagination-bullet]:w-4 [&_.swiper-pagination-bullet]:rounded-full [&_.swiper-pagination-bullet]:bg-base-content/40 [&_.swiper-pagination-bullet]:opacity-100 [&_.swiper-pagination-bullet-active]:w-7 [&_.swiper-pagination-bullet-active]:bg-primary"
 				modules={[A11y, Autoplay, Keyboard, Navigation, Pagination]}
 				slidesPerView={1}
 				autoplay={prefersReducedMotion ? false : {
@@ -117,12 +117,12 @@ function CompactNews({ prefersReducedMotion }: Readonly<{ prefersReducedMotion: 
 						<article aria-labelledby={`news-compact-${newsItem.id}`} className="flex flex-col gap-3 px-5 pt-3">
 							<img
 								alt={newsItem.title}
-								className="aspect-[2/1] w-full rounded-lg object-cover"
+								className="aspect-[16/7] w-full rounded-lg object-cover"
 								decoding="async"
 								loading="lazy"
 								src={newsItem.image}
 							/>
-							<h2 id={`news-compact-${newsItem.id}`} className="line-clamp-2 min-h-[3.5rem] text-xl font-bold leading-7 text-white">
+							<h2 id={`news-compact-${newsItem.id}`} className="line-clamp-2 text-xl font-bold leading-7 text-white">
 								{newsItem.title}
 							</h2>
 							<p className="line-clamp-3 text-sm leading-relaxed text-white/80">{newsItem.description}</p>
