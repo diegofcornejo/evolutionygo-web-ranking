@@ -22,6 +22,15 @@ type SortBy = 'points' | 'rating';
 // Global has no Elo ladder: the API sends rating null for it.
 const GLOBAL_BAN_LIST = 'Global';
 
+// Native selects (so phones open their own picker), styled as pills to match the rest of the home.
+const PILL_SELECT =
+  'select h-10 w-auto rounded-full border-white/20 bg-white/10 pl-4 pr-9 text-sm font-bold text-white focus:outline-primary';
+
+const SORT_OPTIONS: { value: SortBy; label: string }[] = [
+  { value: 'points', label: 'Points' },
+  { value: 'rating', label: 'Elo' },
+];
+
 // DOM order is 1, 2, 3 (reading order). Mobile: #1 across the top, #2 and #3 below.
 // Desktop: explicit columns, so a lone #1 still sits in the middle: #2 left, #1 center and raised, #3 right.
 const PODIUM_SLOT = [
@@ -163,9 +172,6 @@ export default function Ranking({ weekly = null }: Readonly<{ weekly?: WeeklyDue
 		selectBanList(event.target.value);
 	};
 
-	const handleSortByChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-		setSortBy(event.target.value as SortBy);
-	};
 
   useEffect(() => {
     const fetchDuelists = async () => {
@@ -189,35 +195,45 @@ export default function Ranking({ weekly = null }: Readonly<{ weekly?: WeeklyDue
 	const banListChips = buildBanListChips(selectedFormat);
 
 	const title = 'Top Players';
-  const description = 'Explore the top players in our community. Discover who the standout competitors are in our tournaments and events. Get to know their achievements, strategies, and stay updated with the rankings.';
 
   return (
     <div className='mx-4' id='section-ranking'>
-      <div className='flex flex-col gap-8 text-center place-items-center'>
-        <h1 className='text-3xl md:text-5xl md:leading-[3.5rem] font-bold pt-6'>{title}</h1>
-        <h2 className='text-lg text-gray-400 leading-8 max-w-4xl'>{description}</h2>
+      <div className='relative z-10 flex flex-col items-center gap-1 pt-6 text-center'>
+        <h2 className='text-3xl font-bold md:text-5xl md:leading-[3.5rem]'>{title}</h2>
+        <p className='text-sm font-bold uppercase tracking-[0.18em] text-indigo-300'>Season {season} · {banList}</p>
       </div>
-      <div className="flex flex-col md:flex-row justify-center gap-4 pt-4">
-        <select className="select select-secondary w-full md:max-w-xs" value={season} onChange={handleSeasonChange} aria-label="Filter by season">
+      <div className='relative z-10 flex flex-wrap items-center justify-center gap-2 pt-5'>
+        <select className={PILL_SELECT} value={season} onChange={handleSeasonChange} aria-label="Filter by season">
 				{Array.from({ length: Number.parseInt(import.meta.env.PUBLIC_DEFAULT_SEASON) }, (_, index) => (
 					<option key={index} value={index + 1}>
 						{`Season ${index + 1}`}
 					</option>
 				)).reverse()}
         </select>
-        <select className="select select-secondary w-full md:max-w-xs" value={selectedFormat ? selectedFormat.value : banList} onChange={handleBanListChange} aria-label="Filter by banlist">
+        <select className={PILL_SELECT} value={selectedFormat ? selectedFormat.value : banList} onChange={handleBanListChange} aria-label="Filter by banlist">
           {banListOptions.map((option: BanListSelectorOption) => (
             <option key={option.value} value={option.value}>{option.value}</option>
           ))}
         </select>
-        <select className="select select-secondary w-full md:max-w-xs" value={sortBy} onChange={handleSortByChange} aria-label="Sort by">
-          <option value="points">Sort by Points</option>
-          {!isGlobal && <option value="rating">Sort by Elo</option>}
-        </select>
+        <div role='group' aria-label='Sort by' className='flex h-10 items-center rounded-full border border-white/20 bg-white/10 p-1'>
+          {SORT_OPTIONS.filter((option) => option.value === 'points' || !isGlobal).map((option) => (
+            <button
+              key={option.value}
+              type='button'
+              aria-pressed={sortBy === option.value}
+              onClick={() => setSortBy(option.value)}
+              className={`h-8 rounded-full px-4 text-sm font-bold transition-colors ${
+                sortBy === option.value ? 'bg-primary text-primary-content' : 'text-white/80 hover:text-white'
+              }`}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
       </div>
       {banListChips.length > 0 && selectedFormat ? (
         <div
-          className='flex flex-wrap justify-center gap-2 pt-4'
+          className='relative z-10 flex flex-wrap justify-center gap-2 pt-4'
           role='group'
           aria-label={`Ban lists in ${selectedFormat.value}`}
         >

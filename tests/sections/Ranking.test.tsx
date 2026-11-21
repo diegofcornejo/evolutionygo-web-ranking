@@ -87,6 +87,9 @@ const mockFetch = ({ grouped, flat = flatBanLists, stats = [], weekly = [weeklyI
   return fetchMock;
 };
 
+const sortButtons = (container: HTMLElement) =>
+  [...container.querySelectorAll<HTMLButtonElement>('[role="group"][aria-label="Sort by"] button')];
+
 const banListSelect = (container: HTMLElement) =>
   container.querySelector<HTMLSelectElement>('select[aria-label="Filter by banlist"]')!;
 
@@ -290,11 +293,11 @@ describe('Ranking', () => {
     it('renders the rating, the provisional badge and the empty placeholder', async () => {
       mockFetch({ stats: [...cardDuelists, ...tableDuelists] });
 
-      const { container, findByText, getByText } = render(<Ranking />);
+      const { container, findByText } = render(<Ranking />);
 
       expect(await findByText('RatedDuelist')).toBeTruthy();
       fireEvent.change(banListSelect(container), { target: { value: 'Goat Format' } });
-      await waitFor(() => expect(getByText('Elo')).toBeTruthy());
+      await waitFor(() => expect(container.querySelector('thead')?.textContent).toContain('Elo'));
 
       const rows = container.querySelectorAll('tbody tr');
       expect(rows).toHaveLength(4);
@@ -310,8 +313,6 @@ describe('Ranking', () => {
       const unratedRow = within(rows[3] as HTMLElement);
       expect(unratedRow.getByLabelText('No Elo on this ladder')).toBeTruthy();
       expect(unratedRow.getByText('—')).toBeTruthy();
-
-      expect(getByText('Elo')).toBeTruthy();
     });
   });
 
@@ -401,18 +402,38 @@ describe('Ranking', () => {
   });
 
   describe('filters', () => {
-    it('spans the full width on mobile and caps the width from md up', async () => {
+    it('names the season and format being viewed under the title, without the long description', async () => {
+      mockFetch({ stats: [...cardDuelists, ...tableDuelists] });
+
+      const { container, findByText, getByRole, getByText, queryByText } = render(<Ranking />);
+
+      expect(await findByText('RatedCardDuelist')).toBeTruthy();
+      expect(getByRole('heading', { level: 2, name: 'Top Players' })).toBeTruthy();
+      expect(getByText('Season 3 · Global')).toBeTruthy();
+      expect(queryByText(/Explore the top players/)).toBeNull();
+
+      fireEvent.change(banListSelect(container), { target: { value: 'TCG' } });
+      await waitFor(() => expect(getByText('Season 3 · TCG')).toBeTruthy());
+      fireEvent.click(getByRole('button', { name: '2024.04 TCG' }));
+      await waitFor(() => expect(getByText('Season 3 · 2024.04 TCG')).toBeTruthy());
+    });
+
+    it('shows season and format as compact pills that wrap in one row', async () => {
       mockFetch({ stats: [...cardDuelists, ...tableDuelists] });
 
       const { container, findByText } = render(<Ranking />);
 
       expect(await findByText('RatedCardDuelist')).toBeTruthy();
       const selects = container.querySelectorAll('#section-ranking select');
-      expect(selects).toHaveLength(3);
+      expect(selects).toHaveLength(2);
       selects.forEach((select) => {
-        expect(select).toHaveClass('w-full', 'md:max-w-xs');
-        expect(select).not.toHaveClass('max-w-xs');
+        expect(select).toHaveClass('rounded-full');
+        expect(select).not.toHaveClass('w-full');
       });
+      expect(selects[0].parentElement).toHaveClass('flex-wrap');
+      expect(selects[0].parentElement).not.toHaveClass('flex-col');
+      // The podium vortex is positioned and reaches up under the filters; they must stack above it.
+      expect(selects[0].parentElement).toHaveClass('relative', 'z-10');
     });
   });
 
@@ -522,9 +543,8 @@ describe('Ranking', () => {
 
       expect(await findByText('RatedDuelist')).toBeTruthy();
       expect([...container.querySelectorAll('thead th')].map((th) => th.textContent)).not.toContain('Elo');
-      expect(
-        [...container.querySelectorAll('select[aria-label="Sort by"] option')].map((option) => option.textContent)
-      ).toEqual(['Sort by Points']);
+      expect(sortButtons(container).map((button) => button.textContent)).toEqual(['Points']);
+      expect(sortButtons(container)[0]).toHaveAttribute('aria-pressed', 'true');
     });
 
     it('resets an Elo sort to points when switching to Global', async () => {
@@ -534,9 +554,8 @@ describe('Ranking', () => {
 
       expect(await findByText('RatedDuelist')).toBeTruthy();
       fireEvent.change(banListSelect(container), { target: { value: 'Goat Format' } });
-      const sortSelect = () => container.querySelector<HTMLSelectElement>('select[aria-label="Sort by"]')!;
-      await waitFor(() => expect(sortSelect().querySelectorAll('option')).toHaveLength(2));
-      fireEvent.change(sortSelect(), { target: { value: 'rating' } });
+      await waitFor(() => expect(sortButtons(container)).toHaveLength(2));
+      fireEvent.click(sortButtons(container)[1]);
       await waitFor(() => {
         expect(fetchMock.mock.calls.some(([url]) => String(url).includes('sortBy=rating'))).toBe(true);
       });
@@ -549,7 +568,7 @@ describe('Ranking', () => {
         expect(last).toContain('banListName=Global');
         expect(last).toContain('sortBy=points');
       });
-      expect(sortSelect().value).toBe('points');
+      expect(sortButtons(container)[0]).toHaveAttribute('aria-pressed', 'true');
     });
   });
 
@@ -564,17 +583,11 @@ describe('Ranking', () => {
       });
 
       fireEvent.change(banListSelect(container), { target: { value: 'Goat Format' } });
-      await waitFor(() => {
-        expect(container.querySelectorAll('select[aria-label="Sort by"] option')).toHaveLength(2);
-      });
+      await waitFor(() => expect(sortButtons(container)).toHaveLength(2));
+      expect(sortButtons(container).map((button) => button.textContent)).toEqual(['Points', 'Elo']);
 
-      const sortSelect = container.querySelector<HTMLSelectElement>('select[aria-label="Sort by"]')!;
-      expect(Array.from(sortSelect.querySelectorAll('option')).map((option) => option.textContent)).toEqual([
-        'Sort by Points',
-        'Sort by Elo',
-      ]);
-
-      fireEvent.change(sortSelect, { target: { value: 'rating' } });
+      fireEvent.click(sortButtons(container)[1]);
+      await waitFor(() => expect(sortButtons(container)[1]).toHaveAttribute('aria-pressed', 'true'));
 
       await waitFor(() => {
         expect(fetchMock.mock.calls.some(([url]) => String(url).includes('sortBy=rating'))).toBe(true);

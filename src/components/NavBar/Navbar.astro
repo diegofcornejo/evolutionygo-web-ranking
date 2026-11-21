@@ -172,7 +172,10 @@ const getBadgeClass = (item: MenuItemWithBadge) => item.badgeClass ?? 'text-prim
 				}
 			</ul>
 		</div>
-		<a href='/' class='lg:shrink-0'><img src='/logo.svg' alt='logo' width='184' height='34' class='h-8.5 w-auto cursor-pointer' loading='lazy' decoding='async' fetchpriority='low'/></a>
+		<a href='/' class='shrink-0' aria-label='Evolution home'>
+			<img src='/favicon.svg' alt='' width='34' height='34' class='h-8.5 w-8.5 rounded-md sm:hidden' decoding='async'/>
+			<img src='/logo.svg' alt='' width='184' height='34' class='hidden h-8.5 w-auto cursor-pointer sm:block' loading='lazy' decoding='async' fetchpriority='low'/>
+		</a>
 	</div>
 	<div class='navbar-center hidden lg:flex'>
 		<ul class='menu menu-horizontal px-1'>

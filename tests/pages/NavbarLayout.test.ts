@@ -30,6 +30,17 @@ describe('Navbar layout', () => {
     expect(looseChildren).toHaveLength(0);
   });
 
+  it('shows only the V0 mark on phones and the wordmark from sm up', async () => {
+    const document = await renderNavbar();
+    const mark = document.querySelector('.navbar-start img[src="/favicon.svg"]')!;
+    const wordmark = document.querySelector('.navbar-start img[src="/logo.svg"]')!;
+
+    expect(mark).not.toBeNull();
+    expect(mark.classList.contains('sm:hidden')).toBe(true);
+    expect(wordmark.classList.contains('hidden')).toBe(true);
+    expect(wordmark.classList.contains('sm:block')).toBe(true);
+  });
+
   it('draws the wordmark at EvoDuel’s size without letterboxing', async () => {
     const document = await renderNavbar();
     const logo = document.querySelector('.navbar-start img[src="/logo.svg"]')!;
@@ -37,6 +48,6 @@ describe('Navbar layout', () => {
     expect(logo.getAttribute('width')).toBe('184');
     expect(logo.getAttribute('height')).toBe('34');
     expect(logo.classList.contains('h-8.5')).toBe(true);
-    expect(logo.parentElement!.classList.contains('lg:shrink-0')).toBe(true);
+    expect(logo.parentElement!.classList.contains('shrink-0')).toBe(true);
   });
 });
