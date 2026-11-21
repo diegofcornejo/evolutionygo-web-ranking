@@ -4,9 +4,11 @@ import ProfileHeader from '@components/Profile/ProfileHeader';
 import StatsOverview from '@components/Profile/StatsOverview';
 import MatchHistory from '@components/Profile/MatchHistory';
 import AchievementShowcase from '@components/Profile/AchievementShowcase';
+import RankCard from '@components/Profile/RankCard';
 import SeasonSelector from '@components/Profile/SeasonSelector.astro';
-import type { Achievement, AchievementCatalog, AchievementRecord, Match } from '@types';
+import type { Achievement, AchievementCatalog, AchievementRecord, DuelistRating, Match } from '@types';
 import { formatWinRate } from '@utils/winRate';
+import { parseTierLadder, tierForBanList } from '@utils/tier';
 
 let { id, banlist = 'Global' } = Astro.params;
 const username = Astro.url.searchParams.get('username') || '';
@@ -49,10 +51,23 @@ const fetchJson = async <T,>(url: string): Promise<T | null> => {
 	}
 };
 
-const [achievementCatalog, achievementRecord] = await Promise.all([
+const [achievementCatalog, achievementRecord, ladderPayload] = await Promise.all([
 	fetchJson<AchievementCatalog>(`${API_URL}/achievements/`),
 	fetchJson<AchievementRecord>(`${API_URL}/users/${id}/achievements`),
+	// Global has no ranked ladder.
+	banlistName ? fetchJson<unknown>(`${API_URL}/ranked-tiers?banListName=${encodeURIComponent(banlistName)}`) : Promise.resolve(null),
 ]);
+const tierLadder = parseTierLadder(ladderPayload);
+
+// The rank lives in ratings[], one entry per banlist and per group, not at the root of the stats.
+const ratings: DuelistRating[] = Array.isArray(duelist.ratings) ? duelist.ratings : [];
+const currentRating = banlistName ? tierForBanList(ratings, banlistName) : null;
+const otherRatings = ratings.filter(
+	(rating, index) =>
+		rating.tier &&
+		rating.banListName !== banlistName &&
+		ratings.findIndex((candidate) => candidate.banListName === rating.banListName) === index,
+);
 const achievements: Achievement[] = achievementRecord?.achievements ?? duelist.achievements ?? [];
 
 const createMockMatches = (name: string): Match[] => [
@@ -260,6 +275,16 @@ const seasonStats = await Promise.all(
 					winRate={duelist.winRate}
 					points={duelist.points}
 					position={duelist.position}
+				/>
+
+				<RankCard
+					rating={currentRating}
+					others={otherRatings}
+					ladder={tierLadder}
+					season={season}
+					banListName={banlistName || 'Global'}
+					userId={id ?? ''}
+					username={duelist.username}
 				/>
 
 				<div>
