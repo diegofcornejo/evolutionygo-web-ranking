@@ -21,11 +21,11 @@ type SortBy = 'points' | 'rating';
 const GLOBAL_BAN_LIST = 'Global';
 
 // DOM order is 1, 2, 3 (reading order). Mobile: #1 across the top, #2 and #3 below.
-// Desktop: #2 left, #1 center and raised, #3 right.
+// Desktop: explicit columns, so a lone #1 still sits in the middle: #2 left, #1 center and raised, #3 right.
 const PODIUM_SLOT = [
-  'col-span-2 mx-auto w-[58%] md:order-2 md:col-span-1 md:w-full md:-translate-y-8',
-  'w-full md:order-1 md:mx-auto md:w-[86%]',
-  'w-full md:order-3 md:mx-auto md:w-[86%]',
+  'col-span-2 mx-auto w-[58%] md:col-span-1 md:col-start-2 md:row-start-1 md:w-full md:-translate-y-8',
+  'w-full md:col-start-1 md:row-start-1 md:mx-auto md:w-[86%]',
+  'w-full md:col-start-3 md:row-start-1 md:mx-auto md:w-[86%]',
 ];
 
 const buildUserStatsUrl = (apiUrl: string, userId: string, season: string, banList: string): string => {
@@ -245,6 +245,7 @@ export default function Ranking() {
           </li>
         ))}
       </ul>
+      {getDisplayDuelists().length > 0 && (
       <div className='overflow-x-auto mt-8'>
         <table className='table table-zebra bg-base-300'>
           <thead>
@@ -302,6 +303,7 @@ export default function Ranking() {
           </tbody>
         </table>
       </div>
+      )}
     </div>
   );
 }

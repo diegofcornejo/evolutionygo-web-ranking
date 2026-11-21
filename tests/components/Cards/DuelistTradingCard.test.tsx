@@ -85,6 +85,15 @@ describe('DuelistTradingCard', () => {
     expect(container.querySelector('[data-initials]')).toHaveTextContent('KR');
   });
 
+  it('keeps narrow cards readable: the bottom line wraps and the art keeps a floor', () => {
+    const { container } = render(
+      <DuelistTradingCard {...fuku} provisional banListName="TCG" season="7" place={3} showElo />
+    );
+
+    expect(screen.getByText('PTS/212').parentElement).toHaveClass('flex-wrap');
+    expect(container.querySelector('[data-initials]')!.parentElement).toHaveClass('min-h-12');
+  });
+
   it('truncates a long name and keeps it in the title', () => {
     render(
       <DuelistTradingCard {...fuku} username="AVeryLongDuelistName (You)" banListName="TCG" season="7" place={3} showElo />

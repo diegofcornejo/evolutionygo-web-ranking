@@ -362,7 +362,26 @@ describe('Ranking', () => {
 
       expect(await findByText('NewCardDuelist')).toBeTruthy();
       expect(container.querySelectorAll('[data-place]')).toHaveLength(2);
-      expect(container.querySelectorAll('tbody tr')).toHaveLength(0);
+      expect(container.querySelector('table')).toBeNull();
+    });
+
+    it('places each card in its own podium column so a lone #1 stays centered', async () => {
+      mockFetch({ stats: cardDuelists.slice(0, 1) });
+
+      const { container, findByText } = render(<Ranking />);
+
+      expect(await findByText('RatedCardDuelist')).toBeTruthy();
+      expect(container.querySelector('[data-place="1"]')!.closest('li')).toHaveClass('md:col-start-2', 'md:row-start-1');
+    });
+
+    it('puts #2 on the left and #3 on the right column', async () => {
+      mockFetch({ stats: [...cardDuelists, ...tableDuelists] });
+
+      const { container, findByText } = render(<Ranking />);
+
+      expect(await findByText('RatedCardDuelist')).toBeTruthy();
+      expect(container.querySelector('[data-place="2"]')!.closest('li')).toHaveClass('md:col-start-1');
+      expect(container.querySelector('[data-place="3"]')!.closest('li')).toHaveClass('md:col-start-3');
     });
   });
 

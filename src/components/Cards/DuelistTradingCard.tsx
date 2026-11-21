@@ -97,7 +97,7 @@ export default function DuelistTradingCard({
 				<div role="img" aria-label={`Level ${level}`} className="flex justify-end gap-0.5 px-1 text-xs leading-none text-amber-300 sm:text-sm">
 					{'★'.repeat(level)}
 				</div>
-				<div className="relative min-h-0 flex-1 overflow-hidden rounded-md border-2 border-black/60 bg-[radial-gradient(circle_at_50%_38%,rgba(255,255,255,0.32),transparent_58%),linear-gradient(160deg,#2b1250,#14203f)]">
+				<div className="relative min-h-12 flex-1 overflow-hidden rounded-md border-2 border-black/60 bg-[radial-gradient(circle_at_50%_38%,rgba(255,255,255,0.32),transparent_58%),linear-gradient(160deg,#2b1250,#14203f)]">
 					<span
 						aria-hidden="true"
 						data-initials
@@ -119,7 +119,7 @@ export default function DuelistTradingCard({
 					<p className="text-xs leading-snug sm:text-sm">
 						{wins} wins · {losses} losses · {formatWinRate(winRate, 1)} win rate
 					</p>
-					<div className="mt-1.5 flex items-center justify-end gap-3 border-t border-[#2a2014]/50 pt-1 text-xs font-extrabold sm:text-sm">
+					<div className="mt-1.5 flex flex-wrap items-center justify-end gap-x-3 gap-y-0.5 border-t border-[#2a2014]/50 pt-1 text-xs font-extrabold sm:text-sm">
 						<span>PTS/{points}</span>
 						{showElo ? (
 							<span className="flex items-center gap-1">
