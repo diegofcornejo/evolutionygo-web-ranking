@@ -161,9 +161,13 @@
 		}
 	}
 
+	/* The mist is 150% wide and starts at -25%: a ±8% drift (±12% of the viewport) never shows its edges. */
 	@keyframes mist-drift {
+		from {
+			transform: translateX(8%);
+		}
 		to {
-			transform: translateX(-16%);
+			transform: translateX(-8%);
 		}
 	}
 

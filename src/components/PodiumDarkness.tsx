@@ -41,7 +41,7 @@ export default function PodiumDarkness() {
 					data-darkness-mist
 					viewBox="0 0 400 400"
 					preserveAspectRatio="none"
-					className={`absolute -inset-[15%] h-[130%] w-[130%] opacity-60 mix-blend-screen ${animate('animate-mist')}`}
+					className={`absolute -top-[15%] -left-[25%] h-[130%] w-[150%] opacity-60 mix-blend-screen ${animate('animate-mist')}`}
 				>
 					<filter id={filterId}>
 						<feTurbulence type="fractalNoise" baseFrequency="0.012 0.02" numOctaves={3} seed={7} />

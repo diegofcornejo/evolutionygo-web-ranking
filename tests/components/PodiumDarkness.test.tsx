@@ -37,6 +37,13 @@ describe('PodiumDarkness', () => {
     expect(veil.querySelectorAll('[data-darkness-fog]')).toHaveLength(3);
   });
 
+  it('makes the mist wide enough that its drift never shows an edge', () => {
+    const { container } = render(<PodiumDarkness />);
+
+    // 150% wide from -25%, drifting ±8% of itself (see mist-drift in global.css): always past both edges.
+    expect(darknessOf(container).querySelector('[data-darkness-mist]')).toHaveClass('-left-[25%]', 'w-[150%]');
+  });
+
   it('drifts the fog banks and the mist', () => {
     const { container } = render(<PodiumDarkness />);
     const darkness = darknessOf(container);
