@@ -5,26 +5,36 @@ import { avatars, clearAvatar, saveAvatar } from '@stores/avatarStore';
 import { session } from '@stores/sessionStore';
 import {
 	AVATAR_OPTIONS,
+	AVATAR_THEMES,
 	DEFAULT_AVATAR,
+	applyTheme,
 	avatarDataUri,
+	outfitCarriesLogo,
 	randomAvatar,
 	sanitizeAvatar,
 	type AvatarConfig,
 	type AvatarPart,
+	type AvatarTheme,
+	type AvatarWriteResult,
 } from '@utils/avatar';
+
+const SESSION_EXPIRED = 'Your session expired. Log in again to save your avatar.';
 
 type Group = {
 	part: AvatarPart;
 	label: string;
 	kind: 'swatch' | 'thumb';
 	// Thumbnails zoom in where the option shows, so eyes and logos are not lost in a full bust.
-	focus?: 'face' | 'chest';
+	focus?: 'face' | 'chest' | 'torso';
 	visible?: (look: AvatarConfig) => boolean;
 };
 
-const COLORED_HATS = new Set<AvatarConfig['headwear']>(['cap', 'beanie', 'headband', 'wizard', 'tophat']);
+const COLORED_HATS = new Set<AvatarConfig['headwear']>(['cap', 'beanie', 'headband', 'wizard', 'tophat', 'helmet', 'hood', 'witch']);
+
+const THEMES_TAB = 'themes';
 
 const TABS: { id: string; label: string; groups: Group[] }[] = [
+	{ id: THEMES_TAB, label: 'Themes', groups: [] },
 	{
 		id: 'face',
 		label: 'Face',
@@ -62,23 +72,35 @@ const TABS: { id: string; label: string; groups: Group[] }[] = [
 		],
 	},
 	{
-		id: 'shirt',
-		label: 'Shirt',
+		id: 'outfit',
+		label: 'Outfit',
 		groups: [
+			{ part: 'outfit', label: 'Outfit', kind: 'thumb', focus: 'torso' },
 			{ part: 'shirtColor', label: 'Color', kind: 'swatch' },
-			{ part: 'shirtLogo', label: 'Logo', kind: 'thumb', focus: 'chest' },
+			{ part: 'shirtLogo', label: 'Logo', kind: 'thumb', focus: 'chest', visible: (look) => outfitCarriesLogo(look.outfit) },
+		],
+	},
+	{
+		id: 'magic',
+		label: 'Magic',
+		groups: [
+			{ part: 'magic', label: 'Magic', kind: 'thumb' },
+			{ part: 'magicColor', label: 'Color', kind: 'swatch', visible: (look) => look.magic !== 'none' },
 		],
 	},
 	{
 		id: 'background',
 		label: 'Background',
-		groups: [{ part: 'background', label: 'Color', kind: 'swatch' }],
+		groups: [{ part: 'background', label: 'Background', kind: 'thumb' }],
 	},
 ];
+
+const THEME_IDS = Object.keys(AVATAR_THEMES) as AvatarTheme[];
 
 const FOCUS_CLASS = {
 	face: 'scale-[1.9] origin-[50%_46%]',
 	chest: 'scale-[2.2] origin-[50%_92%]',
+	torso: 'scale-[1.4] origin-[50%_100%]',
 } as const;
 
 const userIdFrom = (raw: string) => {
@@ -106,14 +128,32 @@ function AvatarForm({ dialog, userId, saved }: Readonly<FormProps>) {
 
 	const pick = (part: AvatarPart, id: string) => setLook((current) => sanitizeAvatar({ ...current, [part]: id }));
 
-	const handleSave = () => {
-		saveAvatar(userId, look);
+	const [busy, setBusy] = useState(false);
+
+	const reportFailure = (result: AvatarWriteResult, failed: string) => {
+		toast.error(result === 'unauthorized' ? SESSION_EXPIRED : failed);
+	};
+
+	const handleSave = async () => {
+		setBusy(true);
+		const result = await saveAvatar(userId, look);
+		setBusy(false);
+		if (result !== 'ok') {
+			reportFailure(result, 'Could not save your avatar. Try again.');
+			return;
+		}
 		toast.success('Avatar saved');
 		closeDialog(dialog);
 	};
 
-	const handleUseInitials = () => {
-		clearAvatar(userId);
+	const handleUseInitials = async () => {
+		setBusy(true);
+		const result = await clearAvatar(userId);
+		setBusy(false);
+		if (result !== 'ok') {
+			reportFailure(result, 'Could not remove your avatar. Try again.');
+			return;
+		}
 		toast.success('Back to your initials');
 		closeDialog(dialog);
 	};
@@ -156,18 +196,25 @@ function AvatarForm({ dialog, userId, saved }: Readonly<FormProps>) {
 						aria-labelledby={`avatar-tab-${activeTab.id}`}
 						className="mt-4 space-y-4 md:min-h-72"
 					>
-						{activeTab.groups
-							.filter((group) => group.visible?.(look) ?? true)
-							.map((group) => (
-								<OptionGroup key={group.part} group={group} look={look} onPick={pick} />
-							))}
+						{activeTab.id === THEMES_TAB ? (
+							<ThemePicker look={look} onPick={(theme) => setLook((current) => applyTheme(current, theme))} />
+						) : (
+							activeTab.groups
+								.filter((group) => group.visible?.(look) ?? true)
+								.map((group) => <OptionGroup key={group.part} group={group} look={look} onPick={pick} />)
+						)}
 					</div>
 				</div>
 			</div>
 
 			<div className="flex flex-wrap items-center gap-2">
 				{saved && (
-					<button type="button" className="btn btn-sm btn-ghost text-base-content/70" onClick={handleUseInitials}>
+					<button
+						type="button"
+						className="btn btn-sm btn-ghost text-base-content/70"
+						onClick={handleUseInitials}
+						disabled={busy}
+					>
 						Use initials
 					</button>
 				)}
@@ -175,10 +222,32 @@ function AvatarForm({ dialog, userId, saved }: Readonly<FormProps>) {
 					<button type="button" className="btn btn-ghost" onClick={() => closeDialog(dialog)}>
 						Cancel
 					</button>
-					<button type="button" className="btn btn-primary" onClick={handleSave}>
+					<button type="button" className="btn btn-primary" onClick={handleSave} disabled={busy}>
 						Save
 					</button>
 				</div>
+			</div>
+		</div>
+	);
+}
+
+function ThemePicker({ look, onPick }: Readonly<{ look: AvatarConfig; onPick: (theme: AvatarTheme) => void }>) {
+	return (
+		<div>
+			<p className="text-sm text-base-content/60 mb-3">Dress up in one click. You can still change every piece afterwards.</p>
+			<div className="grid grid-cols-3 sm:grid-cols-6 md:grid-cols-3 gap-3">
+				{THEME_IDS.map((theme) => (
+					<button
+						key={theme}
+						type="button"
+						aria-label={`${AVATAR_THEMES[theme].label} theme`}
+						onClick={() => onPick(theme)}
+						className="flex flex-col items-center gap-1 rounded-xl p-2 bg-base-300/60 cursor-pointer transition-transform hover:scale-105 hover:bg-base-300"
+					>
+						<img src={avatarDataUri(applyTheme(look, theme))} alt="" className="w-16 h-16 rounded-full" />
+						<span className="text-xs font-semibold">{AVATAR_THEMES[theme].label}</span>
+					</button>
+				))}
 			</div>
 		</div>
 	);

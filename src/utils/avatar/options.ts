@@ -87,8 +87,19 @@ export const AVATAR_OPTIONS = {
 		{ id: 'wizard', label: 'Wizard hat' },
 		{ id: 'tophat', label: 'Top hat' },
 		{ id: 'crown', label: 'Crown' },
+		{ id: 'helmet', label: 'Knight helmet' },
+		{ id: 'hood', label: 'Hood' },
+		{ id: 'witch', label: 'Witch hat' },
 	],
 	headwearColor: CLOTH_COLORS,
+	outfit: [
+		{ id: 'tshirt', label: 'T-shirt' },
+		{ id: 'knight', label: 'Knight armor' },
+		{ id: 'mage', label: 'Mage robe' },
+		{ id: 'vampire', label: 'Vampire coat' },
+		{ id: 'necromancer', label: 'Necromancer robe' },
+		{ id: 'rogue', label: 'Rogue leathers' },
+	],
 	shirtColor: CLOTH_COLORS,
 	shirtLogo: [
 		{ id: 'none', label: 'None' },
@@ -111,6 +122,24 @@ export const AVATAR_OPTIONS = {
 		{ id: 'red', label: 'Red', hex: '#a33a3a' },
 		{ id: 'pink', label: 'Pink', hex: '#d77aa6' },
 		{ id: 'sky', label: 'Sky', hex: '#8ec5ea' },
+		{ id: 'castle', label: 'Castle', hex: '#33275a' },
+		{ id: 'graveyard', label: 'Graveyard', hex: '#1f3a30' },
+		{ id: 'moon', label: 'Full moon', hex: '#252b55' },
+		{ id: 'library', label: 'Library', hex: '#4a2e1c' },
+		{ id: 'arcane', label: 'Arcane circle', hex: '#2e1a5e' },
+	],
+	magic: [
+		{ id: 'none', label: 'None' },
+		{ id: 'aura', label: 'Aura' },
+		{ id: 'eyes', label: 'Glowing eyes' },
+		{ id: 'both', label: 'Aura and eyes' },
+	],
+	magicColor: [
+		{ id: 'arcane', label: 'Arcane', hex: '#b07cff' },
+		{ id: 'spectral', label: 'Spectral', hex: '#5dff9e' },
+		{ id: 'frost', label: 'Frost', hex: '#62cfff' },
+		{ id: 'ember', label: 'Ember', hex: '#ff8a3d' },
+		{ id: 'gold', label: 'Gold', hex: '#ffd45c' },
 	],
 } as const;
 
@@ -130,9 +159,13 @@ export const DEFAULT_AVATAR: AvatarConfig = {
 	headwear: 'none',
 	headwearColor: 'red',
 	shirtColor: 'blue',
+	outfit: 'tshirt',
 	shirtLogo: 'none',
 	background: 'slate',
+	magic: 'none',
+	magicColor: 'arcane',
 };
+
 
 const PARTS = Object.keys(AVATAR_OPTIONS) as AvatarPart[];
 
@@ -163,4 +196,42 @@ export const optionHex = (part: AvatarPart, id: string): string => {
 	return option?.hex ?? '';
 };
 
+const OUTFITS_WITH_LOGO: readonly AvatarConfig['outfit'][] = ['tshirt', 'knight'];
+
+/** T-shirts and knight tabards carry the shirt logo; robes and coats have no room for it. */
+export const outfitCarriesLogo = (outfit: AvatarConfig['outfit']) => OUTFITS_WITH_LOGO.includes(outfit);
+
 export const clothInk = (id: string): string => CLOTH_COLORS.find((color) => color.id === id)?.ink ?? '#ffffff';
+
+// One-click looks: they dress the avatar and leave the face and hair alone.
+export const AVATAR_THEMES = {
+	knight: {
+		label: 'Knight',
+		look: { outfit: 'knight', headwear: 'helmet', headwearColor: 'red', shirtColor: 'navy', shirtLogo: 'evolution', eyewear: 'none', background: 'castle', magic: 'none' },
+	},
+	mage: {
+		label: 'Mage',
+		look: { outfit: 'mage', headwear: 'wizard', headwearColor: 'purple', shirtColor: 'purple', eyewear: 'none', background: 'library', magic: 'aura', magicColor: 'arcane' },
+	},
+	witch: {
+		label: 'Witch',
+		look: { outfit: 'mage', headwear: 'witch', headwearColor: 'black', shirtColor: 'green', eyewear: 'none', background: 'moon', magic: 'aura', magicColor: 'spectral' },
+	},
+	necromancer: {
+		label: 'Necromancer',
+		look: { outfit: 'necromancer', headwear: 'hood', headwearColor: 'black', shirtColor: 'black', eyewear: 'none', background: 'graveyard', magic: 'eyes', magicColor: 'spectral' },
+	},
+	vampire: {
+		label: 'Vampire',
+		look: { outfit: 'vampire', headwear: 'none', shirtColor: 'red', eyewear: 'none', eyeStyle: 'sharp', eyeColor: 'red', background: 'castle', magic: 'none' },
+	},
+	rogue: {
+		label: 'Rogue',
+		look: { outfit: 'rogue', headwear: 'hood', headwearColor: 'green', shirtColor: 'green', eyewear: 'none', background: 'graveyard', magic: 'none' },
+	},
+} as const satisfies Record<string, { label: string; look: Partial<AvatarConfig> }>;
+
+export type AvatarTheme = keyof typeof AVATAR_THEMES;
+
+export const applyTheme = (look: AvatarConfig, theme: AvatarTheme): AvatarConfig =>
+	sanitizeAvatar({ ...look, ...AVATAR_THEMES[theme].look });

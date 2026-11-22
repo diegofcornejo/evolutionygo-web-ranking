@@ -4,41 +4,49 @@ import TierEmblem from '@components/TierEmblem';
 
 const TIERS = ['rookie', 'bronze', 'silver', 'gold', 'platinum', 'diamond', 'master'];
 
-const paletteOf = (svg: Element) => `${svg.getAttribute('data-c1')}/${svg.getAttribute('data-c2')}`;
+const emblem = (container: HTMLElement) => container.querySelector('img[data-tier-emblem]')!;
 
 describe('TierEmblem', () => {
-  it('renders one palette per tier', () => {
-    const palettes = TIERS.map((tier) => {
-      const { container } = render(<TierEmblem tier={tier} />);
-      const svg = container.querySelector(`svg[data-tier-emblem="${tier}"]`)!;
-      expect(svg).not.toBeNull();
-      return paletteOf(svg);
-    });
-
-    expect(new Set(palettes).size).toBe(TIERS.length);
+  it('draws the official art of each tier', () => {
+    for (const tier of TIERS) {
+      const img = emblem(render(<TierEmblem tier={tier} />).container);
+      expect(img).toHaveAttribute('data-tier-emblem', tier);
+      expect(img).toHaveAttribute('src', `/ranks/${tier}-64.webp`);
+      expect(img.getAttribute('srcset')).toBe(
+        [32, 64, 128, 256].map((size) => `/ranks/${tier}-${size}.webp ${size}w`).join(', '),
+      );
+    }
   });
 
-  it('falls back for an unknown tier id', () => {
-    const { container } = render(<TierEmblem tier="legend" />);
-    const rookie = render(<TierEmblem tier="rookie" />).container.querySelector('svg')!;
-
-    expect(paletteOf(container.querySelector('svg[data-tier-emblem="legend"]')!)).toBe(paletteOf(rookie));
+  it('asks the browser for the size it is drawn at', () => {
+    expect(emblem(render(<TierEmblem tier="gold" />).container)).toHaveAttribute('sizes', '24px');
+    expect(emblem(render(<TierEmblem tier="gold" size={80} />).container)).toHaveAttribute('sizes', '80px');
   });
 
-  it('does not pick up object built-ins as a palette', () => {
-    const rookie = render(<TierEmblem tier="rookie" />).container.querySelector('svg')!;
-    const { container } = render(<TierEmblem tier="constructor" />);
+  it('falls back to rookie for an unknown tier id', () => {
+    const img = emblem(render(<TierEmblem tier="legend" />).container);
+    expect(img).toHaveAttribute('data-tier-emblem', 'legend');
+    expect(img).toHaveAttribute('src', '/ranks/rookie-64.webp');
+  });
 
-    expect(paletteOf(container.querySelector('svg')!)).toBe(paletteOf(rookie));
+  it('does not pick up object built-ins as a tier', () => {
+    expect(emblem(render(<TierEmblem tier="constructor" />).container)).toHaveAttribute('src', '/ranks/rookie-64.webp');
   });
 
   it('is decorative unless titled', () => {
-    const plain = render(<TierEmblem tier="gold" />).container.querySelector('svg')!;
+    const plain = emblem(render(<TierEmblem tier="gold" />).container);
+    expect(plain).toHaveAttribute('alt', '');
     expect(plain).toHaveAttribute('aria-hidden', 'true');
 
-    const titled = render(<TierEmblem tier="gold" title="Gold" />).container.querySelector('svg')!;
-    expect(titled).toHaveAttribute('role', 'img');
-    expect(titled).toHaveAttribute('aria-label', 'Gold');
+    const titled = emblem(render(<TierEmblem tier="gold" title="Gold" />).container);
+    expect(titled).toHaveAttribute('alt', 'Gold');
     expect(titled).not.toHaveAttribute('aria-hidden');
+  });
+
+  it('ships every size it points to', async () => {
+    const { existsSync } = await import('node:fs');
+    for (const tier of TIERS) {
+      for (const size of [32, 64, 128, 256]) expect(existsSync(`public/ranks/${tier}-${size}.webp`), `${tier}-${size}`).toBe(true);
+    }
   });
 });

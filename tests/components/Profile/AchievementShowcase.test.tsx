@@ -161,10 +161,41 @@ describe('AchievementShowcase', () => {
 		expect(screen.getByText('300 achievement points')).toBeInTheDocument();
 	});
 
+	it('draws the badge art for achievements that have it', () => {
+		render(<AchievementShowcase achievements={achievements} />);
+
+		const card = screen.getAllByRole('heading', { name: 'On a roll' })[0].closest('.group') as HTMLElement;
+		const badge = card.querySelector('img');
+		expect(badge).toHaveAttribute('src', '/achievements/streak_3-64.webp');
+		expect(badge).toHaveAttribute('srcset', '/achievements/streak_3-64.webp 1x, /achievements/streak_3-128.webp 2x');
+		expect(badge).toHaveAttribute('alt', '');
+		expect(card).not.toHaveTextContent('🔥');
+	});
+
+	it('keeps the emoji for achievements without art', () => {
+		render(<AchievementShowcase achievements={achievements} />);
+
+		// The latest unlock is Tournament Victor, which has no art.
+		const latest = screen.getByText('Latest unlock').parentElement?.parentElement as HTMLElement;
+		expect(latest).toHaveTextContent('Tournament Victor');
+		expect(latest.querySelector('img')).toBeNull();
+		expect(latest).toHaveTextContent('🏆');
+	});
+
+	it('greys out the badge of a locked achievement', () => {
+		render(<AchievementShowcase achievements={achievements} catalog={catalog} progress={progress} />);
+
+		const locked = screen.getByText('Veteran I').closest('.rounded-2xl') as HTMLElement;
+		const badge = locked.querySelector('img');
+		expect(badge).toHaveAttribute('src', '/achievements/wins_10-64.webp');
+		expect(badge?.parentElement).toHaveClass('grayscale');
+	});
+
 	it('shows catalog achievements to unlock when the player has none', () => {
 		render(<AchievementShowcase achievements={[]} catalog={catalog} progress={progress} />);
 
 		expect(screen.getByText('No Achievements Yet')).toBeInTheDocument();
+		expect(document.querySelector('img[data-empty-state="atlas"]')).not.toBeNull();
 		expect(screen.getByText('Achievements you can unlock:')).toBeInTheDocument();
 		expect(screen.getByText('Veteran I')).toBeInTheDocument();
 	});

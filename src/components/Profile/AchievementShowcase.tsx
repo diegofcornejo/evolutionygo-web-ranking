@@ -1,6 +1,8 @@
 import { useMemo, useRef } from 'react';
 import { useHydrated } from '@utils/useHydrated';
 import type { Achievement, AchievementCatalogItem, AchievementProgress } from '@types';
+import { achievementArt } from '@utils/achievementArt';
+import EmptyStateArt from '@components/EmptyStateArt';
 
 interface AchievementShowcaseProps {
 	achievements: Achievement[];
@@ -64,9 +66,7 @@ export default function AchievementShowcase({
 	if (achievements.length === 0) {
 		return (
 			<div className="bg-base-200/50 rounded-2xl p-8 text-center border border-base-300">
-				<div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-warning/10 flex items-center justify-center">
-					<span className="text-sm font-semibold text-warning">Locked</span>
-				</div>
+				<EmptyStateArt name="atlas" className="h-24 w-24 mb-4" />
 				<h3 className="text-xl font-semibold mb-2">No Achievements Yet</h3>
 				<p className="text-base-content/60">Keep dueling ranked matches to unlock achievements.</p>
 
@@ -169,7 +169,12 @@ export default function AchievementShowcase({
 	);
 }
 
-function AchievementIcon({ icon, muted = false }: Readonly<{ icon: string; muted?: boolean }>) {
+function AchievementIcon({
+	code,
+	icon,
+	muted = false,
+}: Readonly<{ code: string | null; icon: string; muted?: boolean }>) {
+	const art = achievementArt(code);
 	return (
 		<div
 			aria-hidden="true"
@@ -177,7 +182,11 @@ function AchievementIcon({ icon, muted = false }: Readonly<{ icon: string; muted
 				muted ? 'bg-base-300/60 grayscale opacity-50' : 'bg-warning/10'
 			}`}
 		>
-			{icon}
+			{art ? (
+				<img src={art.src} srcSet={art.srcSet} alt="" width={48} height={48} loading="lazy" decoding="async" className="w-12 h-12" />
+			) : (
+				icon
+			)}
 		</div>
 	);
 }
@@ -197,7 +206,7 @@ function LatestAchievement({ achievement }: Readonly<{ achievement: Achievement 
 	const unlockedDate = useUnlockedDate(achievement.unlockedAt);
 	return (
 		<div className="flex items-center gap-4 min-w-0 sm:pl-6 sm:border-l border-t sm:border-t-0 pt-4 sm:pt-0 border-warning/20">
-			<AchievementIcon icon={achievement.icon} />
+			<AchievementIcon code={achievement.code} icon={achievement.icon} />
 			<div className="min-w-0">
 				<span className="text-xs uppercase tracking-wide text-warning/80">Latest unlock</span>
 				<h3 className="font-bold leading-tight truncate">{achievement.name}</h3>
@@ -216,7 +225,7 @@ function AchievementCard({ achievement }: Readonly<{ achievement: Achievement }>
 		<div className="group relative overflow-hidden rounded-2xl bg-base-200/80 border border-base-300 hover:border-warning/30 transition-all duration-300 hover:shadow-lg hover:shadow-warning/5">
 			<div className="relative p-5">
 				<div className="flex items-start gap-4 mb-4">
-					<AchievementIcon icon={achievement.icon} />
+					<AchievementIcon code={achievement.code} icon={achievement.icon} />
 					<div className="flex-1 min-w-0">
 						<h3 className="font-bold text-base leading-tight wrap-break-word">{achievement.name}</h3>
 						<p className="text-sm text-base-content/60 line-clamp-2">{achievement.description}</p>
@@ -254,7 +263,7 @@ function LockedAchievementCard({ achievement }: Readonly<{ achievement: LockedAc
 	return (
 		<div className="rounded-2xl bg-base-300/30 border border-base-300/60 p-5">
 			<div className="flex items-start gap-4">
-				<AchievementIcon icon={achievement.icon} muted />
+				<AchievementIcon code={achievement.code} icon={achievement.icon} muted />
 				<div className="flex-1 min-w-0">
 					<h3 className="font-semibold text-sm leading-tight text-base-content/70">{achievement.name}</h3>
 					<p className="text-xs text-base-content/50 line-clamp-2">{achievement.description}</p>

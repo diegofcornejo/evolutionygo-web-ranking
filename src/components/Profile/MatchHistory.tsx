@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useHydrated } from '@utils/useHydrated';
 import type { Match } from '@types';
+import EmptyStateArt from '@components/EmptyStateArt';
 
 interface MatchHistoryProps {
 	matches: Match[];
@@ -98,9 +99,7 @@ export default function MatchHistory({ matches }: Readonly<MatchHistoryProps>) {
 	if (matches.length === 0) {
 		return (
 			<div className="bg-base-200/50 rounded-2xl p-8 text-center border border-base-300">
-				<div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-base-300/60 flex items-center justify-center">
-					<span className="text-sm font-semibold text-base-content/60">No Data</span>
-				</div>
+				<EmptyStateArt name="history" className="h-24 w-24 mb-4" />
 				<h3 className="text-xl font-semibold mb-2">No Matches Yet</h3>
 				<p className="text-base-content/60">
 					Start dueling to build your match history.

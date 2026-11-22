@@ -109,7 +109,7 @@ export default function RankCard({ rating, others, ladder, season, banListName, 
 			{tier && view ? (
 				<>
 					<div className="flex items-center gap-5">
-						<TierEmblem tier={tier.id} className="h-20 w-20 drop-shadow-[0_8px_18px_rgba(124,58,237,0.35)]" />
+						<TierEmblem tier={tier.id} className="h-20 w-20 drop-shadow-[0_8px_18px_rgba(124,58,237,0.35)]" size={80} />
 						<div className="min-w-0">
 							<p className="text-sm text-base-content/60">{`Season ${season} · ${banListName}`}</p>
 							<h2 className="text-3xl font-extrabold leading-tight">{tier.name}</h2>
@@ -179,7 +179,7 @@ export default function RankCard({ rating, others, ladder, season, banListName, 
 									href={profileHref(userId, other.banListName, username, season)}
 									className="flex items-center gap-2 rounded-full border border-base-content/15 px-3 py-1 text-sm transition-colors hover:border-primary hover:bg-primary/10"
 								>
-									<TierEmblem tier={other.tier.id} className="h-5 w-5" />
+									<TierEmblem tier={other.tier.id} className="h-5 w-5" size={20} />
 									<span className="font-semibold">{other.banListName}</span>
 									<span className="text-base-content/60">{other.tier.name}</span>
 								</a>

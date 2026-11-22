@@ -66,7 +66,7 @@ describe('DuelistTradingCard', () => {
   it('shows the tier emblem in the name bar', () => {
     const { container } = render(<DuelistTradingCard {...fuku} banListName="TCG" season="7" place={1} showElo />);
 
-    const emblem = container.querySelector('svg[data-tier-emblem="master"]')!;
+    const emblem = container.querySelector('[data-tier-emblem="master"]')!;
     expect(emblem).not.toBeNull();
     expect(emblem).toHaveAttribute('aria-hidden', 'true');
     expect(screen.queryByText('★', { selector: 'span[aria-hidden="true"]' })).toBeNull();
@@ -75,7 +75,7 @@ describe('DuelistTradingCard', () => {
   it('keeps the star without a tier', () => {
     const { container } = render(<DuelistTradingCard {...fuku} tier={null} banListName="Global" season="7" place={1} showElo={false} />);
 
-    expect(container.querySelector('svg[data-tier-emblem]')).toBeNull();
+    expect(container.querySelector('[data-tier-emblem]')).toBeNull();
     expect(screen.getByText('★', { selector: 'span[aria-hidden="true"]' })).toBeInTheDocument();
   });
 

@@ -1,8 +1,11 @@
-import { render, fireEvent, waitFor, within } from '@testing-library/react';
+import { render, fireEvent, waitFor, within, act } from '@testing-library/react';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import type { Duelist } from '@types';
 import Ranking from '@sections/Ranking';
 import { parseWeeklyDuelist } from '@utils/weeklyDuelist';
+import { getSession } from '@stores/sessionStore';
+import { avatars } from '@stores/avatarStore';
+import { DEFAULT_AVATAR, avatarDataUri } from '@utils/avatar';
 
 vi.mock('@stores/sessionStore', () => ({
   getSession: vi.fn(() => ({ isLoggedIn: false })),
@@ -63,13 +66,17 @@ type FetchOverrides = {
   flat?: unknown;
   stats?: Duelist[];
   weekly?: unknown[] | (() => Promise<unknown>);
+  avatars?: () => Promise<unknown>;
 };
 
-const mockFetch = ({ grouped, flat = flatBanLists, stats = [], weekly = [weeklyItem] }: FetchOverrides = {}) => {
+const mockFetch = ({ grouped, flat = flatBanLists, stats = [], weekly = [weeklyItem], avatars }: FetchOverrides = {}) => {
   const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
     const url = String(input);
     if (url.includes('/stats/player-of-the-week')) {
       return typeof weekly === 'function' ? await weekly() : jsonResponse(weekly);
+    }
+    if (url.includes('/avatars?')) {
+      return avatars ? await avatars() : jsonResponse({ avatars: [] });
     }
     if (url.includes('/ban-lists/grouped')) {
       return grouped ? await grouped() : jsonResponse(groupedBanLists);
@@ -102,6 +109,107 @@ const chipNames = (row: HTMLElement) =>
   );
 
 describe('Ranking', () => {
+  describe('empty and failed leaderboards', () => {
+    beforeEach(() => {
+      vi.stubEnv('PUBLIC_API_URL', API_URL);
+      vi.stubEnv('PUBLIC_DEFAULT_SEASON', '3');
+      vi.stubEnv('PUBLIC_DEFAULT_BAN_LIST', 'Global');
+    });
+
+    afterEach(() => {
+      vi.unstubAllEnvs();
+      vi.unstubAllGlobals();
+      vi.restoreAllMocks();
+    });
+
+    it('says the ladder has no duelists yet', async () => {
+      mockFetch({ stats: [] });
+      const { findByText, container } = render(<Ranking />);
+      expect(await findByText('No duelists in this ladder yet.')).toBeTruthy();
+      expect(container.querySelector('img[data-empty-state="leaderboard"]')).not.toBeNull();
+    });
+
+    it('says the ranking could not load when the API fails', async () => {
+      const fetchMock = mockFetch();
+      fetchMock.mockImplementation(async (input: RequestInfo | URL) => {
+        const url = String(input);
+        if (url.includes('/stats/?')) return { ok: false, status: 500, json: async () => ({ message: 'boom' }) };
+        if (url.includes('/ban-lists/grouped')) return jsonResponse(groupedBanLists);
+        if (url.includes('/ban-lists')) return jsonResponse(flatBanLists);
+        return jsonResponse([]);
+      });
+      const { findByText, container } = render(<Ranking />);
+      expect(await findByText("We couldn't load the ranking. Try again in a moment.")).toBeTruthy();
+      expect(container.querySelector('img[data-empty-state="load-error"]')).not.toBeNull();
+    });
+  });
+
+  describe('avatars', () => {
+    beforeEach(() => {
+      vi.stubEnv('PUBLIC_API_URL', API_URL);
+      vi.stubEnv('PUBLIC_DEFAULT_SEASON', '3');
+      vi.stubEnv('PUBLIC_DEFAULT_BAN_LIST', 'Global');
+    });
+
+    afterEach(() => {
+      vi.unstubAllEnvs();
+      vi.unstubAllGlobals();
+      vi.restoreAllMocks();
+      vi.mocked(getSession).mockReturnValue({ isLoggedIn: false } as never);
+      avatars.set({});
+    });
+
+    const rowImage = (container: HTMLElement, username: string) =>
+      container.querySelector<HTMLImageElement>(`tbody img[alt="${username}"]`)?.getAttribute('src') ?? '';
+
+    it("shows a player's avatar in their row", async () => {
+      const fetchMock = mockFetch({
+        stats: [...cardDuelists, ...tableDuelists],
+        avatars: async () => jsonResponse({ avatars: [{ userId: '6', config: { hairStyle: 'spiky' } }] }),
+      });
+
+      const { container, findByText } = render(<Ranking />);
+      expect(await findByText('NewDuelist')).toBeTruthy();
+
+      await waitFor(() => expect(rowImage(container, 'NewDuelist')).toMatch(/^data:image\/svg\+xml,/));
+      expect(rowImage(container, 'RatedDuelist')).toContain('ui-avatars.com');
+      const avatarCall = fetchMock.mock.calls.map(([url]) => String(url)).find((url) => url.includes('/avatars?'));
+      expect(decodeURIComponent(avatarCall ?? '')).toContain('userIds=1,2,3,4,5,6,7');
+    });
+
+    it("shows the player's own avatar from this browser, so a save shows at once", async () => {
+      vi.mocked(getSession).mockReturnValue({ isLoggedIn: true, token: 't', user: { id: '6', username: 'NewDuelist' } } as never);
+      const mine = { ...DEFAULT_AVATAR, hairStyle: 'afro' as const };
+      avatars.set({ '6': mine });
+      mockFetch({
+        stats: [...cardDuelists, ...tableDuelists],
+        avatars: async () => jsonResponse({ avatars: [{ userId: '6', config: { hairStyle: 'spiky' } }] }),
+      });
+
+      const { container, findByText } = render(<Ranking />);
+      expect(await findByText('NewDuelist (You)')).toBeTruthy();
+
+      await waitFor(() => expect(rowImage(container, 'NewDuelist')).toBe(avatarDataUri(mine)));
+      const updated = { ...DEFAULT_AVATAR, hairStyle: 'bob' as const };
+      act(() => avatars.set({ '6': updated }));
+      await waitFor(() => expect(rowImage(container, 'NewDuelist')).toBe(avatarDataUri(updated)));
+      act(() => avatars.set({}));
+      await waitFor(() => expect(rowImage(container, 'NewDuelist')).toContain('ui-avatars.com'));
+    });
+
+    it('falls back to initials when the API fails', async () => {
+      mockFetch({
+        stats: [...cardDuelists, ...tableDuelists],
+        avatars: async () => ({ ok: false, status: 500, json: async () => ({}) }),
+      });
+
+      const { container, findByText } = render(<Ranking />);
+      expect(await findByText('NewDuelist')).toBeTruthy();
+
+      await waitFor(() => expect(rowImage(container, 'NewDuelist')).toContain('ui-avatars.com'));
+    });
+  });
+
   beforeEach(() => {
     vi.stubEnv('PUBLIC_API_URL', API_URL);
     vi.stubEnv('PUBLIC_DEFAULT_SEASON', '3');
@@ -116,6 +224,21 @@ describe('Ranking', () => {
   });
 
   describe('ban list selector', () => {
+    const formatIcon = (container: HTMLElement) =>
+      banListSelect(container).parentElement?.querySelector<HTMLImageElement>('img[data-format-icon]') ?? null;
+
+    it('shows the icon of the selected format inside the selector', async () => {
+      mockFetch();
+      const { container } = render(<Ranking />);
+      await waitFor(() => expect(banListSelect(container).querySelectorAll('option')).toHaveLength(3));
+
+      expect(formatIcon(container)).toBeNull();
+
+      fireEvent.change(banListSelect(container), { target: { value: 'TCG' } });
+      await waitFor(() => expect(formatIcon(container)).toHaveAttribute('src', '/formats/tcg-64.webp'));
+      expect(formatIcon(container)).toHaveAttribute('alt', '');
+    });
+
     it('lists formats and orphan ban lists, never the members of a group', async () => {
       mockFetch();
 
@@ -336,7 +459,7 @@ describe('Ranking', () => {
       expect(headers.indexOf('Rank')).toBe(headers.indexOf('Username') + 1);
       const goldRow = within(container.querySelectorAll('tbody tr')[1] as HTMLElement);
       expect(goldRow.getByText('Gold')).toBeTruthy();
-      expect(goldRow.getByText('Gold').closest('td')!.querySelector('svg[data-tier-emblem="gold"]')).not.toBeNull();
+      expect(goldRow.getByText('Gold').closest('td')!.querySelector('[data-tier-emblem="gold"]')).not.toBeNull();
     });
 
     it('shows a dash for a row without a tier', async () => {

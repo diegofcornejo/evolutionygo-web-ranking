@@ -1,6 +1,7 @@
 import { render } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
 import ProfileHeader from '@components/Profile/ProfileHeader';
+import { DEFAULT_AVATAR, avatarDataUri } from '@utils/avatar';
 
 describe('ProfileHeader', () => {
 	it('renders champion badge and core stats', () => {
@@ -29,6 +30,47 @@ describe('ProfileHeader', () => {
 		expect(getAllByText('Points')[0]).toBeTruthy();
 		expect(getAllByText('Wins')[0]).toBeTruthy();
 		expect(getAllByText('Losses')[0]).toBeTruthy();
+	});
+
+	it('puts the format icon on the ban list badge', () => {
+		const { getByText } = render(
+			<ProfileHeader userId="42" username="Ace" points={0} wins={0} losses={0} winRate={null} position={0} season="5" banlistName="2026.10 OCG" />
+		);
+		const badge = getByText('2026.10 OCG').closest('.badge') as HTMLElement;
+		expect(badge.querySelector('img')).toHaveAttribute('src', '/formats/ocg-64.webp');
+	});
+
+	it('leaves the Global badge without an icon', () => {
+		const { getByText } = render(
+			<ProfileHeader userId="42" username="Ace" points={0} wins={0} losses={0} winRate={null} position={0} season="5" banlistName="Global" />
+		);
+		expect((getByText('Global').closest('.badge') as HTMLElement).querySelector('img')).toBeNull();
+	});
+
+	it('draws the arcane banner behind the header as decoration', () => {
+		const { container } = render(
+			<ProfileHeader userId="42" username="Ace" points={0} wins={0} losses={0} winRate={null} position={0} season="5" banlistName="Global" />
+		);
+		const banner = container.querySelector('img[data-profile-banner]');
+		expect(banner).toHaveAttribute('src', '/profile/banner-1281.webp');
+		expect(banner).toHaveAttribute('srcset', '/profile/banner-1281.webp 1281w, /profile/banner-1920.webp 1920w');
+		expect(banner).toHaveAttribute('alt', '');
+		expect(banner).toHaveAttribute('aria-hidden', 'true');
+	});
+
+	it('draws the avatar it is given', () => {
+		const avatar = { ...DEFAULT_AVATAR, hairStyle: 'afro' as const };
+		const { getByAltText } = render(
+			<ProfileHeader userId="42" username="Ace" avatar={avatar} points={0} wins={0} losses={0} winRate={null} position={0} season="5" banlistName="Global" />
+		);
+		expect(getByAltText('Ace')).toHaveAttribute('src', avatarDataUri(avatar));
+	});
+
+	it('keeps the initials when the player has no avatar', () => {
+		const { getByAltText } = render(
+			<ProfileHeader userId="42" username="Ace" avatar={null} points={0} wins={0} losses={0} winRate={null} position={0} season="5" banlistName="Global" />
+		);
+		expect(getByAltText('Ace').getAttribute('src')).toContain('ui-avatars.com');
 	});
 
 	it('marks the picture with the player id so their own avatar can replace it', () => {
