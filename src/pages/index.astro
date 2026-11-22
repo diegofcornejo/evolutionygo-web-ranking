@@ -39,7 +39,7 @@ const [weeklyDuelist, { news, upcomingSeason }, evoDuelVersion] = await Promise.
 const edition = getSeasonalEdition(new Date(), Astro.url.searchParams.get(EDITION_PARAM));
 const EditionHero = edition && { halloween: ShadowRealmHero, muertos: OfrendaHero, christmas: WinterHero, newyear: NewYearHero }[edition];
 const title = `Evolution YGO Season ${currentSeason}`;
-const description = `Play Yu-Gi-Oh! online for free on Evolution YGO Season ${currentSeason}. Compatible with EDOPro, Koishi, and YGO Mobile. Join competitive rankings, participate in tournaments, and duel players worldwide! Play instantly in your browser with EvoDuel.`;
+const description = `Play YGO online for free on Evolution YGO Season ${currentSeason}. Compatible with EDOPro, Koishi, and YGO Mobile. Join competitive rankings, participate in tournaments, and duel players worldwide! Play instantly in your browser with EvoDuel.`;
 
 const keywords = [
 	'Yu-Gi-Oh online',
@@ -66,7 +66,6 @@ const keywords = [
 	title={title} 
 	description={description}
 	keywords={keywords}
-	image="/banners/banner1.webp"
 >
 	<main class='w-full text-[white] text-xl leading-[1.6] mx-auto'>
 		<RoomsWebSocketListener client:only='react' />

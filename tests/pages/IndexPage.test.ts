@@ -302,6 +302,8 @@ describe('index.astro page', () => {
 
     expect(result).toMatch(/data-layout-description="[^"]*Play instantly in your browser with EvoDuel\.[^"]*"/);
     expect(result).toMatch(/data-layout-keywords="[^"]*\bEvoDuel\b[^"]*"/);
+    expect(result).toMatch(/data-layout-description="Play YGO online for free on Evolution YGO Season \d+\./);
+    expect(result).not.toMatch(/data-layout-description="[^"]*Yu-Gi-Oh/);
   });
 
   it('puts the news card before the marquee in the DOM so keyboard order follows the desktop row', async () => {

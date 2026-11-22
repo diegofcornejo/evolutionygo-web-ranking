@@ -1,4 +1,6 @@
 ---
+import { seasonCardPath } from '@utils/ogImage';
+
 /**
  * SEO Component for Evolution YGO
  * Provides comprehensive meta tags, Open Graph, Twitter Cards, and JSON-LD structured data
@@ -21,8 +23,8 @@ interface Props {
 }
 
 const SITE_NAME = 'Evolution YGO';
-const DEFAULT_DESCRIPTION = 'Welcome to Evolution Server, a versatile platform for creating Yu-Gi-Oh! matches, fully compatible with EDOPro, Koishi, and YGO Mobile! Join the community, compete in rankings, and participate in tournaments.';
-const DEFAULT_IMAGE = '/banners/banner1.webp';
+const DEFAULT_DESCRIPTION = 'Welcome to Evolution Server, a versatile platform for creating YGO matches, fully compatible with EDOPro, Koishi, and YGO Mobile! Join the community, compete in rankings, and participate in tournaments.';
+const DEFAULT_IMAGE = seasonCardPath(import.meta.env.PUBLIC_DEFAULT_SEASON);
 const DEFAULT_KEYWORDS = [
 	'Yu-Gi-Oh',
 	'YGO',
@@ -150,7 +152,7 @@ const videoGameJsonLd = {
 	'@context': 'https://schema.org',
 	'@type': 'VideoGame',
 	name: 'Evolution YGO',
-	description: 'A free online Yu-Gi-Oh! dueling platform compatible with EDOPro, Koishi, and YGO Mobile.',
+	description: 'A free online YGO dueling platform compatible with EDOPro, Koishi, and YGO Mobile.',
 	genre: ['Card Game', 'Strategy', 'Collectible Card Game'],
 	gamePlatform: ['Web Browser', 'Windows', 'macOS', 'Linux', 'Android'],
 	applicationCategory: 'Game',
@@ -216,6 +218,7 @@ const allJsonLd = [
 <meta property="og:image" content={resolvedImage} />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
+{image === DEFAULT_IMAGE && <meta property="og:image:type" content="image/png" />}
 <meta property="og:image:alt" content={title} />
 <meta property="og:site_name" content={SITE_NAME} />
 <meta property="og:locale" content="en_US" />
