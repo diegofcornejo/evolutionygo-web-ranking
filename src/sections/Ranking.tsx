@@ -9,6 +9,8 @@ import type { BanListSelectorOption } from '@utils/banListSelector';
 import { formatWinRate, winRateStars } from '@utils/winRate';
 import type { WeeklyDuelist } from '@utils/weeklyDuelist';
 import { avatarDataUri, fetchAvatars, sanitizeAvatar, type AvatarConfig } from '@utils/avatar';
+import { formatArt } from '@utils/formatArt';
+import EmptyStateArt from '@components/EmptyStateArt';
 import { banlists } from '@stores/banlistsStore';
 import { getSession } from '@stores/sessionStore';
 import { avatars as ownAvatars } from '@stores/avatarStore';
@@ -65,6 +67,7 @@ const buildUserStatsUrl = (apiUrl: string, userId: string, season: string, banLi
 export default function Ranking({ weekly = null }: Readonly<{ weekly?: WeeklyDuelist | null }>) {
   const [duelists, setDuelists] = useState<Duelist[]>([]);
   const [topDuelists, setTopDuelists] = useState<Duelist[]>([]);
+  const [leaderboardFailed, setLeaderboardFailed] = useState(false);
 	const [season, setSeason] = useState<string>(import.meta.env.PUBLIC_DEFAULT_SEASON);
 	const [banList, setBanList] = useState<string>(import.meta.env.PUBLIC_DEFAULT_BAN_LIST);
 	const [banListOptions, setBanListOptions] = useState<BanListSelectorOption[]>([]);
@@ -218,12 +221,21 @@ export default function Ranking({ weekly = null }: Readonly<{ weekly?: WeeklyDue
 
   useEffect(() => {
     const fetchDuelists = async () => {
-      const response = await fetch(
-        `${API_URL}/stats/?page=1&limit=20&banListName=${banList}&season=${season}&sortBy=${sortBy}`
-      );
-      const data = await response.json();
-      setTopDuelists(data.slice(0, 3));
-      setDuelists(data.slice(3));
+      try {
+        const response = await fetch(
+          `${API_URL}/stats/?page=1&limit=20&banListName=${banList}&season=${season}&sortBy=${sortBy}`
+        );
+        const data = response.ok ? await response.json() : null;
+        if (!Array.isArray(data)) throw new Error(`Leaderboard request failed (${response.status})`);
+        setTopDuelists(data.slice(0, 3));
+        setDuelists(data.slice(3));
+        setLeaderboardFailed(false);
+      } catch (error) {
+        console.error('Error fetching leaderboard:', error);
+        setTopDuelists([]);
+        setDuelists([]);
+        setLeaderboardFailed(true);
+      }
       setLeaderboardLoaded(true);
     };
 
@@ -236,6 +248,7 @@ export default function Ranking({ weekly = null }: Readonly<{ weekly?: WeeklyDue
 
 	const selectedFormat = findBanListSelectorOption(banListOptions, banList);
 	const banListChips = buildBanListChips(selectedFormat);
+	const selectedFormatArt = formatArt(selectedFormat ? selectedFormat.value : banList);
 
 	const title = 'Top Players';
 
@@ -255,11 +268,29 @@ export default function Ranking({ weekly = null }: Readonly<{ weekly?: WeeklyDue
 					</option>
 				)).reverse()}
         </select>
-        <select className={PILL_SELECT} value={selectedFormat ? selectedFormat.value : banList} onChange={handleBanListChange} aria-label="Filter by banlist">
-          {banListOptions.map((option: BanListSelectorOption) => (
-            <option key={option.value} value={option.value}>{option.value}</option>
-          ))}
-        </select>
+        <span className='relative inline-flex items-center'>
+          {selectedFormatArt ? (
+            <img
+              data-format-icon={selectedFormatArt.format}
+              src={selectedFormatArt.src}
+              srcSet={selectedFormatArt.srcSet}
+              alt=''
+              width={24}
+              height={24}
+              className='pointer-events-none absolute left-2.5 z-10 h-6 w-6'
+            />
+          ) : null}
+          <select
+            className={selectedFormatArt ? PILL_SELECT.replace('pl-4', 'pl-10') : PILL_SELECT}
+            value={selectedFormat ? selectedFormat.value : banList}
+            onChange={handleBanListChange}
+            aria-label="Filter by banlist"
+          >
+            {banListOptions.map((option: BanListSelectorOption) => (
+              <option key={option.value} value={option.value}>{option.value}</option>
+            ))}
+          </select>
+        </span>
         <div role='group' aria-label='Sort by' className='flex h-10 items-center rounded-full border border-white/20 bg-white/10 p-1'>
           {SORT_OPTIONS.map((option) => (
             <button
@@ -296,6 +327,14 @@ export default function Ranking({ weekly = null }: Readonly<{ weekly?: WeeklyDue
               {index === 0 ? 'All' : chip}
             </button>
           ))}
+        </div>
+      ) : null}
+      {leaderboardLoaded && (leaderboardFailed || topDuelists.length === 0) ? (
+        <div className='relative z-10 flex flex-col items-center gap-3 pt-12 text-center'>
+          <EmptyStateArt name={leaderboardFailed ? 'load-error' : 'leaderboard'} className='h-32 w-32' />
+          <p className='text-base-content/70'>
+            {leaderboardFailed ? "We couldn't load the ranking. Try again in a moment." : 'No duelists in this ladder yet.'}
+          </p>
         </div>
       ) : null}
       {leaderboardLoaded && (
@@ -400,7 +439,7 @@ export default function Ranking({ weekly = null }: Readonly<{ weekly?: WeeklyDue
                     <NotTracked />
                   ) : duelist.tier ? (
                     <span className='flex items-center gap-2 font-bold'>
-                      <TierEmblem tier={duelist.tier.id} className='h-7 w-7' />
+                      <TierEmblem tier={duelist.tier.id} className='h-7 w-7' size={28} />
                       {duelist.tier.name}
                     </span>
                   ) : (

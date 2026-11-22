@@ -39,6 +39,7 @@ describe('MatchHistory', () => {
 		const { getByText } = render(<MatchHistory matches={[]} />);
 
 		expect(getByText('No Matches Yet')).toBeTruthy();
+		expect(document.querySelector('img[data-empty-state="history"]')).not.toBeNull();
 		expect(getByText('Start dueling to build your match history.')).toBeTruthy();
 	});
 

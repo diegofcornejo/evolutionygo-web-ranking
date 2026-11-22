@@ -106,7 +106,7 @@ export default function DuelistTradingCard({
 						{username}
 					</span>
 					{tier ? (
-						<TierEmblem tier={tier.id} className="h-7 w-7 drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]" />
+						<TierEmblem tier={tier.id} className="h-7 w-7 drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]" size={28} />
 					) : (
 						<span aria-hidden="true" className="grid h-6 w-6 shrink-0 place-items-center rounded-full border border-white/40 bg-black/60 text-xs text-amber-200">
 							★

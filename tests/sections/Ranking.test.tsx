@@ -109,6 +109,41 @@ const chipNames = (row: HTMLElement) =>
   );
 
 describe('Ranking', () => {
+  describe('empty and failed leaderboards', () => {
+    beforeEach(() => {
+      vi.stubEnv('PUBLIC_API_URL', API_URL);
+      vi.stubEnv('PUBLIC_DEFAULT_SEASON', '3');
+      vi.stubEnv('PUBLIC_DEFAULT_BAN_LIST', 'Global');
+    });
+
+    afterEach(() => {
+      vi.unstubAllEnvs();
+      vi.unstubAllGlobals();
+      vi.restoreAllMocks();
+    });
+
+    it('says the ladder has no duelists yet', async () => {
+      mockFetch({ stats: [] });
+      const { findByText, container } = render(<Ranking />);
+      expect(await findByText('No duelists in this ladder yet.')).toBeTruthy();
+      expect(container.querySelector('img[data-empty-state="leaderboard"]')).not.toBeNull();
+    });
+
+    it('says the ranking could not load when the API fails', async () => {
+      const fetchMock = mockFetch();
+      fetchMock.mockImplementation(async (input: RequestInfo | URL) => {
+        const url = String(input);
+        if (url.includes('/stats/?')) return { ok: false, status: 500, json: async () => ({ message: 'boom' }) };
+        if (url.includes('/ban-lists/grouped')) return jsonResponse(groupedBanLists);
+        if (url.includes('/ban-lists')) return jsonResponse(flatBanLists);
+        return jsonResponse([]);
+      });
+      const { findByText, container } = render(<Ranking />);
+      expect(await findByText("We couldn't load the ranking. Try again in a moment.")).toBeTruthy();
+      expect(container.querySelector('img[data-empty-state="load-error"]')).not.toBeNull();
+    });
+  });
+
   describe('avatars', () => {
     beforeEach(() => {
       vi.stubEnv('PUBLIC_API_URL', API_URL);
@@ -189,6 +224,21 @@ describe('Ranking', () => {
   });
 
   describe('ban list selector', () => {
+    const formatIcon = (container: HTMLElement) =>
+      banListSelect(container).parentElement?.querySelector<HTMLImageElement>('img[data-format-icon]') ?? null;
+
+    it('shows the icon of the selected format inside the selector', async () => {
+      mockFetch();
+      const { container } = render(<Ranking />);
+      await waitFor(() => expect(banListSelect(container).querySelectorAll('option')).toHaveLength(3));
+
+      expect(formatIcon(container)).toBeNull();
+
+      fireEvent.change(banListSelect(container), { target: { value: 'TCG' } });
+      await waitFor(() => expect(formatIcon(container)).toHaveAttribute('src', '/formats/tcg-64.webp'));
+      expect(formatIcon(container)).toHaveAttribute('alt', '');
+    });
+
     it('lists formats and orphan ban lists, never the members of a group', async () => {
       mockFetch();
 
@@ -409,7 +459,7 @@ describe('Ranking', () => {
       expect(headers.indexOf('Rank')).toBe(headers.indexOf('Username') + 1);
       const goldRow = within(container.querySelectorAll('tbody tr')[1] as HTMLElement);
       expect(goldRow.getByText('Gold')).toBeTruthy();
-      expect(goldRow.getByText('Gold').closest('td')!.querySelector('svg[data-tier-emblem="gold"]')).not.toBeNull();
+      expect(goldRow.getByText('Gold').closest('td')!.querySelector('[data-tier-emblem="gold"]')).not.toBeNull();
     });
 
     it('shows a dash for a row without a tier', async () => {

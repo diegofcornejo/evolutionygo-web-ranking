@@ -1,6 +1,7 @@
 import Rating from '@components/Rating';
 import { formatWinRate, winRateStars } from '@utils/winRate';
 import { avatarDataUri, type AvatarConfig } from '@utils/avatar';
+import { formatArt } from '@utils/formatArt';
 
 interface ProfileHeaderProps {
 	userId?: string;
@@ -39,6 +40,7 @@ export default function ProfileHeader({
 	const image = avatar
 		? avatarDataUri(avatar)
 		: `https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&background=random&size=256`;
+	const banlistArt = formatArt(banlistName || 'Global');
 	const rating = winRateStars(winRate);
 	const totalGames = wins + losses;
 	const normalizedPosition = Number(position) || 0;
@@ -146,8 +148,21 @@ export default function ProfileHeader({
 			{/* Background decoration */}
 			<div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-secondary/10 rounded-3xl" />
 			
-			<div className="relative bg-base-200/80 backdrop-blur-sm rounded-3xl p-6 md:p-8 border border-base-300">
-				<div className="flex flex-col lg:flex-row items-center gap-6 lg:gap-10">
+			<div className="relative overflow-hidden bg-base-200/80 backdrop-blur-sm rounded-3xl p-6 md:p-8 border border-base-300">
+				{/* Arcane backdrop from evolution-cosmetics (ui/profile/banner): decorative, faded into the card. */}
+				<img
+					data-profile-banner
+					src="/profile/banner-1281.webp"
+					srcSet="/profile/banner-1281.webp 1281w, /profile/banner-1920.webp 1920w"
+					sizes="(min-width: 1280px) 50vw, 100vw"
+					alt=""
+					aria-hidden="true"
+					loading="lazy"
+					decoding="async"
+					className="pointer-events-none absolute inset-x-0 top-0 h-64 w-full object-cover object-bottom"
+				/>
+				<div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-64 bg-gradient-to-b from-transparent from-55% to-base-200" />
+				<div className="relative flex flex-col lg:flex-row items-center gap-6 lg:gap-10">
 					{/* Avatar Section */}
 					<div className="relative group">
 						<div className={`absolute -inset-1 bg-gradient-to-r ${getBorderGradient()} rounded-full blur opacity-75 group-hover:opacity-100 transition duration-500`} />
@@ -185,7 +200,12 @@ export default function ProfileHeader({
 
 						<div className="flex flex-wrap justify-center lg:justify-start gap-2 mb-4">
 							<span className="badge badge-outline badge-lg">Season {season}</span>
-							<span className="badge badge-outline badge-lg">{banlistName || 'Global'}</span>
+							<span className="badge badge-outline badge-lg gap-1.5">
+								{banlistArt ? (
+									<img src={banlistArt.src} srcSet={banlistArt.srcSet} alt="" width={20} height={20} className="h-5 w-5" />
+								) : null}
+								{banlistName || 'Global'}
+							</span>
 							<span className="badge badge-ghost badge-lg">Rank #{normalizedPosition || '-'}</span>
 						</div>
 
