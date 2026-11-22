@@ -63,52 +63,9 @@ function PauseIcon({ paused }: Readonly<{ paused: boolean }>) {
 	);
 }
 
-const news: News[] = [
-	{
-		id: 7,
-		image: '/banners/news-season-7.webp',
-		title: 'Season 7 is live',
-		description: 'A new season begins: every ladder starts from zero and the race for the top is wide open again. Pick your format and start climbing.',
-		buttonLink: '#section-ranking',
-		buttonText: 'Start climbing'
-	},
-	{
-		id: 8,
-		image: '/banners/news-season-7-dragon.webp',
-		title: 'Your rating now knows who you beat',
-		description: 'Ranked duels move an Elo rating, and beating a stronger duelist moves it further. Everyone starts at 1000, your first ten duels place you fast, and every format keeps a rating of its own.',
-		buttonLink: '#section-ranking',
-		buttonText: 'See the rankings'
-	},
-	{
-		id: 6,
-		image: '/banners/news-season-7-winged.webp',
-		title: 'EvoDuel 1.0.0 is here',
-		description: "The beta is over. EvoDuel's first official release is live — duel from any device, no install, no waiting. Your account and your rank come with you.",
-		buttonLink: 'https://evoduel.com',
-		buttonText: 'Play Now'
-	},
-	{
-		id: 9,
-		image: '/banners/news-edison.webp',
-		title: 'Edison, exactly as it was',
-		description: 'Edison format is live on EvoDuel, running the original rulings of its era — the same interactions duelists learned back then, not their modern rewrites.',
-		buttonLink: 'https://evoduel.com',
-		buttonText: 'Play Edison'
-	},
-	{
-		id: 10,
-		image: '/banners/news-rush.webp',
-		title: 'Rush Duel, now in beta',
-		description: 'Rush Duel is playable on EvoDuel while we put it through its paces. Jump in, duel, and tell us what breaks.',
-		buttonLink: 'https://evoduel.com',
-		buttonText: 'Try the beta'
-	},
-];
-
 type Variant = 'full' | 'compact';
 
-function CompactNews({ prefersReducedMotion }: Readonly<{ prefersReducedMotion: boolean }>) {
+function CompactNews({ news, prefersReducedMotion }: Readonly<{ news: readonly News[]; prefersReducedMotion: boolean }>) {
 	const headingId = useId();
 	const autoplay = useAutoplayControl(prefersReducedMotion);
 	return (
@@ -156,7 +113,7 @@ function CompactNews({ prefersReducedMotion }: Readonly<{ prefersReducedMotion: 
 					enabled: true,
 					onlyInViewport: true,
 				}}
-				loop
+				loop={news.length > 1}
 				navigation={{
 					nextEl: '.news-compact-next',
 					prevEl: '.news-compact-prev',
@@ -172,7 +129,7 @@ function CompactNews({ prefersReducedMotion }: Readonly<{ prefersReducedMotion: 
 						<article aria-labelledby={`news-compact-${newsItem.id}`} className="group relative flex h-full flex-col gap-3 px-5 pt-3 pb-9" data-news-slide>
 							<img
 								alt=""
-								className="aspect-[16/7] w-full rounded-lg object-cover lg:aspect-auto lg:min-h-0 lg:flex-1"
+								className="aspect-[16/7] w-full rounded-lg object-cover object-right lg:aspect-auto lg:min-h-0 lg:flex-1"
 								decoding="async"
 								loading={index === 0 ? 'eager' : 'lazy'}
 								src={newsItem.image}
@@ -198,11 +155,18 @@ function CompactNews({ prefersReducedMotion }: Readonly<{ prefersReducedMotion: 
 	);
 }
 
-export default function NewsSection({ variant = 'full' }: Readonly<{ variant?: Variant }>) {
+interface Props {
+	/** The carousel entries, read from the evolution-assets news feed (`@utils/newsFeed`). */
+	news: readonly News[];
+	variant?: Variant;
+}
+
+export default function NewsSection({ news, variant = 'full' }: Readonly<Props>) {
 	const prefersReducedMotion = usePrefersReducedMotion();
 	const autoplay = useAutoplayControl(prefersReducedMotion);
+	if (news.length === 0) return null;
 	if (variant === 'compact') {
-		return <CompactNews prefersReducedMotion={prefersReducedMotion} />;
+		return <CompactNews news={news} prefersReducedMotion={prefersReducedMotion} />;
 	}
 	return (
 		<section aria-label="Latest news" className="relative mx-4 my-10" onBlur={autoplay.onBlur} onFocus={autoplay.onFocus}>
@@ -220,7 +184,7 @@ export default function NewsSection({ variant = 'full' }: Readonly<{ variant?: V
 					enabled: true,
 					onlyInViewport: true,
 				}}
-				loop
+				loop={news.length > 1}
 				navigation={{
 					nextEl: '.news-swiper-next',
 					prevEl: '.news-swiper-prev',

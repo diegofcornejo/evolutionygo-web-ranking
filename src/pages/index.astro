@@ -15,6 +15,8 @@ import NewYearHero from '@components/NewYear/NewYearHero.astro';
 import EvoDuelHero from '@components/EvoDuel/EvoDuelHero.astro';
 import { EDITION_PARAM, getSeasonalEdition } from '@utils/seasonalEdition';
 import { parseWeeklyDuelist } from '@utils/weeklyDuelist';
+import { fetchNewsFeed } from '@utils/newsFeed';
+import { fetchEvoDuelVersion } from '@utils/evoDuelVersion';
 
 // Server-side, like the old strip, so the ranking has it from the first render and nothing reflows.
 const fetchWeeklyDuelist = async () => {
@@ -29,7 +31,11 @@ const fetchWeeklyDuelist = async () => {
 };
 
 const currentSeason = import.meta.env.PUBLIC_DEFAULT_SEASON;
-const weeklyDuelist = await fetchWeeklyDuelist();
+const [weeklyDuelist, { news, upcomingSeason }, evoDuelVersion] = await Promise.all([
+	fetchWeeklyDuelist(),
+	fetchNewsFeed(),
+	fetchEvoDuelVersion(),
+]);
 const edition = getSeasonalEdition(new Date(), Astro.url.searchParams.get(EDITION_PARAM));
 const EditionHero = edition && { halloween: ShadowRealmHero, muertos: OfrendaHero, christmas: WinterHero, newyear: NewYearHero }[edition];
 const title = `Evolution YGO Season ${currentSeason}`;
@@ -69,15 +75,15 @@ const keywords = [
 				<Fragment>
 					<EditionHero season={currentSeason} />
 					<Live client:only='svelte' />
-					<News client:only='react' />
+					<News news={news} client:only='react' />
 				</Fragment>
 			) : (
 				<div class='mx-4 mt-4 mb-10 grid gap-4 sm:mt-6 lg:grid-cols-[minmax(0,1.8fr)_minmax(0,1fr)]'>
 					<div class='lg:col-start-1 lg:row-start-1'>
-						<EvoDuelHero season={currentSeason} />
+						<EvoDuelHero season={currentSeason} upcomingSeason={upcomingSeason} version={evoDuelVersion} />
 					</div>
 					<div data-home-news class='order-last min-w-0 lg:relative lg:order-none lg:col-start-2 lg:row-start-1 lg:min-h-[24rem]'>
-						<News variant='compact' client:only='react' />
+						<News news={news} variant='compact' client:only='react' />
 					</div>
 					<div class='min-w-0 lg:col-span-2 lg:row-start-2'>
 						<Live client:only='svelte' />
@@ -87,7 +93,7 @@ const keywords = [
 		}
 		<Ranking weekly={weeklyDuelist} client:load />
 		<Features />
-		<Download />
+		<Download evoDuelVersion={evoDuelVersion} />
 		<Faqs />
 		<Crew />
 	</main>
