@@ -1,7 +1,9 @@
 import { describe, it, expect } from 'vitest';
 import {
 	AVATAR_OPTIONS,
+	AVATAR_THEMES,
 	DEFAULT_AVATAR,
+	applyTheme,
 	avatarDataUri,
 	randomAvatar,
 	renderAvatarSvg,
@@ -28,6 +30,29 @@ describe('sanitizeAvatar', () => {
 
 	it('fills missing fields with the default', () => {
 		expect(sanitizeAvatar({ shirtColor: 'red' })).toEqual({ ...DEFAULT_AVATAR, shirtColor: 'red' });
+	});
+
+	it('keeps an avatar saved before the fantasy pieces in a t-shirt with no magic', () => {
+		const before: Record<string, string> = { ...DEFAULT_AVATAR, shirtColor: 'red', headwear: 'cap' };
+		for (const key of ['outfit', 'magic', 'magicColor']) delete before[key];
+		const result = sanitizeAvatar(before);
+		expect(result).toMatchObject({ outfit: 'tshirt', magic: 'none', shirtColor: 'red', headwear: 'cap' });
+	});
+});
+
+describe('applyTheme', () => {
+	it('dresses the look in every piece of the theme and keeps the face and hair', () => {
+		const look = { ...DEFAULT_AVATAR, hairStyle: 'curly' as const, skinTone: 'deep' as const };
+		const knight = applyTheme(look, 'knight');
+		expect(knight).toMatchObject({ outfit: 'knight', headwear: 'helmet', background: 'castle', hairStyle: 'curly', skinTone: 'deep' });
+	});
+
+	it('only uses options that exist', () => {
+		for (const theme of Object.keys(AVATAR_THEMES) as (keyof typeof AVATAR_THEMES)[]) {
+			const look = applyTheme(DEFAULT_AVATAR, theme);
+			expect(sanitizeAvatar(look)).toEqual(look);
+			expect(look).toMatchObject(AVATAR_THEMES[theme].look);
+		}
 	});
 });
 
@@ -137,8 +162,49 @@ describe('renderAvatarSvg', () => {
 	});
 
 	it('keeps hair from poking through hats that cover the head', () => {
-		expect(renderAvatarSvg({ ...DEFAULT_AVATAR, headwear: 'beanie' })).toContain('clip-path="url(#hat-clip)"');
+		expect(renderAvatarSvg({ ...DEFAULT_AVATAR, headwear: 'beanie' })).toContain('clip-path="url(#av-hat)"');
 		expect(renderAvatarSvg({ ...DEFAULT_AVATAR, headwear: 'crown' })).not.toContain('clip-path');
+	});
+
+	it('dresses the bust in the chosen outfit', () => {
+		expect(renderAvatarSvg(DEFAULT_AVATAR)).toContain('data-layer="outfit-tshirt"');
+		const mage = renderAvatarSvg({ ...DEFAULT_AVATAR, outfit: 'mage', shirtColor: 'teal' });
+		expect(mage).toContain('data-layer="outfit-mage"');
+		expect(mage).toContain(hex('shirtColor', 'teal'));
+	});
+
+	it('shows the logo on t-shirts and knight tabards only', () => {
+		const look = { ...DEFAULT_AVATAR, shirtLogo: 'star' as const };
+		expect(renderAvatarSvg({ ...look, outfit: 'knight' })).toContain('data-layer="logo-star"');
+		expect(renderAvatarSvg({ ...look, outfit: 'mage' })).not.toContain('data-layer="logo-');
+		expect(renderAvatarSvg({ ...look, outfit: 'vampire' })).not.toContain('data-layer="logo-');
+	});
+
+	it('hangs a hood behind the head and hides long hair under it', () => {
+		const svg = renderAvatarSvg({ ...DEFAULT_AVATAR, headwear: 'hood', hairStyle: 'long' });
+		expect(svg).toContain('data-layer="headwear-hood-back"');
+		expect(svg).not.toContain('data-layer="hair-long-back"');
+		expect(svg.indexOf('headwear-hood-back')).toBeLessThan(svg.indexOf('data-layer="head"'));
+	});
+
+	it('paints a scene behind themed backgrounds and none behind plain colours', () => {
+		expect(renderAvatarSvg({ ...DEFAULT_AVATAR, background: 'graveyard' })).toContain('data-layer="scene-graveyard"');
+		expect(renderAvatarSvg({ ...DEFAULT_AVATAR, background: 'gold' })).not.toContain('data-layer="scene-');
+	});
+
+	it('draws magic as an aura, glowing eyes or both, in the chosen colour', () => {
+		const look = { ...DEFAULT_AVATAR, magicColor: 'ember' as const };
+		const aura = renderAvatarSvg({ ...look, magic: 'aura' });
+		const eyes = renderAvatarSvg({ ...look, magic: 'eyes' });
+		const both = renderAvatarSvg({ ...look, magic: 'both' });
+		expect(aura).toContain('data-layer="aura"');
+		expect(aura).not.toContain('data-layer="glow"');
+		expect(eyes).toContain('data-layer="glow"');
+		expect(eyes).not.toContain('data-layer="aura"');
+		expect(both).toContain('data-layer="aura"');
+		expect(both).toContain('data-layer="glow"');
+		expect(aura).toContain(hex('magicColor', 'ember'));
+		expect(renderAvatarSvg(look)).not.toContain(hex('magicColor', 'ember'));
 	});
 });
 

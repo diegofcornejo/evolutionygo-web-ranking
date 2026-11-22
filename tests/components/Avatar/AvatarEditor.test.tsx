@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { toast } from 'sonner';
 import { session } from '@stores/sessionStore';
 import { avatars, getAvatar } from '@stores/avatarStore';
-import { DEFAULT_AVATAR, avatarDataUri, deleteMyAvatar, putMyAvatar } from '@utils/avatar';
+import { DEFAULT_AVATAR, applyTheme, avatarDataUri, deleteMyAvatar, putMyAvatar } from '@utils/avatar';
 import AvatarEditor from '@components/Avatar/AvatarEditor';
 
 vi.mock('sonner', () => ({ toast: { success: vi.fn(), error: vi.fn() } }));
@@ -45,9 +45,33 @@ describe('AvatarEditor', () => {
 		expect(screen.getByRole('radio', { name: 'Spiky' })).toHaveAttribute('aria-checked', 'true');
 	});
 
+	it('dresses the avatar in a theme with one click and keeps the face', () => {
+		render(<AvatarEditor dialog="dialog-avatar" />);
+		fireEvent.click(screen.getByRole('tab', { name: 'Themes' }));
+		fireEvent.click(screen.getByRole('button', { name: 'Knight theme' }));
+		expect(preview()).toBe(avatarDataUri(applyTheme(DEFAULT_AVATAR, 'knight')));
+	});
+
+	it('shows the logo choice only for outfits that carry one', () => {
+		render(<AvatarEditor dialog="dialog-avatar" />);
+		fireEvent.click(screen.getByRole('tab', { name: 'Outfit' }));
+		expect(screen.getByRole('radio', { name: 'EVO' })).toBeInTheDocument();
+		fireEvent.click(screen.getByRole('radio', { name: 'Mage robe' }));
+		expect(screen.queryByRole('radio', { name: 'EVO' })).not.toBeInTheDocument();
+	});
+
+	it('asks for a magic colour only when there is magic', () => {
+		render(<AvatarEditor dialog="dialog-avatar" />);
+		fireEvent.click(screen.getByRole('tab', { name: 'Magic' }));
+		expect(screen.queryByRole('radio', { name: 'Ember' })).not.toBeInTheDocument();
+		fireEvent.click(screen.getByRole('radio', { name: 'Aura' }));
+		fireEvent.click(screen.getByRole('radio', { name: 'Ember' }));
+		expect(preview()).toBe(avatarDataUri({ ...DEFAULT_AVATAR, magic: 'aura', magicColor: 'ember' }));
+	});
+
 	it('saves the look for the logged-in player and closes', async () => {
 		render(<AvatarEditor dialog="dialog-avatar" />);
-		fireEvent.click(screen.getByRole('tab', { name: 'Shirt' }));
+		fireEvent.click(screen.getByRole('tab', { name: 'Outfit' }));
 		fireEvent.click(screen.getByRole('radio', { name: 'EVO' }));
 		fireEvent.click(screen.getByRole('button', { name: 'Save' }));
 		await waitFor(() => expect(getAvatar('1')).toEqual({ ...DEFAULT_AVATAR, shirtLogo: 'evo' }));
