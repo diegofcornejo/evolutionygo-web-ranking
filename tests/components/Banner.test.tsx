@@ -6,7 +6,7 @@ describe('Banner', () => {
   it('renders an accessible news article with its image and CTA', () => {
     const { container } = render(
       <Banner
-        id={1}
+        id="1"
         image="/img/banner.webp"
         title="News Title"
         description="Latest update details"
@@ -37,7 +37,7 @@ describe('Banner', () => {
   it('omits the CTA when its destination is not provided', () => {
     render(
       <Banner
-        id={2}
+        id="2"
         image="/img/banner.webp"
         title="News Title"
         description="Latest update details"

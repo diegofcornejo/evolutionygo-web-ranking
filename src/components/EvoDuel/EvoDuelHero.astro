@@ -1,17 +1,34 @@
 ---
 import { Icon } from 'astro-icon/components';
-import { EVODUEL_URL, EVODUEL_VERSION } from '@utils/evoDuel';
+import { EVODUEL_RELEASES_URL, EVODUEL_URL } from '@utils/evoDuel';
+import { formatCountdown } from '@utils/countdown';
+import type { UpcomingSeason } from '@utils/newsFeed';
 
 interface Props {
 	season: string;
+	/** The next season announced in the evolution-assets news feed, if it has not started yet. */
+	upcomingSeason?: UpcomingSeason | null;
+	/** The live release from evoduel.com/version.json; the badge hides when it is unknown. */
+	version?: string | null;
 }
 
-const { season } = Astro.props;
+const formats = [
+	{ label: 'TCG' },
+	{ label: 'OCG' },
+	{ label: 'Edison' },
+	{ label: 'Goat', beta: true },
+	{ label: 'Genesys' },
+	{ label: 'JTP' },
+	{ label: 'Rush' },
+	{ label: 'Speed Duel', beta: true },
+];
+
+const { season, upcomingSeason, version } = Astro.props;
+// Rendered on the server for every request, so the countdown is current without client code.
+const countdown = upcomingSeason ? formatCountdown(upcomingSeason.startsAt, new Date()) : null;
 
 const highlights = [
 	{ label: 'Duel the AI', icon: 'mdi:robot-outline' },
-	{ label: 'Phone & desktop', icon: 'mdi:cellphone-link' },
-	{ label: 'No install', icon: 'mdi:lightning-bolt-outline' },
 	{ label: 'Daily missions', icon: 'mdi:target' },
 	{ label: 'Essence & shop', icon: 'mdi:diamond-stone' },
 	{ label: 'Cosmetics & emotes', icon: 'mdi:emoticon-cool-outline' },
@@ -19,26 +36,62 @@ const highlights = [
 ---
 
 <section aria-labelledby="evoduel-title" class="evoduel-hero card relative isolate h-full overflow-hidden border border-white/10 shadow-2xl">
+	<!-- The default duel field with the rank emblems climbing from Rookie to Master; built from
+	     evolution-cosmetics (playmats/mossy-ruins and brand/ranks). Its left side is transparent
+	     so the gradient stays behind the text. -->
 	<img
-		src="/favicon.svg"
+		src="/hero/evoduel-ranks.webp"
 		alt=""
 		aria-hidden="true"
-		class="evoduel-mark pointer-events-none absolute -z-10 hidden sm:block"
+		class="evoduel-backdrop pointer-events-none absolute inset-0 -z-10 hidden h-full w-full object-cover object-right sm:block"
+		decoding="async"
+	/>
+	<img
+		src="/hero/evoduel-ranks-mobile.webp"
+		alt=""
+		aria-hidden="true"
+		class="pointer-events-none block aspect-[8/5] w-full object-cover sm:hidden"
 		decoding="async"
 	/>
 	<div class="flex h-full flex-col justify-center gap-3 p-5 sm:gap-4 sm:p-8 lg:p-10">
 		<p class="text-sm font-semibold uppercase tracking-[0.18em] text-white/70">Evolution YGO · Season {season}</p>
+		{
+			upcomingSeason && countdown && (
+				<p data-season-countdown class="flex w-fit items-center gap-2 rounded-full border border-amber-300/40 bg-black/35 backdrop-blur-sm px-3 py-1 text-sm font-semibold text-amber-100">
+					<Icon name="mdi:timer-sand" aria-hidden="true" class="text-base" />
+					<span>{upcomingSeason.title}</span>
+					<span aria-hidden="true">·</span>
+					<time datetime={upcomingSeason.startsAt}>{countdown}</time>
+				</p>
+			)
+		}
 		<div class="flex flex-wrap items-center gap-3">
 			<h1 id="evoduel-title" class="text-4xl font-bold leading-none text-white sm:text-6xl">EvoDuel</h1>
-			<span class="badge badge-outline border-white/30 text-white/80">v{EVODUEL_VERSION}</span>
+			{
+				version && (
+					<a class="badge badge-outline border-white/30 text-white/80 hover:border-white/60 hover:text-white" href={EVODUEL_RELEASES_URL} title="Release notes" data-umami-event="home-click-evoduel-version">
+						v{version}
+					</a>
+				)
+			}
 		</div>
 		<p class="max-w-xl text-base leading-relaxed text-white/85 [text-wrap:pretty] sm:text-lg">
-			YGO duels in your browser. Against players or the AI, on phone or desktop.
+			YGO duels in your browser. Against players or the AI, on phone or desktop. Climb from Rookie to Master.
 		</p>
+		<ul class="flex max-w-2xl flex-wrap items-center gap-x-3 gap-y-1 text-sm font-semibold text-white/90" aria-label="Formats">
+			{
+				formats.map((format) => (
+					<li class="flex items-center gap-1">
+						{format.label}
+						{format.beta && <span class="rounded bg-amber-300/20 px-1 text-[0.65rem] font-bold uppercase tracking-wide text-amber-200">beta</span>}
+					</li>
+				))
+			}
+		</ul>
 		<ul class="flex max-w-2xl flex-wrap gap-1.5 sm:gap-2" aria-label="What EvoDuel offers">
 			{
 				highlights.map((highlight) => (
-					<li class="flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-2.5 py-0.5 text-xs text-white sm:px-3 sm:py-1 sm:text-sm">
+					<li class="flex items-center gap-1.5 rounded-full border border-white/15 bg-black/35 backdrop-blur-sm px-2.5 py-0.5 text-xs text-white sm:px-3 sm:py-1 sm:text-sm">
 						<Icon name={highlight.icon} aria-hidden="true" class="text-base" />
 						{highlight.label}
 					</li>
@@ -50,11 +103,15 @@ const highlights = [
 				<Icon name="mdi:play" aria-hidden="true" class="text-xl" />
 				Play now
 			</a>
-			<a class="btn btn-ghost border-white/25 text-white sm:btn-lg" href="#section-download" data-umami-event="home-click-other-clients">
-				Other clients
+			<a class="btn btn-ghost border-white/25 text-white sm:btn-lg" href="#section-ranking" data-umami-event="home-click-see-rankings">
+				<Icon name="mdi:podium" aria-hidden="true" class="text-xl" />
+				See the rankings
 			</a>
 		</div>
-		<p class="text-xs text-white/70 sm:text-sm">Play without an account. Sign in to earn rewards.</p>
+		<p class="text-xs text-white/70 sm:text-sm">
+			Play without an account. Sign in to earn rewards.{' '}
+			<a class="link link-hover text-white/85" href="#section-download" data-umami-event="home-click-other-clients">Other clients</a>
+		</p>
 	</div>
 </section>
 
@@ -63,11 +120,4 @@ const highlights = [
 		background: linear-gradient(135deg, #1b2a64 0%, #33206d 55%, #561a78 100%);
 	}
 
-	.evoduel-mark {
-		right: -3rem;
-		top: 50%;
-		height: 130%;
-		transform: translateY(-50%) rotate(-8deg);
-		opacity: 0.14;
-	}
 </style>

@@ -16,6 +16,14 @@ vi.mock('@layouts/Layout.astro', async () => ({
   default: (await import('../__mocks__/Layout.astro')).default,
 }));
 
+const fetchNewsFeed = vi.hoisted(() => vi.fn().mockResolvedValue({ news: [], upcomingSeason: null }));
+
+vi.mock('@utils/newsFeed', () => ({ fetchNewsFeed }));
+
+const fetchEvoDuelVersion = vi.hoisted(() => vi.fn().mockResolvedValue(null));
+
+vi.mock('@utils/evoDuelVersion', () => ({ fetchEvoDuelVersion }));
+
 vi.mock('@sections/News', async () => ({
   default: (await import('../__mocks__/SimpleReact')).default,
 }));
@@ -107,6 +115,91 @@ describe('index.astro page', () => {
     expect(rankingIsland(result)).not.toContain('WeeklyDuelist');
   });
 
+  it('shows the live EvoDuel version and links it to the release notes', async () => {
+    fetchEvoDuelVersion.mockResolvedValueOnce('1.7.0');
+
+    const result = await renderIndex('http://localhost/?edition=off');
+
+    expect(result).toMatch(/<a[^>]*href="https:\/\/evoduel\.com\/#\/releases"[^>]*>\s*v1\.7\.0\s*<\/a>/);
+    expect(fetchEvoDuelVersion).toHaveBeenCalled();
+  });
+
+  it('hides the version badge when the EvoDuel version is unknown', async () => {
+    const result = await renderIndex('http://localhost/?edition=off');
+
+    expect(result).not.toContain('evoduel.com/#/releases');
+    expect(result).not.toMatch(/>\s*v\d+\.\d+\.\d+\s*</);
+  });
+
+  it('counts down to the upcoming season announced in the news feed', async () => {
+    const startsAt = new Date(Date.now() + 9.5 * 24 * 60 * 60 * 1000).toISOString();
+    fetchNewsFeed.mockResolvedValueOnce({ news: [], upcomingSeason: { title: 'Season 8 starts December 1', startsAt } });
+
+    const result = await renderIndex('http://localhost/?edition=off');
+
+    expect(result).toMatch(/data-season-countdown[^>]*>[\s\S]*Season 8 starts December 1[\s\S]*in 9 days/);
+    expect(result).toContain(`datetime="${startsAt}"`);
+  });
+
+  it('shows no countdown when no season is coming', async () => {
+    const result = await renderIndex('http://localhost/?edition=off');
+
+    expect(result).not.toContain('data-season-countdown');
+  });
+
+  it('invites players to climb the ranks and links to the ranking', async () => {
+    const result = await renderIndex('http://localhost/?edition=off');
+
+    expect(result).toContain('Climb from Rookie to Master');
+    expect(result).toMatch(/<a[^>]*href="#section-ranking"[^>]*>[\s\S]*?See the rankings/);
+    expect(result).toMatch(/<a[^>]*href="#section-download"[^>]*>[\s\S]*?Other clients/);
+    expect(result).toMatch(/earn rewards\.\s+<a[^>]*href="#section-download"/);
+  });
+
+  it('keeps the hero pills readable over the artwork with a dark frosted background', async () => {
+    const startsAt = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString();
+    fetchNewsFeed.mockResolvedValueOnce({ news: [], upcomingSeason: { title: 'Season 8 starts December 1', startsAt } });
+    const result = await renderIndex('http://localhost/?edition=off');
+    const offers = result.match(/<ul[^>]*aria-label="What EvoDuel offers"[^>]*>[\s\S]*?<\/ul>/)?.[0] ?? '';
+    const pills = [...offers.matchAll(/<li class="([^"]*)"/g)].map((match) => match[1]);
+    const countdown = result.match(/<p[^>]*data-season-countdown[^>]*class="([^"]*)"/)?.[1] ?? '';
+
+    expect(pills).toHaveLength(4);
+    [...pills, countdown].forEach((classes) => {
+      expect(classes).toContain('bg-black/35');
+      expect(classes).toContain('backdrop-blur-sm');
+    });
+  });
+
+  it('shows the rank ladder above the text on phones', async () => {
+    const result = await renderIndex('http://localhost/?edition=off');
+    const mobile = result.match(/<img[^>]*src="\/hero\/evoduel-ranks-mobile\.webp"[^>]*>/)?.[0] ?? '';
+
+    expect(mobile).toContain('sm:hidden');
+    expect(mobile).toContain('alt=""');
+    expect(result.indexOf('evoduel-ranks-mobile.webp')).toBeLessThan(result.indexOf('id="evoduel-title"'));
+  });
+
+  it('names the formats EvoDuel plays and marks the ones in beta', async () => {
+    const result = await renderIndex('http://localhost/?edition=off');
+    const formats = result.match(/<ul[^>]*aria-label="Formats"[^>]*>[\s\S]*?<\/ul>/)?.[0] ?? '';
+
+    ['TCG', 'OCG', 'Edison', 'Goat', 'Genesys', 'JTP', 'Rush', 'Speed Duel'].forEach((format) => expect(formats).toContain(format));
+    expect(formats.match(/beta/g)).toHaveLength(2);
+    expect(formats).toMatch(/Goat[\s\S]*?beta/);
+    expect(formats).toMatch(/Speed Duel[\s\S]*?beta/);
+    expect(result).not.toContain('No install');
+    expect(result).not.toContain('Phone &amp; desktop');
+  });
+
+  it('draws the EvoDuel hero over the rank ladder backdrop', async () => {
+    const result = await renderIndex('http://localhost/?edition=off');
+
+    expect(result).toMatch(/<img[^>]*src="\/hero\/evoduel-ranks\.webp"[^>]*>/);
+    expect(result).toMatch(/<img[^>]*class="[^"]*evoduel-backdrop[^"]*"[^>]*alt=""|<img[^>]*alt=""[^>]*class="[^"]*evoduel-backdrop/);
+    expect(result).not.toContain('evoduel-mark');
+  });
+
   it('renders the home sections', async () => {
     const result = await renderIndex('http://localhost/?edition=off');
 
@@ -115,6 +208,7 @@ describe('index.astro page', () => {
     expect(result).toContain('component-url="@sections/Live.svelte"');
     expect(result).toContain('MockReactSection');
     expect(result).toContain('MockSection');
+    expect(fetchNewsFeed).toHaveBeenCalled();
   });
 
   it('swaps in the Shadow Realm hero during the Halloween edition', async () => {
@@ -180,7 +274,7 @@ describe('index.astro page', () => {
     expect(result).toMatch(/<h1[^>]*>\s*EvoDuel\s*<\/h1>/);
     expect(result).toMatch(/Evolution YGO · Season \d+/);
     expect(result).toContain('YGO duels in your browser. Against players or the AI, on phone or desktop.');
-    for (const highlight of ['Duel the AI', 'Phone &amp; desktop', 'No install', 'Daily missions', 'Essence &amp; shop', 'Cosmetics &amp; emotes']) {
+    for (const highlight of ['Duel the AI', 'Daily missions', 'Essence &amp; shop', 'Cosmetics &amp; emotes']) {
       expect(result).toContain(highlight);
     }
     expect(result).toContain('Play without an account. Sign in to earn rewards.');

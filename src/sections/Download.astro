@@ -3,7 +3,14 @@ import { Icon } from 'astro-icon/components';
 import type { GameClient } from '@types';
 // import CommandTable from '@components/CommandTable.astro';
 import CommandTable from '@components/CommandTable';
-import { EVODUEL_URL, EVODUEL_VERSION } from '@utils/evoDuel';
+import { EVODUEL_URL } from '@utils/evoDuel';
+
+interface Props {
+	/** The live EvoDuel release, shown as the client's badge when known. */
+	evoDuelVersion?: string | null;
+}
+
+const { evoDuelVersion } = Astro.props;
 
 const title = 'Ready to duel?';
 const subtitle = "It's simple";
@@ -30,7 +37,7 @@ const clients: GameClient[] = [
 		// icon: { name: 'mdi:rocket-launch', classes: 'text-primary text-xl' },
 		platforms: ['web', 'windows', 'apple', 'linux'],
 		trackEvent: 'download-click-evoduel',
-		badge: EVODUEL_VERSION,
+		badge: evoDuelVersion ?? undefined,
 		spotlight: true,
 	},
 	{
