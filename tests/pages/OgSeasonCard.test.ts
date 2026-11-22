@@ -9,8 +9,8 @@ describe('season share card', () => {
     vi.unstubAllEnvs();
   });
 
-  it('builds the card URL from the season', () => {
-    expect(seasonCardPath('7')).toBe('/og/season-7.png');
+  it('builds the card URL from the season and the card version', () => {
+    expect(seasonCardPath('7')).toBe('/og/season-7.png?v=1');
   });
 
   it('prerenders only the current season', async () => {
@@ -23,6 +23,13 @@ describe('season share card', () => {
 
   it('fails the build when PUBLIC_DEFAULT_SEASON is missing', async () => {
     vi.stubEnv('PUBLIC_DEFAULT_SEASON', '');
+    const { getStaticPaths } = await loadEndpoint();
+
+    expect(() => getStaticPaths()).toThrow('PUBLIC_DEFAULT_SEASON');
+  });
+
+  it.each(['8 ', 'Season 8', '-1', '7.5'])('rejects a season that is not a whole number: %j', async (season) => {
+    vi.stubEnv('PUBLIC_DEFAULT_SEASON', season);
     const { getStaticPaths } = await loadEndpoint();
 
     expect(() => getStaticPaths()).toThrow('PUBLIC_DEFAULT_SEASON');

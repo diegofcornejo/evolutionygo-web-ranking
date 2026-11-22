@@ -46,4 +46,14 @@ describe('stats.astro page', () => {
 
     expect(result).toContain('MockReactSection');
   });
+
+  it('leaves the share image to the SEO default', async () => {
+    const StatsPage = (await import('@pages/stats.astro')).default;
+    const container = await experimental_AstroContainer.create();
+    container.addServerRenderer({ name: '@astrojs/react', renderer: reactRenderer });
+
+    const result = await container.renderToString(StatsPage);
+
+    expect(result).not.toContain('data-layout-image');
+  });
 });

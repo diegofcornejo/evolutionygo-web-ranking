@@ -30,6 +30,12 @@ const renderWatchPage = async (url: string) => {
 };
 
 describe('watch.astro page', () => {
+  it('leaves the share image to the SEO default', async () => {
+    const result = await renderWatchPage('https://evolutionygo.com/watch');
+
+    expect(result).not.toContain('data-layout-image');
+  });
+
   it('renders the watch section and the rooms listener', async () => {
     const result = await renderWatchPage('https://evolutionygo.com/watch');
 

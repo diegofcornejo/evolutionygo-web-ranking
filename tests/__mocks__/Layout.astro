@@ -1,7 +1,7 @@
 ---
-const { description = '', keywords = [] } = Astro.props;
+const { description = '', keywords = [], image } = Astro.props;
 ---
 
-<main data-layout-description={description} data-layout-keywords={keywords.join(',')}>
+<main data-layout-description={description} data-layout-keywords={keywords.join(',')} data-layout-image={image}>
 	<slot />
 </main>

@@ -1,5 +1,6 @@
 import { readFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import { createRequire } from 'node:module';
+import { dirname, join } from 'node:path';
 import satori from 'satori';
 import sharp from 'sharp';
 import { OG_HEIGHT, OG_WIDTH } from './ogImage';
@@ -7,8 +8,9 @@ import { OG_HEIGHT, OG_WIDTH } from './ogImage';
 // Build-only: imported by the prerendered /og endpoint, never by SSR code.
 
 const fromRoot = (...parts: string[]) => join(process.cwd(), ...parts);
-const fontFile = (weight: 700 | 800) =>
-	fromRoot('node_modules/@fontsource/plus-jakarta-sans/files', `plus-jakarta-sans-latin-${weight}-normal.woff`);
+// Resolve the package like Node does, so isolated installs (no flat node_modules) still find it.
+const fontDir = join(dirname(createRequire(fromRoot('package.json')).resolve('@fontsource/plus-jakarta-sans')), 'files');
+const fontFile = (weight: 700 | 800) => join(fontDir, `plus-jakarta-sans-latin-${weight}-normal.woff`);
 
 const toDataUri = (png: Buffer) => `data:image/png;base64,${png.toString('base64')}`;
 

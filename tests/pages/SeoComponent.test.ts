@@ -22,9 +22,11 @@ describe('SEO share image', () => {
   it('uses the season card when no image is given', async () => {
     const html = await renderSeo();
 
-    expect(metaContent(html, 'property', 'og:image')).toBe('https://evolutionygo.com/og/season-7.png');
-    expect(metaContent(html, 'name', 'twitter:image')).toBe('https://evolutionygo.com/og/season-7.png');
+    expect(metaContent(html, 'property', 'og:image')).toBe('https://evolutionygo.com/og/season-7.png?v=1');
+    expect(metaContent(html, 'name', 'twitter:image')).toBe('https://evolutionygo.com/og/season-7.png?v=1');
     expect(metaContent(html, 'property', 'og:image:type')).toBe('image/png');
+    expect(metaContent(html, 'property', 'og:image:width')).toBe('1200');
+    expect(metaContent(html, 'property', 'og:image:height')).toBe('630');
   });
 
   it("keeps a page's own image", async () => {
@@ -33,6 +35,8 @@ describe('SEO share image', () => {
 
     expect(metaContent(html, 'property', 'og:image')).toBe(avatar.replace(/&/g, '&amp;'));
     expect(html).not.toContain('og:image:type');
+    expect(html).not.toContain('og:image:width');
+    expect(html).not.toContain('og:image:height');
   });
 
   it('says YGO, not Yu-Gi-Oh, in descriptions', async () => {

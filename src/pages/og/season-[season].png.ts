@@ -5,7 +5,7 @@ export const prerender = true;
 
 export function getStaticPaths() {
 	const season = import.meta.env.PUBLIC_DEFAULT_SEASON;
-	if (!season) throw new Error('PUBLIC_DEFAULT_SEASON is not set');
+	if (!/^\d+$/.test(season ?? '')) throw new Error(`PUBLIC_DEFAULT_SEASON must be a whole number, got ${JSON.stringify(season)}`);
 	return [{ params: { season } }];
 }
 

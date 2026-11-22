@@ -306,6 +306,12 @@ describe('index.astro page', () => {
     expect(result).not.toMatch(/data-layout-description="[^"]*Yu-Gi-Oh/);
   });
 
+  it('leaves the share image to the SEO default', async () => {
+    const result = await renderIndex('http://localhost/?edition=off', { withMeta: true });
+
+    expect(result).not.toContain('data-layout-image');
+  });
+
   it('puts the news card before the marquee in the DOM so keyboard order follows the desktop row', async () => {
     const result = await renderIndex('http://localhost/?edition=off');
     const title = result.indexOf('</h1>');
