@@ -8,6 +8,7 @@ describe('Auth exports', () => {
     expect(AuthExports.PasswordStrengthMeter).toBeDefined();
     expect(AuthExports.UpgradePasswordForm).toBeDefined();
     expect(AuthExports.ResetAccountPasswordForm).toBeDefined();
+    expect(AuthExports.PasswordInput).toBeDefined();
   });
 
   it('does not export the removed ResetPasswordForm', () => {

@@ -3,6 +3,7 @@ import { isPasswordValid } from '@utils/passwordPolicy';
 import { updateSession } from '@stores/sessionStore';
 import { PasswordStrengthMeter } from './PasswordStrengthMeter';
 import { AuthErrorMessage } from './FormFields';
+import { PasswordInput } from './PasswordInput';
 
 interface ResetAccountPasswordFormProps {
 	token: string;
@@ -53,9 +54,7 @@ export function ResetAccountPasswordForm({ token }: Readonly<ResetAccountPasswor
 	return (
 		<form className="space-y-4" onSubmit={handleSubmit}>
 			<label className="input input-bordered flex items-center gap-2 w-full">
-				<input
-					type="password"
-					className="grow"
+				<PasswordInput
 					name="password"
 					placeholder="New Password"
 					aria-label="New Password"
@@ -68,9 +67,7 @@ export function ResetAccountPasswordForm({ token }: Readonly<ResetAccountPasswor
 			<PasswordStrengthMeter password={password} />
 
 			<label className="input input-bordered flex items-center gap-2 w-full">
-				<input
-					type="password"
-					className="grow"
+				<PasswordInput
 					name="confirmPassword"
 					placeholder="Confirm Password"
 					aria-label="Confirm Password"

@@ -5,6 +5,7 @@ import { logout } from '@components/NavBar/helper';
 import { getSession } from '@stores/sessionStore';
 import { isPasswordValid } from '@utils/passwordPolicy';
 import { PasswordStrengthMeter } from '@components/Auth/PasswordStrengthMeter';
+import { PasswordInput } from '@components/Auth/PasswordInput';
 import AccountVerificationNotice from './AccountVerificationNotice';
 
 type PinState = 'idle' | 'generating' | 'shown' | 'error';
@@ -174,9 +175,7 @@ export default function SettingsForm({ dialog }: Readonly<{ dialog: string }>) {
 				<form className="space-y-2 mt-8" onSubmit={handleSavePassword}>
 					<label className="input input-bordered flex items-center gap-2 w-full">
 						<ReactSVG src="/icons/password.svg" className="w-4 h-4 opacity-70" />
-						<input
-							type="password"
-							className="grow"
+						<PasswordInput
 							placeholder="Current Password"
 							value={currentPassword}
 							onChange={(e) => setCurrentPassword(e.target.value)}
@@ -185,9 +184,7 @@ export default function SettingsForm({ dialog }: Readonly<{ dialog: string }>) {
 					</label>
 					<label className="input input-bordered flex items-center gap-2 w-full">
 						<ReactSVG src="/icons/password.svg" className="w-4 h-4 opacity-70" />
-						<input
-							type="password"
-							className="grow"
+						<PasswordInput
 							placeholder="New Password"
 							value={newPassword}
 							onChange={(e) => setNewPassword(e.target.value)}
@@ -197,9 +194,7 @@ export default function SettingsForm({ dialog }: Readonly<{ dialog: string }>) {
 					<PasswordStrengthMeter password={newPassword} />
 					<label className="input input-bordered flex items-center gap-2 w-full">
 						<ReactSVG src="/icons/password.svg" className="w-4 h-4 opacity-70" />
-						<input
-							type="password"
-							className="grow"
+						<PasswordInput
 							placeholder="Confirm New Password"
 							value={confirmNewPassword}
 							onChange={(e) => setConfirmNewPassword(e.target.value)}

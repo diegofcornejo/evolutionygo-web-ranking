@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ReactSVG } from 'react-svg';
 import { AuthEmailField, AuthErrorMessage } from './FormFields';
+import { PasswordInput } from './PasswordInput';
 import { PasswordStrengthMeter } from './PasswordStrengthMeter';
 import { isPasswordValid } from '@utils/passwordPolicy';
 import { updateSession } from '@stores/sessionStore';
@@ -137,9 +138,7 @@ export function SignUpForm({ dialog }: Readonly<{ dialog: string }>) {
 				/>
 			</label>
 			<label className="input input-bordered flex items-center gap-2 w-full">
-				<input
-					type="password"
-					className="grow"
+				<PasswordInput
 					name="password"
 					placeholder="Password"
 					aria-label="Password"
@@ -150,9 +149,7 @@ export function SignUpForm({ dialog }: Readonly<{ dialog: string }>) {
 			</label>
 			<PasswordStrengthMeter password={password} />
 			<label className="input input-bordered flex items-center gap-2 w-full">
-				<input
-					type="password"
-					className="grow"
+				<PasswordInput
 					name="confirmPassword"
 					placeholder="Confirm password"
 					aria-label="Confirm password"

@@ -3,6 +3,7 @@ import { ReactSVG } from 'react-svg';
 import type { Session } from '@types';
 import { updateSession } from '@stores/sessionStore';
 import { AuthEmailField, AuthErrorMessage } from './FormFields';
+import { PasswordInput } from './PasswordInput';
 
 export function SignInForm({ dialog }: Readonly<{ dialog: string }>) {
 	const [email, setEmail] = useState('');
@@ -108,9 +109,7 @@ export function SignInForm({ dialog }: Readonly<{ dialog: string }>) {
 			{isLoginMode && (
 				<label className="input input-bordered flex items-center gap-2 w-full">
 					<ReactSVG src='/icons/password.svg' className='w-4 h-4 opacity-70' />
-				<input
-					type="password"
-					className="grow"
+				<PasswordInput
 					name="password"
 					placeholder="Password"
 					value={password}

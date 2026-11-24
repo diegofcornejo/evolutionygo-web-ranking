@@ -3,3 +3,4 @@ export { SignUpForm } from './SignUpForm';
 export { PasswordStrengthMeter } from './PasswordStrengthMeter';
 export { UpgradePasswordForm } from './UpgradePasswordForm';
 export { ResetAccountPasswordForm } from './ResetAccountPasswordForm';
+export { PasswordInput } from './PasswordInput';
