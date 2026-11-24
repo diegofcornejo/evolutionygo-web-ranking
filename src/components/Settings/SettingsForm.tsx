@@ -5,6 +5,7 @@ import { logout } from '@components/NavBar/helper';
 import { getSession } from '@stores/sessionStore';
 import { isPasswordValid } from '@utils/passwordPolicy';
 import { PasswordStrengthMeter } from '@components/Auth/PasswordStrengthMeter';
+import AccountVerificationNotice from './AccountVerificationNotice';
 
 type PinState = 'idle' | 'generating' | 'shown' | 'error';
 
@@ -166,6 +167,7 @@ export default function SettingsForm({ dialog }: Readonly<{ dialog: string }>) {
 
 	return (
 		<div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-8">
+			<AccountVerificationNotice dialog={dialog} />
 			{/* Left column (desktop): Change Account Password */}
 			<div className="order-2 md:order-1">
 				<h3 className="divider">Change Account Password</h3>
