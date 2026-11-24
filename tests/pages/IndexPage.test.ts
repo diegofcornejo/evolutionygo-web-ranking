@@ -5,12 +5,10 @@ import reactRenderer from '@astrojs/react/server.js';
 import svelteRenderer from '@astrojs/svelte/server.js';
 import { experimental_AstroContainer } from 'astro/container';
 
-Object.defineProperty(import.meta, 'env', {
-  value: {
-    PUBLIC_DEFAULT_SEASON: '2024',
-  },
-  writable: true,
-});
+// vi.stubEnv reaches import.meta.env in every module, including the page under
+// test; redefining import.meta here would only change this file's copy and leave
+// the page reading whatever the local .env happens to hold.
+vi.stubEnv('PUBLIC_DEFAULT_SEASON', '2024');
 
 vi.mock('@layouts/Layout.astro', async () => ({
   default: (await import('../__mocks__/Layout.astro')).default,
